@@ -674,6 +674,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
                idata,icol,it,lserr,iin,nrect,idimc,idm,&
                jdm,inidim
+    logical :: boundary
 
     save
     !
@@ -746,15 +747,12 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     !  SWGHT is a local variable = XTRAP, and can be considered a smoothing
     !  weight for data sparse areas.  If SWGHT == 0, no smoothing
     !  computations are performed.
-
     swght = xtrap
 
     !  Set aside workspace for counting data points.
-
     if (swght/=0.0_wp) nwrk1 = ncol + 1
 
     !  NWLFT is the length of the remaining workspace.
-
     nwlft = nwrk - nwrk1 + 1
     if (nwlft<1) then
         ierror = 106
@@ -765,11 +763,9 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     irow = 0
 
     !  ROWWT is used to weight rows of the least squares matrix.
-
     rowwt = 1.0_wp
 
     !  Loop through all data points, computing a row for each.
-
     do idata = 1,mdata
 
         !  WDATA(1)<0 means weights have not been entered.  In that case,
@@ -778,7 +774,6 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !
         !  Every element of the row, as well as the corresponding right hand
         !  side, is multiplied by ROWWT.
-
         if (wdata(1)>=0.0_wp) then
             rowwt = wdata(idata)
             !  Data points with 0 weight are ignored.
@@ -789,7 +784,6 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  One row of the least squares matrix corresponds to each data
         !  point.  The right hand for that row will correspond to the
         !  function value YDATA at that point.
-
         rhs = rowwt*ydata(idata)
         do idim = 1,mdim
             x(idim) = xdata(idim,idata)
@@ -798,7 +792,6 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  The COEF array serves as a row of least squares matrix.
         !  Its value is zero except for columns corresponding to functions
         !  which are nonzero at X.
-
         do icol = 1,ncol
             coef(icol) = 0.0_wp
         end do
@@ -806,7 +799,6 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  Compute the indices of basis functions which are nonzero at X.
         !  IBMN is in the range 0 to nodes-2 and IBMX is in range 1
         !  to NODES-1.
-
         do idim = 1,mdim
             nod = nodes(idim)
             it = dxin(idim)* (x(idim)-xmin(idim))
@@ -815,29 +807,26 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             ibmx(idim) = max(min(it+2,nod-1),1)
         end do
 
-        !  Begining of basis index loop - traverse all indices corresponding
-        !  to basis functions which are nonzero at X.  The indices are in
-        !  IB and are passed through common to BASCMP.
+        basis_index : do
+            !  Begining of basis index loop - traverse all indices corresponding
+            !  to basis functions which are nonzero at X.  The indices are in
+            !  IB and are passed through common to BASCMP.
+            call bascmpd(x,nderiv,xmin,nodes,icol,basm)
 
-106     call bascmpd(x,nderiv,xmin,nodes,icol,basm)
+            !  BASCMP computes ICOL and BASM where BASM is the value at X of
+            !  the N-dimensional basis function corresponding to column ICOL.
+            coef(icol) = rowwt*basm
 
-        !  BASCMP computes ICOL and BASM where BASM is the value at X of
-        !  the N-dimensional basis function corresponding to column ICOL.
+            !  Increment the basis indices.
+            do idim = 1,mdim
+                ib(idim) = ib(idim) + 1
+                if (ib(idim)<=ibmx(idim)) cycle basis_index
+                ib(idim) = ibmn(idim)
+            end do
+            exit basis_index !  End of basis index loop.
+        end do basis_index
 
-        coef(icol) = rowwt*basm
-
-        !  Increment the basis indices.
-
-        do idim = 1,mdim
-            ib(idim) = ib(idim) + 1
-            if (ib(idim)<=ibmx(idim)) go to 106
-            ib(idim) = ibmn(idim)
-        end do
-
-        !  End of basis index loop.
-        !
         !  Send a row of the least squares matrix to the reduction routine.
-
         call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
         if (lserr/=0) then
             ierror = 107
@@ -851,200 +840,195 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     !  If SWGHT==0, the least squares matrix is complete and no
     !  smoothing rows are computed.
 
-    if (swght==0.0_wp) go to 126
+    if (swght/=0.0_wp) then
 
-    !  Initialize smoothing computations for data sparse areas.
-    !  Derivative constraints will always have zero right hand side.
+        !  Initialize smoothing computations for data sparse areas.
+        !  Derivative constraints will always have zero right hand side.
+        rhs = 0.0_wp
+        nrect = 1
 
-    rhs = 0.0_wp
-    nrect = 1
-
-    !  Initialize the node indices and compute number of rectangles
-    !  formed by the node network.
-
-    do idim = 1,mdim
-        in(idim) = 0
-        inmx(idim) = nodes(idim) - 1
-        nrect = nrect*inmx(idim)
-    end do
-
-    !  Every node is assigned an element of the workspace (set aside
-    !  previously) in which data points are counted.
-
-    do iin = 1,ncol
-        work(iin) = 0.0_wp
-    end do
-
-    !  Assign each data point to a node, total the assignments for
-    !  each node, and save in the workspace.
-
-    totlwt = 0.0_wp
-    do idata = 1,mdata
-
-        ! BUMP is the weight associated with the data point.
-        bump = 1.0_wp
-        if (wdata(1)>=0.0_wp) bump = wdata(idata)
-        if (bump==0.0_wp) cycle
-
-        ! Find the nearest node.
-        iin = 0
-        do idimc = 1,mdim
-            idim = mdim + 1 - idimc
-            inidim = int(dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
-            ! Points not in range (+ or - 1/2 node spacing) are not counted.
-            if (inidim<0 .or. inidim>inmx(idim)) cycle
-            ! Compute linear address of node in workspace by Horner's method.
-            iin = (inmx(idim)+1)*iin + inidim
-        end do
-
-        ! Bump counter for that node.
-        work(iin+1) = work(iin+1) + bump
-        totlwt = totlwt + bump
-    end do
-
-    ! Compute the expected weight per rectangle.
-    wtprrc = totlwt/real(nrect,wp)
-
-    !  IN contains indices of the node (previously initialized).
-    !  IIN will be the linear address of the node in the workspace.
-
-    iin = 0
-
-    !  Loop through all nodes, computing derivative constraint rows
-    !  for those in data sparse locations.
-    !
-    !  Begining of node index loop - traverse all node indices.
-    !  The indices are in IN.
-
-    113 iin = iin + 1
-    expect = wtprrc
-
-    !  Rectangles at edge of network are smaller and hence less weight
-    !  should be expected.
-
-    do idim = 1,mdim
-        if (in(idim)==0 .or. in(idim)==inmx(idim)) expect = 0.5_wp*expect
-    end do
-
-    !  The expected weight minus the actual weight serves to define
-    !  data sparseness and is also used to weight the derivative
-    !  constraint rows.
-    !
-    !  There is no constraint if not data sparse.
-
-    if (work(iin)<spcrit*expect) then
-
-        dcwght = expect - work(iin)
+        !  Initialize the node indices and compute number of rectangles
+        !  formed by the node network.
         do idim = 1,mdim
-            inidim = in(idim)
-
-            !  Compute the location of the node.
-            x(idim) = xmin(idim) + real(inidim,wp)*dx(idim)
-
-            !  Compute the indices of the basis functions which are non-zero
-            !  at the node.
-            ibmn(idim) = inidim - 1
-            ibmx(idim) = inidim + 1
-
-            !  Distinguish the boundaries.
-            if (inidim==0) ibmn(idim) = 0
-            if (inidim==inmx(idim)) ibmx(idim) = inmx(idim)
-
-            !  Initialize the basis indices.
-            ib(idim) = ibmn(idim)
+            in(idim) = 0
+            inmx(idim) = nodes(idim) - 1
+            nrect = nrect*inmx(idim)
         end do
 
-        !  Multiply by the extrapolation parameter (this acts as a
-        !  smoothing weight).
-        dcwght = swght*dcwght
-
-        !  The COEF array serves as a row of the least squares matrix.
-        !  Its value is zero except for columns corresponding to functions
-        !  which are non-zero at the node.
-        do icol = 1,ncol
-            coef(icol) = 0.0_wp
+        !  Every node is assigned an element of the workspace (set aside
+        !  previously) in which data points are counted.
+        do iin = 1,ncol
+            work(iin) = 0.0_wp
         end do
 
-        !  The 2nd derivative of a function of MDIM variables may be thought
-        !  of as a symmetric MDIM x MDIM matrix of 2nd order partial
-        !  derivatives.  Traverse the upper triangle of this matrix and,
-        !  for each element, compute a row of the least squares matrix.
+        !  Assign each data point to a node, total the assignments for
+        !  each node, and save in the workspace.
+        totlwt = 0.0_wp
+        do idata = 1,mdata
 
-        do idm = 1,mdim
-            do jdm = idm,mdim
+            ! BUMP is the weight associated with the data point.
+            bump = 1.0_wp
+            if (wdata(1)>=0.0_wp) bump = wdata(idata)
+            if (bump==0.0_wp) cycle
+
+            ! Find the nearest node.
+            iin = 0
+            do idimc = 1,mdim
+                idim = mdim + 1 - idimc
+                inidim = int(dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
+                ! Points not in range (+ or - 1/2 node spacing) are not counted.
+                if (inidim<0 .or. inidim>inmx(idim)) cycle
+                ! Compute linear address of node in workspace by Horner's method.
+                iin = (inmx(idim)+1)*iin + inidim
+            end do
+
+            ! Bump counter for that node.
+            work(iin+1) = work(iin+1) + bump
+            totlwt = totlwt + bump
+        end do
+
+        ! Compute the expected weight per rectangle.
+        wtprrc = totlwt/real(nrect,wp)
+
+        !  IN contains indices of the node (previously initialized).
+        !  IIN will be the linear address of the node in the workspace.
+        iin = 0
+
+        !  Loop through all nodes, computing derivative constraint rows
+        !  for those in data sparse locations.
+        !
+        !  Begining of node index loop - traverse all node indices.
+        !  The indices are in IN.
+        node_index : do
+            iin = iin + 1
+            expect = wtprrc
+
+            !  Rectangles at edge of network are smaller and hence less weight
+            !  should be expected.
+            do idim = 1,mdim
+                if (in(idim)==0 .or. in(idim)==inmx(idim)) expect = 0.5_wp*expect
+            end do
+
+            !  The expected weight minus the actual weight serves to define
+            !  data sparseness and is also used to weight the derivative
+            !  constraint rows.
+            !
+            !  There is no constraint if not data sparse.
+            if (work(iin)<spcrit*expect) then
+
+                dcwght = expect - work(iin)
                 do idim = 1,mdim
-                    nderiv(idim) = 0
-                end do
+                    inidim = in(idim)
 
-                !  Off-diagonal elements appear twice by symmetry, so the corresponding
-                !  row is weighted by a factor of 2.
+                    !  Compute the location of the node.
+                    x(idim) = xmin(idim) + real(inidim,wp)*dx(idim)
 
-                rowwt = 2.0_wp*dcwght
-                if (jdm/=idm) go to 118
+                    !  Compute the indices of the basis functions which are non-zero
+                    !  at the node.
+                    ibmn(idim) = inidim - 1
+                    ibmx(idim) = inidim + 1
 
-                !  Diagonal.
+                    !  Distinguish the boundaries.
+                    if (inidim==0) ibmn(idim) = 0
+                    if (inidim==inmx(idim)) ibmx(idim) = inmx(idim)
 
-                rowwt = dcwght
-                nderiv(jdm) = 2
-                if (in(idm)/=0 .and. in(idm)/=inmx(idm)) go to 119
-
-                !  Node is at boundary.
-                !
-                !  Normal 2nd derivative constraint at boundary is not appropriate for
-                !  natural splines (2nd derivative 0 by definition).  Substitute
-                !  a 1st derivative constraint.
-
-        118     nderiv(idm) = 1
-                nderiv(jdm) = 1
-
-        119     irow = irow + 1
-
-                !  Begining of basis index loop - traverse all indices corresponding
-                !  to basis functions which are non-zero at X.
-                !  The indices are in IB and are passed through common to BASCMP.
-
-        120     call bascmpd(x,nderiv,xmin,nodes,icol,basm)
-
-                !  BASCMP computes ICOL and BASM where BASM is the value at X of the
-                !  N-dimensional basis function corresponding to column ICOL.
-
-                coef(icol) = rowwt*basm
-
-                !  Increment the basis indices.
-
-                do idim = 1,mdim
-                    ib(idim) = ib(idim) + 1
-                    if (ib(idim)<=ibmx(idim)) go to 120
+                    !  Initialize the basis indices.
                     ib(idim) = ibmn(idim)
                 end do
 
-                !  End of basis index loop.
-                !
-                !  Send row of least squares matrix to reduction routine.
+                !  Multiply by the extrapolation parameter (this acts as a
+                !  smoothing weight).
+                dcwght = swght*dcwght
 
-                call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef, &
-                            reserr,lserr)
-                if (lserr/=0) then
-                    ierror = 107
-                    call cfaerr(ierror, &
-                        ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
-                end if
+                !  The COEF array serves as a row of the least squares matrix.
+                !  Its value is zero except for columns corresponding to functions
+                !  which are non-zero at the node.
+                do icol = 1,ncol
+                    coef(icol) = 0.0_wp
+                end do
+
+                !  The 2nd derivative of a function of MDIM variables may be thought
+                !  of as a symmetric MDIM x MDIM matrix of 2nd order partial
+                !  derivatives.  Traverse the upper triangle of this matrix and,
+                !  for each element, compute a row of the least squares matrix.
+
+                do idm = 1,mdim
+                    do jdm = idm,mdim
+                        do idim = 1,mdim
+                            nderiv(idim) = 0
+                        end do
+
+                        boundary = .true.
+                        !  Off-diagonal elements appear twice by symmetry, so the corresponding
+                        !  row is weighted by a factor of 2.
+                        rowwt = 2.0_wp*dcwght
+                        if (jdm==idm) then
+                            !  Diagonal.
+                            rowwt = dcwght
+                            nderiv(jdm) = 2
+                            if (in(idm)/=0 .and. in(idm)/=inmx(idm)) then
+                                boundary = .false.
+                            end if
+                        end if
+                        if (boundary) then
+                            !  Node is at boundary.
+                            !
+                            !  Normal 2nd derivative constraint at boundary is not appropriate for
+                            !  natural splines (2nd derivative 0 by definition).  Substitute
+                            !  a 1st derivative constraint.
+                            nderiv(idm) = 1
+                            nderiv(jdm) = 1
+                        end if
+                        irow = irow + 1
+
+                        basis : do
+                            !  Begining of basis index loop - traverse all indices corresponding
+                            !  to basis functions which are non-zero at X.
+                            !  The indices are in IB and are passed through common to BASCMP.
+                            call bascmpd(x,nderiv,xmin,nodes,icol,basm)
+
+                            !  BASCMP computes ICOL and BASM where BASM is the value at X of the
+                            !  N-dimensional basis function corresponding to column ICOL.
+                            coef(icol) = rowwt*basm
+
+                            !  Increment the basis indices.
+                            do idim = 1,mdim
+                                ib(idim) = ib(idim) + 1
+                                if (ib(idim)<=ibmx(idim)) cycle basis
+                                ib(idim) = ibmn(idim)
+                            end do
+
+                            !  End of basis index loop.
+                            exit basis
+                        end do basis
+
+                        !  Send row of least squares matrix to reduction routine.
+                        call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+                        if (lserr/=0) then
+                            ierror = 107
+                            call cfaerr(ierror, &
+                                ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+                        end if
+                    end do
+                end do
+
+            end if
+
+            !  Increment node indices.
+            do idim = 1,mdim
+                in(idim) = in(idim) + 1
+                if (in(idim)<=inmx(idim)) cycle node_index
+                in(idim) = 0
             end do
-        end do
+
+            exit node_index !  End of node index loop.
+
+        end do node_index
 
     end if
 
-    !  Increment node indices.
-    do idim = 1,mdim
-        in(idim) = in(idim) + 1
-        if (in(idim)<=inmx(idim)) go to 113
-        in(idim) = 0
-    end do
-    !  End of node index loop.
-
     !  Call for least squares solution in COEF array.
-
-126 irow = 0
+    irow = 0
     call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
     if (lserr/=0) then
         ierror = 107
@@ -1083,7 +1067,7 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     !
     ! The restriction for NDIM to be <= 4 can be eliminated by increasing
     ! the above dimensions.
-    !
+
     ierror = 0
     mdim = ndim
     if (mdim<1 .or. mdim>4) go to 105
@@ -1094,14 +1078,14 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         xrng = xmax(idim) - xmin(idim)
         if (xrng==0.0_wp) go to 107
         if (nderiv(idim)<0 .or. nderiv(idim)>2) go to 108
-    !
+
     !  DX(IDIM) is the node spacing along the IDIM coordinate.
-    !
+
         dx(idim) = xrng/real(nod-1,wp)
         dxin(idim) = 1.0_wp/dx(idim)
-    !
+
     !  Compute indices of basis functions which are nonzero at X.
-    !
+
         it = dxin(idim)*(x(idim)-xmin(idim))
     !
     !  IBMN must be in the range 0 to NODES-2.
