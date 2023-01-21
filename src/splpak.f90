@@ -311,14 +311,13 @@ end subroutine bascmpd
 !
 !  The message is writen to `output_unit`.
 
-subroutine cfaerr (ierr,mess,lmess)
+subroutine cfaerr (ierr,mess)
 
     integer,intent(in) :: ierr !! The error number (printed only if non-zero).
     character(len=*), intent(in) :: mess !! Message to be printed.
-    integer,intent(in) :: lmess !! Number of characters in mess (<= 130).
 
     if (ierr /= 0) write (output_unit,'(A,I5)') ' IERR=', ierr
-    write (output_unit,'(A)') mess(1:lmess)
+    write (output_unit,'(A)') trim(mess)
 
 end subroutine cfaerr
 !*****************************************************************************************
@@ -636,7 +635,7 @@ end subroutine splccd
 !  NODES(NDIM).
 
 subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
-                 nodes,xtrap,coef,ncf,work,nwrk,ierror)
+                  nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
     integer,intent(in) :: ndim
     integer,intent(in) :: l1xdat
@@ -654,7 +653,6 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     real(wp) :: x(4)
     real(wp) :: dx(4)
     real(wp) :: dxin(4)
-    real(wp) :: spcrit
     real(wp) :: xrng
     real(wp) :: swght
     real(wp) :: rowwt
@@ -682,107 +680,133 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     !  The restriction that NDIM be less than are equat to 4 can be
     !  eliminated by increasing the above dimensions, but the required
     !  length of WORK becomes quite large.
-    !
-    !  SPCRIT is used to determine data sparseness as follows -
-    !  the weights assigned to all data points are totaled into the
-    !  variable TOTLWT. (If no weights are entered, it is set to
-    !  NDATA.)  Each node of the node network is assigned a
-    !  rectangle (in which it is contained) and the weights of all
-    !  data points which fall in that rectangle are totaled.  If that
-    !  total is less than SPCRIT*EXPECT (EXPECT is defined below),
-    !  then the node is ascertained to be in a data sparse location.
-    !  EXPECT is that fraction of TOTLWT that would be expected by
-    !  comparing the area of the rectangle with the total area under
-    !  consideration.
-    !
-    data spcrit/0.75_wp/
+
+    real(wp),parameter :: spcrit = 0.75_wp
+        !! SPCRIT is used to determine data sparseness as follows -
+        !! the weights assigned to all data points are totaled into the
+        !! variable TOTLWT. (If no weights are entered, it is set to
+        !! NDATA.)  Each node of the node network is assigned a
+        !! rectangle (in which it is contained) and the weights of all
+        !! data points which fall in that rectangle are totaled.  If that
+        !! total is less than SPCRIT*EXPECT (EXPECT is defined below),
+        !! then the node is ascertained to be in a data sparse location.
+        !! EXPECT is that fraction of TOTLWT that would be expected by
+        !! comparing the area of the rectangle with the total area under
+        !! consideration.
 
     ierror = 0
     mdim = ndim
-    if (mdim<1 .or. mdim>4) go to 127
+    if (mdim<1 .or. mdim>4) then
+        ierror = 101
+        call cfaerr(ierror, &
+            ' SPLCCD or SPLCWD - NDIM is less than 1 or is greater than 4')
+        return
+    end if
     ncol = 1
     do idim = 1,mdim
         nod = nodes(idim)
-        if (nod<4) go to 128
+        if (nod<4) then
+            ierror = 102
+            call cfaerr(ierror, &
+                ' SPLCCD or SPLCWD - NODES(IDIM) is less than 4 for some IDIM')
+            return
+        end if
 
         !  Number of columns in least squares matrix = number of coefficients =
         !  product of nodes over all dimensions.
-
         ncol = ncol*nod
         xrng = xmax(idim) - xmin(idim)
-        if (xrng==0.0_wp) go to 129
+        if (xrng==0.0_wp) then
+            ierror = 103
+            call cfaerr(ierror, &
+                ' SPLCCD or SPLCWD - XMIN(IDIM) equals XMAX(IDIM) for some IDIM')
+            return
+        end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
-
         dx(idim) = xrng/real(nod-1,wp)
         dxin(idim) = 1.0_wp/dx(idim)
         nderiv(idim) = 0
     end do
-    if (ncol>ncf) go to 130
+    if (ncol>ncf) then
+        ierror = 104
+        call cfaerr(ierror, &
+            ' SPLCCD or SPLCWD - NCF (size of COEF) is too small')
+        return
+    end if
     nwrk1 = 1
     mdata = ndata
-    if (mdata<1) go to 131
-    !
+    if (mdata<1) then
+        ierror = 105
+        call cfaerr(ierror, &
+            ' SPLCCD or SPLCWD - Ndata Is less than 1')
+        return
+    end if
+
     !  SWGHT is a local variable = XTRAP, and can be considered a smoothing
     !  weight for data sparse areas.  If SWGHT == 0, no smoothing
     !  computations are performed.
-    !
+
     swght = xtrap
-    !
+
     !  Set aside workspace for counting data points.
-    !
+
     if (swght/=0.0_wp) nwrk1 = ncol + 1
-    !
+
     !  NWLFT is the length of the remaining workspace.
-    !
+
     nwlft = nwrk - nwrk1 + 1
-    if (nwlft<1) go to 132
+    if (nwlft<1) then
+        ierror = 106
+        call cfaerr(ierror, &
+            ' SPLCCD or SPLCWD - NWRK (size of WORK) is too small')
+        return
+    end if
     irow = 0
-    !
+
     !  ROWWT is used to weight rows of the least squares matrix.
-    !
+
     rowwt = 1.0_wp
-    !
+
     !  Loop through all data points, computing a row for each.
-    !
-    do 108 idata = 1,mdata
-    !
-    !  WDATA(1)<0 means weights have not been entered.  In that case,
-    !  ROWWT is left equal to  1. for all points.  Otherwise ROWWT is
-    !  equal to WDATA(IDATA).
-    !
-    !  Every element of the row, as well as the corresponding right hand
-    !  side, is multiplied by ROWWT.
-    !
-        if (wdata(1)<0.0_wp) go to 102
-        rowwt = wdata(idata)
-    !
-    !  Data points with 0 weight are ignored.
-    !
-        if (rowwt==0.0_wp) go to 108
-    102     irow = irow + 1
-    !
-    !  One row of the least squares matrix corresponds to each data
-    !  point.  The right hand for that row will correspond to the
-    !  function value YDATA at that point.
-    !
+
+    do idata = 1,mdata
+
+        !  WDATA(1)<0 means weights have not been entered.  In that case,
+        !  ROWWT is left equal to  1. for all points.  Otherwise ROWWT is
+        !  equal to WDATA(IDATA).
+        !
+        !  Every element of the row, as well as the corresponding right hand
+        !  side, is multiplied by ROWWT.
+
+        if (wdata(1)>=0.0_wp) then
+            rowwt = wdata(idata)
+            !  Data points with 0 weight are ignored.
+            if (rowwt==0.0_wp) cycle
+        end if
+        irow = irow + 1
+
+        !  One row of the least squares matrix corresponds to each data
+        !  point.  The right hand for that row will correspond to the
+        !  function value YDATA at that point.
+
         rhs = rowwt*ydata(idata)
         do idim = 1,mdim
             x(idim) = xdata(idim,idata)
         end do
-    !
-    !  The COEF array serves as a row of least squares matrix.
-    !  Its value is zero except for columns corresponding to functions
-    !  which are nonzero at X.
-    !
+
+        !  The COEF array serves as a row of least squares matrix.
+        !  Its value is zero except for columns corresponding to functions
+        !  which are nonzero at X.
+
         do icol = 1,ncol
             coef(icol) = 0.0_wp
         end do
-    !
-    !  Compute the indices of basis functions which are nonzero at X.
-    !  IBMN is in the range 0 to nodes-2 and IBMX is in range 1
-    !  to NODES-1.
-    !
+
+        !  Compute the indices of basis functions which are nonzero at X.
+        !  IBMN is in the range 0 to nodes-2 and IBMX is in range 1
+        !  to NODES-1.
+
         do idim = 1,mdim
             nod = nodes(idim)
             it = dxin(idim)* (x(idim)-xmin(idim))
@@ -790,67 +814,70 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             ib(idim) = ibmn(idim)
             ibmx(idim) = max(min(it+2,nod-1),1)
         end do
-    !
-    !  Begining of basis index loop - traverse all indices corresponding
-    !  to basis functions which are nonzero at X.  The indices are in
-    !  IB and are passed through common to BASCMP.
-    !
-    106     call bascmpd(x,nderiv,xmin,nodes,icol,basm)
-    !
-    !  BASCMP computes ICOL and BASM where BASM is the value at X of
-    !  the N-dimensional basis function corresponding to column ICOL.
-    !
+
+        !  Begining of basis index loop - traverse all indices corresponding
+        !  to basis functions which are nonzero at X.  The indices are in
+        !  IB and are passed through common to BASCMP.
+
+106     call bascmpd(x,nderiv,xmin,nodes,icol,basm)
+
+        !  BASCMP computes ICOL and BASM where BASM is the value at X of
+        !  the N-dimensional basis function corresponding to column ICOL.
+
         coef(icol) = rowwt*basm
-    !
-    !  Increment the basis indices.
-    !
+
+        !  Increment the basis indices.
+
         do idim = 1,mdim
             ib(idim) = ib(idim) + 1
             if (ib(idim)<=ibmx(idim)) go to 106
             ib(idim) = ibmn(idim)
         end do
-    !
-    !  End of basis index loop.
-    !
-    !
-    !  Send a row of the least squares matrix to the reduction routine.
-    !
+
+        !  End of basis index loop.
+        !
+        !  Send a row of the least squares matrix to the reduction routine.
+
         call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
-        if (lserr/=0) go to 133
-    108 continue
-    !
+        if (lserr/=0) then
+            ierror = 107
+            call cfaerr(ierror, &
+                ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+        end if
+    end do
+
     !  Row computations for all data points are now complete.
     !
     !  If SWGHT==0, the least squares matrix is complete and no
     !  smoothing rows are computed.
-    !
+
     if (swght==0.0_wp) go to 126
-    !
+
     !  Initialize smoothing computations for data sparse areas.
     !  Derivative constraints will always have zero right hand side.
-    !
+
     rhs = 0.0_wp
     nrect = 1
-    !
+
     !  Initialize the node indices and compute number of rectangles
     !  formed by the node network.
-    !
+
     do idim = 1,mdim
         in(idim) = 0
         inmx(idim) = nodes(idim) - 1
         nrect = nrect*inmx(idim)
     end do
-    !
+
     !  Every node is assigned an element of the workspace (set aside
     !  previously) in which data points are counted.
-    !
+
     do iin = 1,ncol
         work(iin) = 0.0_wp
     end do
-    !
+
     !  Assign each data point to a node, total the assignments for
     !  each node, and save in the workspace.
-    !
+
     totlwt = 0.0_wp
     do idata = 1,mdata
 
@@ -969,6 +996,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
         118     nderiv(idm) = 1
                 nderiv(jdm) = 1
+
         119     irow = irow + 1
 
                 !  Begining of basis index loop - traverse all indices corresponding
@@ -996,7 +1024,11 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
                 call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef, &
                             reserr,lserr)
-                if (lserr/=0) go to 133
+                if (lserr/=0) then
+                    ierror = 107
+                    call cfaerr(ierror, &
+                        ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+                end if
             end do
         end do
 
@@ -1008,61 +1040,18 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         if (in(idim)<=inmx(idim)) go to 113
         in(idim) = 0
     end do
-
     !  End of node index loop.
-    !
+
     !  Call for least squares solution in COEF array.
 
-    126 irow = 0
-    call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr, &
-                lserr)
-    if (lserr/=0) go to 133
-    return
+126 irow = 0
+    call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+    if (lserr/=0) then
+        ierror = 107
+        call cfaerr(ierror, &
+            ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+    end if
 
-    !  Error section
-
-    127 continue
-    ierror = 101
-    call cfaerr(ierror, &
-        ' SPLCCD or SPLCWD - NDIM is less than 1 or is greater than 4' &
-                ,60)
-    go to 134
-    128 continue
-    ierror = 102
-    call cfaerr(ierror, &
-        ' SPLCCD or SPLCWD - NODES(IDIM) is less than 4 for some IDIM' &
-                ,60)
-    go to 134
-    129 continue
-    ierror = 103
-    call cfaerr(ierror, &
-    ' SPLCCD or SPLCWD - XMIN(IDIM) equals XMAX(IDIM) for some IDIM' &
-                ,60)
-    go to 134
-    130 continue
-    ierror = 104
-    call cfaerr(ierror, &
-        ' SPLCCD or SPLCWD - NCF (size of COEF) is too small         ' &
-                ,60)
-    go to 134
-    131 continue
-    ierror = 105
-    call cfaerr(ierror, &
-        ' SPLCCD or SPLCWD - Ndata Is less than 1                    ' &
-                ,60)
-    go to 134
-    132 continue
-    ierror = 106
-    call cfaerr(ierror, &
-        ' SPLCCD or SPLCWD - NWRK (size of WORK) is too small        ' &
-                ,60)
-    go to 134
-    133 continue
-    ierror = 107
-    call cfaerr(ierror, &
-    ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data',80)
-
-    134 return
 end subroutine splcwd
 !*****************************************************************************************
 
@@ -1162,25 +1151,25 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     105 continue
     ierror = 101
     call cfaerr(ierror, &
-        ' SPLFED or SPLDED - NDIM is less than 1 or greater than 4   ' ,60)
+        ' SPLFED or SPLDED - NDIM is less than 1 or greater than 4')
     go to 109
 
     106 continue
     ierror = 102
     call cfaerr(ierror, &
-        ' SPLFED or SPLDED - NODES(IDIM) is less than  4for some IDIM' ,60)
+        ' SPLFED or SPLDED - NODES(IDIM) is less than  4for some IDIM')
     go to 109
 
     107 continue
     ierror = 103
     call cfaerr(ierror, &
-        ' SPLFED or SPLDED - XMIN(IDIM) = XMAX(IDIM) for some IDIM   ' ,60)
+        ' SPLFED or SPLDED - XMIN(IDIM) = XMAX(IDIM) for some IDIM')
     go to 109
 
     108 continue
     ierror = 104
     call cfaerr(ierror, &
-    ' SPLDED - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM  ',70)
+    ' SPLDED - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM')
 
     109 stop
 end function splded
@@ -1241,60 +1230,57 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     save
 
     ier = 0
-    if (i>1) go to 101
 
     !  Routine entered with I<=0 means complete the reduction and store
     !  the solution in SOLN.
-
     if (i<=0) go to 125
 
-    !  Set up quantities on first call.
+    if (i<=1) then
 
-    iold = 0
-    np1 = n + 1
+        !  Set up quantities on first call.
+        iold = 0
+        np1 = n + 1
 
-    !  Compute how many rows can be input now.
+        !  Compute how many rows can be input now.
+        l = nn/np1
+        ilast = 0
+        il1 = 0
+        k = 0
+        k1 = 0
+        errsum = 0.0_wp
+        nreq = ((n+5)*n+2)/2
 
-    l = nn/np1
-    ilast = 0
-    il1 = 0
-    k = 0
-    k1 = 0
-    errsum = 0.0_wp
-    nreq = ((n+5)*n+2)/2
+        !  Error exit if insufficient scratch storage provided.
+        if (nn<nreq) then
+            ier = 32
+            call cfaerr(ier, &
+                        ' SUPRLD - insufficient scratch storage provided. '//&
+                        'at least ((N+5)*N+2)/2 locations needed')
+            return
+        end if
 
-    !  Error exit if insufficient scratch storage provided.
-
-    if (nn>=nreq) go to 101
-    ier = 32
-    call cfaerr(ier, &
-                ' SUPRLD - insufficient scratch storage provided. '//&
-                'at least ((N+5)*N+2)/2 locations needed',88)
-    return
-
-    !  Store the row in the scratch storage.
-
-    101 continue
+    end if
 
     !  Error exit if (I-IOLD)/=1.
+    if ((i-iold)/=1) then
+        ier = 35
+        call cfaerr(ier,' SUPRLD - values of I not in sequence')
+        return
+    end if
 
-    if ((i-iold)==1) go to 102
-    ier = 35
-    call cfaerr(ier,' SUPRLD - values of I not in sequence',37)
-    return
-
-    102 continue
+    !  Store the row in the scratch storage.
     iold = i
-    do 103 j = 1,n
+    do j = 1,n
         ilj = ilast + j
         a(ilj) = rowi(j)
-    103 continue
+    end do
     ilnp = ilast + np1
     a(ilnp) = bi
     ilast = ilast + np1
     isav = i
     if (i<l) return
-    104 continue
+
+104 continue
     if (k==0) go to 115
     k1 = min(k,n)
     idiag = -np1
@@ -1337,172 +1323,167 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
 
     !  Apply rotations to zero out the single new row.
 
-    110 do 112 j = 1,k1
+110 do j = 1,k1
         idiag = idiag + (np1-j+2)
         i1 = il1 + j
-        if (abs(a(i1))<=1.d-18) then
+        if (abs(a(i1))<=1.0e-18_wp) then
             s = sqrt(a(idiag)*a(idiag))
-        else if (abs(a(idiag))<1.d-18) then
+        else if (abs(a(idiag))<1.0e-18_wp) then
             s = sqrt(a(i1)*a(i1))
         else
             s = sqrt(a(idiag)*a(idiag)+a(i1)*a(i1))
         end if
-        if (s==0.0_wp) go to 112
+        if (s==0.0_wp) cycle
         temp = a(idiag)
         a(idiag) = s
         s = 1.0_wp/s
         cn = temp*s
         sn = a(i1)*s
         jp1 = j + 1
-        do 111 j1 = jp1,np1
+        do j1 = jp1,np1
             jdel = j1 - j
             idj = idiag + jdel
             temp = a(idj)
             i1jd = i1 + jdel
             a(idj) = cn*temp + sn*a(i1jd)
             a(i1jd) = -sn*temp + cn*a(i1jd)
-    111     continue
-    112 continue
-    113 if (k<n) go to 115
+        end do
+    end do
+113 if (k<n) go to 115
     lmkm1 = l - k
 
     !  Accumulate residual sum of squares.
-
-    do 114 ii = 1,lmkm1
+    do ii = 1,lmkm1
         ilnp = il1 + ii*np1
         errsum = errsum + a(ilnp)*a(ilnp)
-    114 continue
+    end do
     if (i<=0) go to 127
     k = l
     ilast = il1
 
     !  Determine how many new rows may be input on next iteration.
-
     l = k + (nn-ilast)/np1
     return
-    115 k11 = k1 + 1
+
+115 k11 = k1 + 1
     k1 = min(l,n)
-    if (l-k==1) go to 122
-    k1m1 = k1 - 1
-    if (l>n) k1m1 = n
-    i1 = il1 + k11 - np1 - 1
+    if (l-k/=1) then
+        k1m1 = k1 - 1
+        if (l>n) k1m1 = n
+        i1 = il1 + k11 - np1 - 1
 
-    !  Perform householder transformations to reduce rows to upper
-    !  triangular form.
-
-    do 120 j = k11,k1m1
-        i1 = i1 + (np1+1)
-        i2 = i1 + (l-j)*np1
-        s = 0.0_wp
-        do 116 ii = i1,i2,np1
-            s = s + a(ii)*a(ii)
-    116     continue
-        if (s==0.0_wp) go to 120
-        temp = a(i1)
-        a(i1) = sqrt(s)
-        if (temp>0.0_wp) a(i1) = -a(i1)
-        temp = temp - a(i1)
-        temp1 = 1.0_wp/ (temp*a(i1))
-        jp1 = j + 1
-        i11 = i1 + np1
-        do 119 j1 = jp1,np1
-            jdel = j1 - j
-            i1jd = i1 + jdel
-            s = temp*a(i1jd)
-            do 117 ii = i11,i2,np1
-                iijd = ii + jdel
-                s = s + a(ii)*a(iijd)
-    117         continue
-            s = s*temp1
-            i1jd = i1 + jdel
-            a(i1jd) = a(i1jd) + s*temp
-            do 118 ii = i11,i2,np1
-                iijd = ii + jdel
-                a(iijd) = a(iijd) + s*a(ii)
-    118         continue
-    119     continue
-    120 continue
-    if (l<=n) go to 122
-    np1mk = np1 - k
-    lmk = l - k
-
-    !  Accumulate residual sum of squares.
-
-    do 121 ii = np1mk,lmk
-        ilnp = il1 + ii*np1
-        errsum = errsum + a(ilnp)*a(ilnp)
-    121 continue
-    122 imov = 0
+        !  Perform householder transformations to reduce rows to upper
+        !  triangular form.
+        do j = k11,k1m1
+            i1 = i1 + (np1+1)
+            i2 = i1 + (l-j)*np1
+            s = 0.0_wp
+            do ii = i1,i2,np1
+                s = s + a(ii)*a(ii)
+            end do
+            if (s==0.0_wp) cycle
+            temp = a(i1)
+            a(i1) = sqrt(s)
+            if (temp>0.0_wp) a(i1) = -a(i1)
+            temp = temp - a(i1)
+            temp1 = 1.0_wp/ (temp*a(i1))
+            jp1 = j + 1
+            i11 = i1 + np1
+            do j1 = jp1,np1
+                jdel = j1 - j
+                i1jd = i1 + jdel
+                s = temp*a(i1jd)
+                do ii = i11,i2,np1
+                    iijd = ii + jdel
+                    s = s + a(ii)*a(iijd)
+                end do
+                s = s*temp1
+                i1jd = i1 + jdel
+                a(i1jd) = a(i1jd) + s*temp
+                do ii = i11,i2,np1
+                    iijd = ii + jdel
+                    a(iijd) = a(iijd) + s*a(ii)
+                end do
+            end do
+        end do
+        if (l>n) then
+            np1mk = np1 - k
+            lmk = l - k
+            ! Accumulate residual sum of squares.
+            do ii = np1mk,lmk
+                ilnp = il1 + ii*np1
+                errsum = errsum + a(ilnp)*a(ilnp)
+            end do
+        end if
+    end if
+    imov = 0
     i1 = il1 + k11 - np1 - 1
 
     !  Squeeze the unnecessary elements out of scratch storage to
     !  allow space for more rows.
-
-    do 124 ii = k11,k1
+    do ii = k11,k1
         imov = imov + (ii-1)
         i1 = i1 + np1 + 1
         i2 = i1 + np1 - ii
-        do 123 iii = i1,i2
+        do iii = i1,i2
             iiim = iii - imov
             a(iiim) = a(iii)
-    123     continue
-    124 continue
+        end do
+    end do
     ilast = i2 - imov
     il1 = ilast
     if (i<=0) go to 127
     k = l
 
     !  Determine how many new rows may be input on next iteration.
-
     l = k + (nn-ilast)/np1
     return
 
     !  Complete reduction and store solution in SOLN.
-
-    125 l = isav
+125 l = isav
 
     !  Error exit if L less than N.
-
-    if (l>=n) go to 126
-    ier = 33
-    call cfaerr(ier,' SUPRLD - array has too few rows.',33)
-    return
-    126 continue
+    if (l<n) then
+        ier = 33
+        call cfaerr(ier,' SUPRLD - array has too few rows.')
+        return
+    end if
 
     !  K/=ISAV means further reduction needed.
-
     if (k/=isav) go to 104
-    127 ilast = (np1* (np1+1))/2 - 1
-    if (a(ilast-1)==0.0_wp) go to 130
+
+127 ilast = (np1* (np1+1))/2 - 1
+    if (a(ilast-1)==0.0_wp) then
+        ! Error return if system is singular.
+        ier = 34
+        call cfaerr(ier,' SUPRLD - system is singular.')
+        return
+    end if
 
     ! Solve triangular system into ROWI.
-
     soln(n) = a(ilast)/a(ilast-1)
-    do 129 ii = 2,n
+    do ii = 2,n
         iim1 = ii - 1
         ilast = ilast - ii
         s = a(ilast)
-        do 128 k = 1,iim1
+        do k = 1,iim1
             ilk = ilast - k
             npk = np1 - k
             s = s - a(ilk)*soln(npk)
-    128     continue
+        end do
         ilii = ilast - ii
-        if (a(ilii)==0.0_wp) go to 130
+        if (a(ilii)==0.0_wp) then
+            ! Error return if system is singular.
+            ier = 34
+            call cfaerr(ier,' SUPRLD - system is singular.')
+            return
+        end if
         npii = np1 - ii
         soln(npii) = s/a(ilii)
-    129 continue
+    end do
 
-    !  Store residual norm.
-
+    ! Store residual norm.
     err = sqrt(errsum)
-    return
-
-    !  Error return if system is singular.
-
-    130 continue
-    ier = 34
-    call cfaerr(ier,' SUPRLD - system is singular.',29)
 
 end subroutine suprld
 
