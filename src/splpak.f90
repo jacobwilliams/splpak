@@ -72,7 +72,7 @@
     use iso_fortran_env, only: output_unit
     use iso_fortran_env, only: wp => real64
 
-    !implicit none
+    implicit none
 
     contains
 !*****************************************************************************************
@@ -120,8 +120,8 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
     real(wp) :: x(4)
     real(wp) :: xmin(4)
     real(wp) :: basm
-    real(wp) :: dx
-    real(wp) :: dxin
+    real(wp) :: dx(4)
+    real(wp) :: dxin(4)
     real(wp) :: xb
     real(wp) :: bas1
     real(wp) :: z
@@ -130,7 +130,10 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
     integer :: nderiv(4),nodes(4)
     integer :: icol
 
-    common /splcomd/dx(4),dxin(4),mdim,ib(4),ibmn(4),ibmx(4)
+    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+
+    integer :: idim,mdmid,ntyp,ngo
 
     save
 
@@ -649,8 +652,8 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     real(wp) :: coef(ncf)
     real(wp) :: work(nwrk)
     real(wp) :: x(4)
-    real(wp) :: dx
-    real(wp) :: dxin
+    real(wp) :: dx(4)
+    real(wp) :: dxin(4)
     real(wp) :: spcrit
     real(wp) :: xrng
     real(wp) :: swght
@@ -665,8 +668,14 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     real(wp) :: dcwght
     integer :: nodes(ndim)
     integer :: nderiv(4),in(4),inmx(4)
+    integer :: ierror
 
-    common /splcomd/dx(4),dxin(4),mdim,ib(4),ibmn(4),ibmx(4)
+    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+
+    integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
+               idata,icol,it,lserr,iin,nrect,idimc,idm,&
+               jdm,inidim
 
     save
     !
@@ -1064,19 +1073,23 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
     integer,intent(in) :: ndim
     real(wp) :: splded
-    real(wp) :: x
-    real(wp) :: coef
-    real(wp) :: xmin
-    real(wp) :: xmax
-    real(wp) :: dx
-    real(wp) :: dxin
+    real(wp) :: x(ndim)
+    real(wp) :: coef(*)
+    real(wp) :: xmin(ndim)
+    real(wp) :: xmax(ndim)
+    real(wp) :: dx(4)
+    real(wp) :: dxin(4)
     real(wp) :: xrng
     real(wp) :: sum
     real(wp) :: basm
-    dimension x(ndim),nderiv(ndim),coef(*),xmin(ndim),xmax(ndim), &
-              nodes(ndim)
+    integer :: nderiv(ndim), nodes(ndim)
+    integer :: ierror
 
-    common /splcomd/dx(4),dxin(4),mdim,ib(4),ibmn(4),ibmx(4)
+    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    common /splcomd/dx,dxin,mdim,ib,ibmn,ibmx
+
+    integer :: iibmx,idim,nod,it,iib,icof
+
     save
     !
     ! The restriction for NDIM to be <= 4 can be eliminated by increasing
@@ -1177,14 +1190,16 @@ end function splded
 !
 function splfed(ndim,x,coef,xmin,xmax,nodes,ierror)
 
+    integer,intent(in) :: ndim
     real(wp) :: splfed
-    real(wp) :: x
-    real(wp) :: coef
-    real(wp) :: xmin
-    real(wp) :: xmax
+    real(wp) :: x(ndim)
+    real(wp) :: coef(*)
+    real(wp) :: xmin(ndim)
+    real(wp) :: xmax(ndim)
     real(wp) :: splded
-    dimension x(ndim),coef(*),xmin(ndim),xmax(ndim),nodes(ndim)
-    dimension nderiv(4)
+    integer :: nderiv(4),nodes(ndim)
+    integer :: ierror
+
     save
 
     data nderiv(1),nderiv(2),nderiv(3),nderiv(4)/0,0,0,0/
@@ -1202,6 +1217,9 @@ end function splfed
 !
 subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
 
+    integer :: i
+    integer :: nn
+    integer,intent(in) :: n
     real(wp) :: rowi(n)
     real(wp) :: bi
     real(wp) :: a(nn)
@@ -1213,24 +1231,30 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     real(wp) :: temp1
     real(wp) :: cn
     real(wp) :: sn
+    integer :: ier
+
+    integer :: iold,np1,l,ilast,il1,k,k1,nreq,j,ilj,ilnp,&
+               isav,idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
+               i1jd,k11,k1m1,i11,np1mk,lmk,imov,iii,iiim,iim1,&
+               ilk,npk,ilii,npii
 
     save
-    !
+
     ier = 0
     if (i>1) go to 101
-    !
+
     !  Routine entered with I<=0 means complete the reduction and store
     !  the solution in SOLN.
-    !
+
     if (i<=0) go to 125
-    !
+
     !  Set up quantities on first call.
-    !
+
     iold = 0
     np1 = n + 1
-    !
+
     !  Compute how many rows can be input now.
-    !
+
     l = nn/np1
     ilast = 0
     il1 = 0
@@ -1238,27 +1262,27 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     k1 = 0
     errsum = 0.0_wp
     nreq = ((n+5)*n+2)/2
-    !
+
     !  Error exit if insufficient scratch storage provided.
-    !
+
     if (nn>=nreq) go to 101
     ier = 32
     call cfaerr(ier, &
                 ' SUPRLD - insufficient scratch storage provided. '//&
                 'at least ((N+5)*N+2)/2 locations needed',88)
     return
-    !
+
     !  Store the row in the scratch storage.
-    !
+
     101 continue
-    !
+
     !  Error exit if (I-IOLD)/=1.
-    !
+
     if ((i-iold)==1) go to 102
     ier = 35
     call cfaerr(ier,' SUPRLD - values of I not in sequence',37)
     return
-    !
+
     102 continue
     iold = i
     do 103 j = 1,n
@@ -1275,9 +1299,9 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     k1 = min(k,n)
     idiag = -np1
     if (l-k==1) go to 110
-    !
+
     !  Apply householder transformations to zero out new rows.
-    !
+
     do j = 1,k1
         idiag = idiag + (np1-j+2)
         i1 = il1 + j
@@ -1310,9 +1334,9 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
         end do
     end do
     go to 113
-    !
+
     !  Apply rotations to zero out the single new row.
-    !
+
     110 do 112 j = 1,k1
         idiag = idiag + (np1-j+2)
         i1 = il1 + j
@@ -1341,9 +1365,9 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     112 continue
     113 if (k<n) go to 115
     lmkm1 = l - k
-    !
+
     !  Accumulate residual sum of squares.
-    !
+
     do 114 ii = 1,lmkm1
         ilnp = il1 + ii*np1
         errsum = errsum + a(ilnp)*a(ilnp)
@@ -1351,9 +1375,9 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     if (i<=0) go to 127
     k = l
     ilast = il1
-    !
+
     !  Determine how many new rows may be input on next iteration.
-    !
+
     l = k + (nn-ilast)/np1
     return
     115 k11 = k1 + 1
@@ -1362,10 +1386,10 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     k1m1 = k1 - 1
     if (l>n) k1m1 = n
     i1 = il1 + k11 - np1 - 1
-    !
+
     !  Perform householder transformations to reduce rows to upper
     !  triangular form.
-    !
+
     do 120 j = k11,k1m1
         i1 = i1 + (np1+1)
         i2 = i1 + (l-j)*np1
@@ -1401,19 +1425,19 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     if (l<=n) go to 122
     np1mk = np1 - k
     lmk = l - k
-    !
+
     !  Accumulate residual sum of squares.
-    !
+
     do 121 ii = np1mk,lmk
         ilnp = il1 + ii*np1
         errsum = errsum + a(ilnp)*a(ilnp)
     121 continue
     122 imov = 0
     i1 = il1 + k11 - np1 - 1
-    !
+
     !  Squeeze the unnecessary elements out of scratch storage to
     !  allow space for more rows.
-    !
+
     do 124 ii = k11,k1
         imov = imov + (ii-1)
         i1 = i1 + np1 + 1
@@ -1427,32 +1451,32 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     il1 = ilast
     if (i<=0) go to 127
     k = l
-    !
+
     !  Determine how many new rows may be input on next iteration.
-    !
+
     l = k + (nn-ilast)/np1
     return
-    !
+
     !  Complete reduction and store solution in SOLN.
-    !
+
     125 l = isav
-    !
+
     !  Error exit if L less than N.
-    !
+
     if (l>=n) go to 126
     ier = 33
     call cfaerr(ier,' SUPRLD - array has too few rows.',33)
     return
     126 continue
-    !
+
     !  K/=ISAV means further reduction needed.
-    !
+
     if (k/=isav) go to 104
     127 ilast = (np1* (np1+1))/2 - 1
     if (a(ilast-1)==0.0_wp) go to 130
-    !
+
     ! Solve triangular system into ROWI.
-    !
+
     soln(n) = a(ilast)/a(ilast-1)
     do 129 ii = 2,n
         iim1 = ii - 1
@@ -1468,14 +1492,14 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
         npii = np1 - ii
         soln(npii) = s/a(ilii)
     129 continue
-    !
+
     !  Store residual norm.
-    !
+
     err = sqrt(errsum)
     return
-    !
+
     !  Error return if system is singular.
-    !
+
     130 continue
     ier = 34
     call cfaerr(ier,' SUPRLD - system is singular.',29)
