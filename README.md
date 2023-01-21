@@ -1,4 +1,4 @@
-Double precision SPLPAK files from [NCL](https://github.com/NCAR/ncl).
+Modernization of the double precision SPLPAK files from [NCL](https://github.com/NCAR/ncl). A work in progress.
 
 ### See also
  * [bspline-fortran](https://github.com/jacobwilliams/bspline-fortran) Multidimensional B-Spline Interpolation of Data on a Regular Grid
