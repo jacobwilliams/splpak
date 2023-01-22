@@ -169,79 +169,112 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
         !  BAS1 will be the 1-dimensional basis function evaluated at X.
         bas1 = 0.0_wp
 
-        main : block
+        select case (ngo)
 
-            go to (102,103,104,105,106,108,110,113,117) ngo
-
-            !  Function type 1 (left linear) is mirror image of function type 3.
-            !
-            !  Transform so that XB is at 2 and the other nodes are at the integers
-            !  (with ordering reversed to form a mirror image).
-
-    102     z = dxin(idim)* (xb-x(idim)) + 2.0_wp
-            go to 111
-
-            !  1st derivative.
-
-    103     fact = -dxin(idim)
-            go to 114
-
-            !  2nd derivative.
-
-    104     fact = -dxin(idim)
-            go to 118
+        case(4)
 
             !  Function type 2 (chapeau function).
             !
             !  Transform so that XB is at the origin and the other nodes are at
             !  the integers.
-
-    105     z = abs(dxin(idim)* (x(idim)-xb)) - 2.0_wp
+            z = abs(dxin(idim)* (x(idim)-xb)) - 2.0_wp
 
             !  This chapeau function is then that unique cubic spline which is
             !  identically zero for ABS(Z) GE 2 and is 1 at the origin.  This
             !  function is the general interior node basis function.
+            if (z<0.0_wp) then
+                bas1 = -0.25_wp*z**3
+                z = z + 1.0_wp
+                if (z<0.0_wp) then
+                    bas1 = bas1 + z**3
+                end if
+            end if
 
-            if (z>=0.0_wp) exit main
-            bas1 = -0.25_wp*z**3
-            z = z + 1.0_wp
-            if (z>=0.0_wp) exit main
-            bas1 = bas1 + z**3
-            exit main
+        case(5)
 
             !  1st derivative.
-
-    106     z = x(idim) - xb
+            z = x(idim) - xb
             fact = dxin(idim)
             if (z<0.0_wp) fact = -fact
             z = fact*z - 2.0_wp
-            if (z>=0.0_wp) exit main
-            bas1 = -0.75_wp*z**2
-            z = z + 1.0_wp
             if (z<0.0_wp) then
-                bas1 = bas1 + 3.0_wp*z**2
+                bas1 = -0.75_wp*z**2
+                z = z + 1.0_wp
+                if (z<0.0_wp) then
+                    bas1 = bas1 + 3.0_wp*z**2
+                end if
+                bas1 = fact*bas1
             end if
-            bas1 = fact*bas1
-            exit main
+
+        case(6) ! 108
 
             !  2nd derivative.
-
-    108     fact = dxin(idim)
+            fact = dxin(idim)
             z = fact*abs(x(idim)-xb) - 2.0_wp
-            if (z>=0.0_wp) exit main
-            bas1 = -1.5_wp*z
-            z = z + 1.0_wp
             if (z<0.0_wp) then
-                bas1 = bas1 + 6.0_wp*z
+                bas1 = -1.5_wp*z
+                z = z + 1.0_wp
+                if (z<0.0_wp) then
+                    bas1 = bas1 + 6.0_wp*z
+                end if
+                bas1 = (fact**2)*bas1
             end if
-            bas1 = (fact**2)*bas1
-            exit main
 
-            !  Function type 3 (right linear).
-            !
-            !  Transform so that XB is at 2 and the other nodes are at the integers.
+        case(2,8)
 
-    110     z = dxin(idim)* (x(idim)-xb) + 2.0_wp
+            !  1st derivative.
+            if (ngo==2) then
+                fact = -dxin(idim)
+            else if (ngo==8) then
+                fact = dxin(idim)
+            end if
+            z = fact* (x(idim)-xb) + 2.0_wp
+            if (z<0.0_wp) then
+                if (z<2.0_wp) then
+                    bas1 = 1.5_wp*z**2
+                    z = z - 1.0_wp
+                    if (z>0.0_wp) then
+                        bas1 = bas1 - 3.0_wp*z**2
+                    end if
+                    bas1 = fact*bas1
+                else
+                    bas1 = 3.0_wp*fact
+                end if
+            end if
+
+        case(3,9)
+
+            !  2nd derivative.
+            if (ngo==3) then
+                fact = -dxin(idim)
+            else if (ngo==9) then
+                fact = dxin(idim)
+            end if
+            z = fact* (x(idim)-xb) + 2.0_wp
+            z1 = z - 1.0_wp
+            if (abs(z1)<1.0_wp) then
+                bas1 = 3.0_wp*z
+                if (z1>0.0_wp) then
+                    bas1 = bas1 - 6.0_wp*z1
+                end if
+                bas1 = (fact**2)*bas1
+            end if
+
+        case default ! case(1,7) ! or ngo some other value (does that ever happen?)
+                        !             (due to the computed goto in the original code)
+
+            if (ngo/=7) then
+                !  Function type 1 (left linear) is mirror image of function type 3.
+                !
+                !  Transform so that XB is at 2 and the other nodes are at the integers
+                !  (with ordering reversed to form a mirror image).
+                z = dxin(idim)* (xb-x(idim)) + 2.0_wp
+            else
+                !  Function type 3 (right linear).
+                !
+                !  Transform so that XB is at 2 and the other nodes are at the integers.
+                z = dxin(idim)* (x(idim)-xb) + 2.0_wp
+            end if
 
             !  This right linear function is defined to be that unique cubic spline
             !  which is identically zero for Z <= 0 and is 3*Z-3 for Z GE 2.
@@ -254,47 +287,19 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
             !  a linear extrapolation which has 2nd order continuity with
             !  the interior splines at the boundary.
 
-        111 if (z<=0.0_wp) exit main
-            if (z<2.0_wp) then
-                bas1 = 0.5_wp*z**3
-                z = z - 1.0_wp
-                if (z<=0.0_wp) exit main
-                bas1 = bas1 - z**3
-                exit main
-            end if
-            bas1 = 3.0_wp*z - 3.0_wp
-            exit main
-
-            !  1st derivative.
-
-    113     fact = dxin(idim)
-        114     z = fact* (x(idim)-xb) + 2.0_wp
-            if (z<=0.0_wp) exit main
-            if (z<2.0_wp) then
-                bas1 = 1.5_wp*z**2
-                z = z - 1.0_wp
-                if (z>0.0_wp) then
-                    bas1 = bas1 - 3.0_wp*z**2
+            if (z>0.0_wp) then
+                if (z<2.0_wp) then
+                    bas1 = 0.5_wp*z**3
+                    z = z - 1.0_wp
+                    if (z>0.0_wp) then
+                        bas1 = bas1 - z**3
+                    end if
+                else
+                    bas1 = 3.0_wp*z - 3.0_wp
                 end if
-                bas1 = fact*bas1
-                exit main
             end if
-            bas1 = 3.0_wp*fact
-            exit main
 
-            !  2nd derivative.
-
-    117     fact = dxin(idim)
-        118     z = fact* (x(idim)-xb) + 2.0_wp
-            z1 = z - 1.0_wp
-            if (abs(z1)>=1.0_wp) exit main
-            bas1 = 3.0_wp*z
-            if (z1>0.0_wp) then
-                bas1 = bas1 - 6.0_wp*z1
-            end if
-            bas1 = (fact**2)*bas1
-
-        end block main
+        end select
 
         basm = basm*bas1
 
@@ -303,6 +308,7 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
     icol = icol + 1
 
 end subroutine bascmpd
+!*****************************************************************************************
 
 !*****************************************************************************************
 !>
@@ -648,8 +654,9 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     real(wp) :: xmin(ndim)
     real(wp) :: xmax(ndim)
     real(wp) :: xtrap
-    real(wp) :: coef(ncf)
+    real(wp),intent(out) :: coef(ncf)
     real(wp) :: work(nwrk)
+
     real(wp) :: x(4)
     real(wp) :: dx(4)
     real(wp) :: dxin(4)
@@ -666,7 +673,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     real(wp) :: dcwght
     integer :: nodes(ndim)
     integer :: nderiv(4),in(4),inmx(4)
-    integer :: ierror
+    integer,intent(out) :: ierror
 
     integer :: mdim,ib(4),ibmn(4),ibmx(4)
     common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
@@ -1042,6 +1049,9 @@ end subroutine splcwd
 !*****************************************************************************************
 !>
 !
+!@note The original version of this routine would stop for an error.
+!      Now it just returns.
+
 function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
     integer,intent(in) :: ndim
@@ -1056,7 +1066,7 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     real(wp) :: sum
     real(wp) :: basm
     integer :: nderiv(ndim), nodes(ndim)
-    integer :: ierror
+    integer,intent(out) :: ierror
 
     integer :: mdim,ib(4),ibmn(4),ibmx(4)
     common /splcomd/dx,dxin,mdim,ib,ibmn,ibmx
@@ -1070,93 +1080,80 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
     ierror = 0
     mdim = ndim
-    if (mdim<1 .or. mdim>4) go to 105
+    if (mdim<1 .or. mdim>4) then
+        ierror = 101
+        call cfaerr(ierror, &
+            ' SPLFED or SPLDED - NDIM is less than 1 or greater than 4')
+        return
+    end if
     iibmx = 1
-    do 101 idim = 1,mdim
+    do idim = 1,mdim
         nod = nodes(idim)
-        if (nod<4) go to 106
+        if (nod<4) then
+            ierror = 102
+            call cfaerr(ierror, &
+                ' SPLFED or SPLDED - NODES(IDIM) is less than  4for some IDIM')
+            return
+        end if
         xrng = xmax(idim) - xmin(idim)
-        if (xrng==0.0_wp) go to 107
-        if (nderiv(idim)<0 .or. nderiv(idim)>2) go to 108
+        if (xrng==0.0_wp) then
+            ierror = 103
+            call cfaerr(ierror, &
+                ' SPLFED or SPLDED - XMIN(IDIM) = XMAX(IDIM) for some IDIM')
+            return
+        end if
+        if (nderiv(idim)<0 .or. nderiv(idim)>2) then
+            ierror = 104
+            call cfaerr(ierror, &
+                ' SPLDED - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM')
+        end if
 
-    !  DX(IDIM) is the node spacing along the IDIM coordinate.
-
+        !  DX(IDIM) is the node spacing along the IDIM coordinate.
         dx(idim) = xrng/real(nod-1,wp)
         dxin(idim) = 1.0_wp/dx(idim)
 
-    !  Compute indices of basis functions which are nonzero at X.
-
+        !  Compute indices of basis functions which are nonzero at X.
         it = dxin(idim)*(x(idim)-xmin(idim))
-    !
-    !  IBMN must be in the range 0 to NODES-2.
-    !
+
+        !  IBMN must be in the range 0 to NODES-2.
         ibmn(idim) = min(max(it-1,0),nod-2)
-    !
-    !  IBMX must be in the range 1 to NODES-1.
-    !
+
+        !  IBMX must be in the range 1 to NODES-1.
         ibmx(idim) = max(min(it+2,nod-1),1)
         iibmx = iibmx* (ibmx(idim)-ibmn(idim)+1)
         ib(idim) = ibmn(idim)
-    101 continue
-    !
+    end do
+
     sum = 0.0_wp
     iib = 0
-    !
-    !  Begining of basis index loop - traverse all indices corresponding
-    !  to basis functions which are nonzero at X.
-    !
-    102 iib = iib + 1
-    !
-    !  The indices are in IB and are passed through common to BASCMP.
-    !
-    call bascmpd(x,nderiv,xmin,nodes,icof,basm)
-    !
-    !  BASCMP computes ICOF and BASM where BASM is the value at X of the
-    !  N-dimensional basis function corresponding to COEF(ICOF).
-    !
-    sum = sum + coef(icof)*basm
-    if (iib>=iibmx) go to 104
-    !
-    !  Increment the basis indices.
-    !
-    do idim = 1,mdim
-        ib(idim) = ib(idim) + 1
-        if (ib(idim)<=ibmx(idim)) go to 102
-        ib(idim) = ibmn(idim)
-    end do
-    !
-    !  End of basis index loop.
-    !
-    104 splded = sum
-    return
-    !
-    !  Errors.
-    !
-    105 continue
-    ierror = 101
-    call cfaerr(ierror, &
-        ' SPLFED or SPLDED - NDIM is less than 1 or greater than 4')
-    go to 109
 
-    106 continue
-    ierror = 102
-    call cfaerr(ierror, &
-        ' SPLFED or SPLDED - NODES(IDIM) is less than  4for some IDIM')
-    go to 109
+    basis_index : do
+        !  Begining of basis index loop - traverse all indices corresponding
+        !  to basis functions which are nonzero at X.
+        iib = iib + 1
 
-    107 continue
-    ierror = 103
-    call cfaerr(ierror, &
-        ' SPLFED or SPLDED - XMIN(IDIM) = XMAX(IDIM) for some IDIM')
-    go to 109
+        !  The indices are in IB and are passed through common to BASCMP.
+        call bascmpd(x,nderiv,xmin,nodes,icof,basm)
 
-    108 continue
-    ierror = 104
-    call cfaerr(ierror, &
-    ' SPLDED - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM')
+        !  BASCMP computes ICOF and BASM where BASM is the value at X of the
+        !  N-dimensional basis function corresponding to COEF(ICOF).
+        sum = sum + coef(icof)*basm
+        if (iib<iibmx) then
+            !  Increment the basis indices.
+            do idim = 1,mdim
+                ib(idim) = ib(idim) + 1
+                if (ib(idim)<=ibmx(idim)) cycle basis_index
+                ib(idim) = ibmn(idim)
+            end do
+        end if
 
-    109 stop
+        exit basis_index !  End of basis index loop.
+    end do basis_index
+
+    splded = sum
+
 end function splded
+!*****************************************************************************************
 
 !*****************************************************************************************
 !>
@@ -1170,12 +1167,12 @@ function splfed(ndim,x,coef,xmin,xmax,nodes,ierror)
     real(wp) :: xmin(ndim)
     real(wp) :: xmax(ndim)
     real(wp) :: splded
-    integer :: nderiv(4),nodes(ndim)
-    integer :: ierror
+    integer :: nodes(ndim)
+    integer,intent(out) :: ierror
+
+    integer,dimension(4),parameter :: nderiv = [0,0,0,0]
 
     save
-
-    data nderiv(1),nderiv(2),nderiv(3),nderiv(4)/0,0,0,0/
 
     ! The restriction for NDIM to be <= 4 can be eliminated by
     ! increasing the above dimension and those in SPLDED.
@@ -1210,233 +1207,246 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
                isav,idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
                i1jd,k11,k1m1,i11,np1mk,lmk,imov,iii,iiim,iim1,&
                ilk,npk,ilii,npii
+    logical :: complete_reduction !! Routine entered with `I<=0` means complete
+                                  !! the reduction and store the solution in `SOLN`.
+
+    real(wp),parameter :: tol = 1.0e-18_wp !! small number tolerance
 
     save
 
     ier = 0
+    complete_reduction = i <= 0
 
-    !  Routine entered with I<=0 means complete the reduction and store
-    !  the solution in SOLN.
-    if (i<=0) go to 125
+    if (.not. complete_reduction) then
 
-    if (i<=1) then
+        if (i<=1) then
 
-        !  Set up quantities on first call.
-        iold = 0
-        np1 = n + 1
+            !  Set up quantities on first call.
+            iold = 0
+            np1 = n + 1
 
-        !  Compute how many rows can be input now.
-        l = nn/np1
-        ilast = 0
-        il1 = 0
-        k = 0
-        k1 = 0
-        errsum = 0.0_wp
-        nreq = ((n+5)*n+2)/2
+            !  Compute how many rows can be input now.
+            l = nn/np1
+            ilast = 0
+            il1 = 0
+            k = 0
+            k1 = 0
+            errsum = 0.0_wp
+            nreq = ((n+5)*n+2)/2
 
-        !  Error exit if insufficient scratch storage provided.
-        if (nn<nreq) then
-            ier = 32
-            call cfaerr(ier, &
-                        ' SUPRLD - insufficient scratch storage provided. '//&
-                        'at least ((N+5)*N+2)/2 locations needed')
+            !  Error exit if insufficient scratch storage provided.
+            if (nn<nreq) then
+                ier = 32
+                call cfaerr(ier, &
+                            ' SUPRLD - insufficient scratch storage provided. '//&
+                            'at least ((N+5)*N+2)/2 locations needed')
+                return
+            end if
+
+        end if
+
+        !  Error exit if (I-IOLD)/=1.
+        if ((i-iold)/=1) then
+            ier = 35
+            call cfaerr(ier,' SUPRLD - values of I not in sequence')
             return
         end if
 
+        !  Store the row in the scratch storage.
+        iold = i
+        do j = 1,n
+            ilj = ilast + j
+            a(ilj) = rowi(j)
+        end do
+        ilnp = ilast + np1
+        a(ilnp) = bi
+        ilast = ilast + np1
+        isav = i
+        if (i<l) return
+
     end if
 
-    !  Error exit if (I-IOLD)/=1.
-    if ((i-iold)/=1) then
-        ier = 35
-        call cfaerr(ier,' SUPRLD - values of I not in sequence')
-        return
-    end if
+    main : do
 
-    !  Store the row in the scratch storage.
-    iold = i
-    do j = 1,n
-        ilj = ilast + j
-        a(ilj) = rowi(j)
-    end do
-    ilnp = ilast + np1
-    a(ilnp) = bi
-    ilast = ilast + np1
-    isav = i
-    if (i<l) return
+        if (.not. complete_reduction) then
 
-104 continue
-    if (k==0) go to 115
-    k1 = min(k,n)
-    idiag = -np1
-    if (l-k==1) go to 110
+            if (k/=0) then
+                k1 = min(k,n)
+                idiag = -np1
+                if (l-k==1) then
+                    !  Apply rotations to zero out the single new row.
+                    do j = 1,k1
+                        idiag = idiag + (np1-j+2)
+                        i1 = il1 + j
+                        if (abs(a(i1))<=tol) then
+                            s = sqrt(a(idiag)*a(idiag))
+                        else if (abs(a(idiag))<tol) then
+                            s = sqrt(a(i1)*a(i1))
+                        else
+                            s = sqrt(a(idiag)*a(idiag)+a(i1)*a(i1))
+                        end if
+                        if (s==0.0_wp) cycle
+                        temp = a(idiag)
+                        a(idiag) = s
+                        s = 1.0_wp/s
+                        cn = temp*s
+                        sn = a(i1)*s
+                        jp1 = j + 1
+                        do j1 = jp1,np1
+                            jdel = j1 - j
+                            idj = idiag + jdel
+                            temp = a(idj)
+                            i1jd = i1 + jdel
+                            a(idj) = cn*temp + sn*a(i1jd)
+                            a(i1jd) = -sn*temp + cn*a(i1jd)
+                        end do
+                    end do
+                else
+                    !  Apply householder transformations to zero out new rows.
+                    do j = 1,k1
+                        idiag = idiag + (np1-j+2)
+                        i1 = il1 + j
+                        i2 = i1 + np1* (l-k-1)
+                        s = a(idiag)*a(idiag)
+                        do ii = i1,i2,np1
+                            s = s + a(ii)*a(ii)
+                        end do
+                        if (s==0.0_wp) cycle
+                        temp = a(idiag)
+                        a(idiag) = sqrt(s)
+                        if (temp>0.0_wp) a(idiag) = -a(idiag)
+                        temp = temp - a(idiag)
+                        temp1 = 1.0_wp / (temp*a(idiag))
+                        jp1 = j + 1
+                        do j1 = jp1,np1
+                            jdel = j1 - j
+                            idj = idiag + jdel
+                            s = temp*a(idj)
+                            do ii = i1,i2,np1
+                                iijd = ii + jdel
+                                s = s + a(ii)*a(iijd)
+                            end do
+                            s = s*temp1
+                            a(idj) = a(idj) + s*temp
+                            do ii = i1,i2,np1
+                                iijd = ii + jdel
+                                a(iijd) = a(iijd) + s*a(ii)
+                            end do
+                        end do
+                    end do
+                end if
 
-    !  Apply householder transformations to zero out new rows.
+                if (k>=n) then
+                    lmkm1 = l - k
 
-    do j = 1,k1
-        idiag = idiag + (np1-j+2)
-        i1 = il1 + j
-        i2 = i1 + np1* (l-k-1)
-        s = a(idiag)*a(idiag)
-        do ii = i1,i2,np1
-            s = s + a(ii)*a(ii)
-        end do
-        if (s==0.0_wp) cycle
-        temp = a(idiag)
-        a(idiag) = sqrt(s)
-        if (temp>0.0_wp) a(idiag) = -a(idiag)
-        temp = temp - a(idiag)
-        temp1 = 1.0_wp/ (temp*a(idiag))
-        jp1 = j + 1
-        do j1 = jp1,np1
-            jdel = j1 - j
-            idj = idiag + jdel
-            s = temp*a(idj)
-            do ii = i1,i2,np1
-                iijd = ii + jdel
-                s = s + a(ii)*a(iijd)
-            end do
-            s = s*temp1
-            a(idj) = a(idj) + s*temp
-            do ii = i1,i2,np1
-                iijd = ii + jdel
-                a(iijd) = a(iijd) + s*a(ii)
-            end do
-        end do
-    end do
-    go to 113
+                    !  Accumulate residual sum of squares.
+                    do ii = 1,lmkm1
+                        ilnp = il1 + ii*np1
+                        errsum = errsum + a(ilnp)*a(ilnp)
+                    end do
+                    if (i<=0) exit main
+                    k = l
+                    ilast = il1
 
-    !  Apply rotations to zero out the single new row.
+                    !  Determine how many new rows may be input on next iteration.
+                    l = k + (nn-ilast)/np1
+                    return
+                end if
+            end if
 
-110 do j = 1,k1
-        idiag = idiag + (np1-j+2)
-        i1 = il1 + j
-        if (abs(a(i1))<=1.0e-18_wp) then
-            s = sqrt(a(idiag)*a(idiag))
-        else if (abs(a(idiag))<1.0e-18_wp) then
-            s = sqrt(a(i1)*a(i1))
-        else
-            s = sqrt(a(idiag)*a(idiag)+a(i1)*a(i1))
-        end if
-        if (s==0.0_wp) cycle
-        temp = a(idiag)
-        a(idiag) = s
-        s = 1.0_wp/s
-        cn = temp*s
-        sn = a(i1)*s
-        jp1 = j + 1
-        do j1 = jp1,np1
-            jdel = j1 - j
-            idj = idiag + jdel
-            temp = a(idj)
-            i1jd = i1 + jdel
-            a(idj) = cn*temp + sn*a(i1jd)
-            a(i1jd) = -sn*temp + cn*a(i1jd)
-        end do
-    end do
-113 if (k<n) go to 115
-    lmkm1 = l - k
+            k11 = k1 + 1
+            k1 = min(l,n)
+            if (l-k/=1) then
+                k1m1 = k1 - 1
+                if (l>n) k1m1 = n
+                i1 = il1 + k11 - np1 - 1
 
-    !  Accumulate residual sum of squares.
-    do ii = 1,lmkm1
-        ilnp = il1 + ii*np1
-        errsum = errsum + a(ilnp)*a(ilnp)
-    end do
-    if (i<=0) go to 127
-    k = l
-    ilast = il1
-
-    !  Determine how many new rows may be input on next iteration.
-    l = k + (nn-ilast)/np1
-    return
-
-115 k11 = k1 + 1
-    k1 = min(l,n)
-    if (l-k/=1) then
-        k1m1 = k1 - 1
-        if (l>n) k1m1 = n
-        i1 = il1 + k11 - np1 - 1
-
-        !  Perform householder transformations to reduce rows to upper
-        !  triangular form.
-        do j = k11,k1m1
-            i1 = i1 + (np1+1)
-            i2 = i1 + (l-j)*np1
-            s = 0.0_wp
-            do ii = i1,i2,np1
-                s = s + a(ii)*a(ii)
-            end do
-            if (s==0.0_wp) cycle
-            temp = a(i1)
-            a(i1) = sqrt(s)
-            if (temp>0.0_wp) a(i1) = -a(i1)
-            temp = temp - a(i1)
-            temp1 = 1.0_wp/ (temp*a(i1))
-            jp1 = j + 1
-            i11 = i1 + np1
-            do j1 = jp1,np1
-                jdel = j1 - j
-                i1jd = i1 + jdel
-                s = temp*a(i1jd)
-                do ii = i11,i2,np1
-                    iijd = ii + jdel
-                    s = s + a(ii)*a(iijd)
+                !  Perform householder transformations to reduce rows to upper
+                !  triangular form.
+                do j = k11,k1m1
+                    i1 = i1 + (np1+1)
+                    i2 = i1 + (l-j)*np1
+                    s = 0.0_wp
+                    do ii = i1,i2,np1
+                        s = s + a(ii)*a(ii)
+                    end do
+                    if (s==0.0_wp) cycle
+                    temp = a(i1)
+                    a(i1) = sqrt(s)
+                    if (temp>0.0_wp) a(i1) = -a(i1)
+                    temp = temp - a(i1)
+                    temp1 = 1.0_wp/ (temp*a(i1))
+                    jp1 = j + 1
+                    i11 = i1 + np1
+                    do j1 = jp1,np1
+                        jdel = j1 - j
+                        i1jd = i1 + jdel
+                        s = temp*a(i1jd)
+                        do ii = i11,i2,np1
+                            iijd = ii + jdel
+                            s = s + a(ii)*a(iijd)
+                        end do
+                        s = s*temp1
+                        i1jd = i1 + jdel
+                        a(i1jd) = a(i1jd) + s*temp
+                        do ii = i11,i2,np1
+                            iijd = ii + jdel
+                            a(iijd) = a(iijd) + s*a(ii)
+                        end do
+                    end do
                 end do
-                s = s*temp1
-                i1jd = i1 + jdel
-                a(i1jd) = a(i1jd) + s*temp
-                do ii = i11,i2,np1
-                    iijd = ii + jdel
-                    a(iijd) = a(iijd) + s*a(ii)
+                if (l>n) then
+                    np1mk = np1 - k
+                    lmk = l - k
+                    ! Accumulate residual sum of squares.
+                    do ii = np1mk,lmk
+                        ilnp = il1 + ii*np1
+                        errsum = errsum + a(ilnp)*a(ilnp)
+                    end do
+                end if
+            end if
+            imov = 0
+            i1 = il1 + k11 - np1 - 1
+
+            !  Squeeze the unnecessary elements out of scratch storage to
+            !  allow space for more rows.
+            do ii = k11,k1
+                imov = imov + (ii-1)
+                i1 = i1 + np1 + 1
+                i2 = i1 + np1 - ii
+                do iii = i1,i2
+                    iiim = iii - imov
+                    a(iiim) = a(iii)
                 end do
             end do
-        end do
-        if (l>n) then
-            np1mk = np1 - k
-            lmk = l - k
-            ! Accumulate residual sum of squares.
-            do ii = np1mk,lmk
-                ilnp = il1 + ii*np1
-                errsum = errsum + a(ilnp)*a(ilnp)
-            end do
+            ilast = i2 - imov
+            il1 = ilast
+            if (i<=0) exit main
+            k = l
+
+            !  Determine how many new rows may be input on next iteration.
+            l = k + (nn-ilast)/np1
+            return
+
         end if
-    end if
-    imov = 0
-    i1 = il1 + k11 - np1 - 1
 
-    !  Squeeze the unnecessary elements out of scratch storage to
-    !  allow space for more rows.
-    do ii = k11,k1
-        imov = imov + (ii-1)
-        i1 = i1 + np1 + 1
-        i2 = i1 + np1 - ii
-        do iii = i1,i2
-            iiim = iii - imov
-            a(iiim) = a(iii)
-        end do
-    end do
-    ilast = i2 - imov
-    il1 = ilast
-    if (i<=0) go to 127
-    k = l
+        ! Complete reduction and store solution in SOLN.
+        complete_reduction = .false. ! reset this flag
+        l = isav
 
-    !  Determine how many new rows may be input on next iteration.
-    l = k + (nn-ilast)/np1
-    return
+        ! Error exit if L less than N.
+        if (l<n) then
+            ier = 33
+            call cfaerr(ier,' SUPRLD - array has too few rows.')
+            return
+        end if
 
-    !  Complete reduction and store solution in SOLN.
-125 l = isav
+        ! K/=ISAV means further reduction needed.
+        if (k==isav) exit main
 
-    !  Error exit if L less than N.
-    if (l<n) then
-        ier = 33
-        call cfaerr(ier,' SUPRLD - array has too few rows.')
-        return
-    end if
+    end do main
 
-    !  K/=ISAV means further reduction needed.
-    if (k/=isav) go to 104
-
-127 ilast = (np1* (np1+1))/2 - 1
+    ilast = (np1* (np1+1))/2 - 1
     if (a(ilast-1)==0.0_wp) then
         ! Error return if system is singular.
         ier = 34
@@ -1470,6 +1480,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     err = sqrt(errsum)
 
 end subroutine suprld
+!*****************************************************************************************
 
 !*****************************************************************************************
     end module splpak_module
