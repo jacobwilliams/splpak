@@ -7,8 +7,8 @@
 !  partial derivatives) at any point.
 !
 !  Coefficient calculation is performed in
-!  subroutines [[SPLCC]] or [[SPLCW]] and evaluation is
-!  performed by functions [[SPLFE]] or [[SPLDE]].
+!  subroutines [[splcc]] or [[splcw]] and evaluation is
+!  performed by functions [[splfe]] or [[splde]].
 !
 !### Usage
 !
@@ -115,7 +115,7 @@
 !  above transform, are passed through common and the argument
 !  list.
 
-subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
+subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
 
     real(wp) :: x(4)
     real(wp) :: xmin(4)
@@ -261,7 +261,7 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
             end if
 
         case default ! case(1,7) ! or ngo some other value (does that ever happen?)
-                        !             (due to the computed goto in the original code)
+                     !             (due to the computed goto in the original code)
 
             if (ngo/=7) then
                 !  Function type 1 (left linear) is mirror image of function type 3.
@@ -307,7 +307,7 @@ subroutine bascmpd(x,nderiv,xmin,nodes,icol,basm)
 
     icol = icol + 1
 
-end subroutine bascmpd
+end subroutine bascmp
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -339,7 +339,7 @@ end subroutine cfaerr
 !  entry [[SPLCW]] description immediately below for a
 !  complete description.
 
-subroutine splccd(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
+subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
                   xtrap,coef,ncf,work,nwrk,ierror)
 
     integer,intent(in) :: ndim
@@ -361,10 +361,10 @@ subroutine splccd(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
     save
 
     w(1) = -1.0_wp
-    call splcwd(ndim,xdata,l1xdat,ydata,w,ndata,xmin,xmax,nodes,xtrap, &
+    call splcw(ndim,xdata,l1xdat,ydata,w,ndata,xmin,xmax,nodes,xtrap, &
                 coef,ncf,work,nwrk,ierror)
 
-end subroutine splccd
+end subroutine splcc
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -613,7 +613,7 @@ end subroutine splccd
 !                                 < NODES(1)*...*NODES(NDIM).
 !                            105  NDATA is < 1.
 !                            106  NWRK (size of WORK) is too small.
-!                            107  SUPRLS failure (usually insufficient
+!                            107  suprls failure (usually insufficient
 !                                 data) -- ordinarily occurs only if
 !                                 XTRAP is zero or WDATA contains all
 !                                 zeros.
@@ -622,7 +622,7 @@ end subroutine splccd
 !  An overdetermined system of linear equations
 !  is formed -- one equation for each data point
 !  plus equations for derivative constraints.
-!  This system is solved using subroutine SUPRLSD.
+!  This system is solved using subroutine [[suprls]].
 !
 !### Accuracy
 !  If there is exactly one data point in the
@@ -640,7 +640,7 @@ end subroutine splccd
 !  to NDATA*NCOF**2 where NCOF = NODES(1)*...*
 !  NODES(NDIM).
 
-subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
+subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                   nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
     integer,intent(in) :: ndim
@@ -648,46 +648,33 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     integer,intent(in) :: ncf
     integer,intent(in) :: nwrk
     integer,intent(in) :: ndata
-    real(wp) :: xdata(l1xdat,ndata)
-    real(wp) :: ydata(ndata)
-    real(wp) :: wdata(ndata)
-    real(wp) :: xmin(ndim)
-    real(wp) :: xmax(ndim)
-    real(wp) :: xtrap
-    real(wp),intent(out) :: coef(ncf)
+    real(wp),intent(in) :: xdata(l1xdat,ndata)
+    real(wp),intent(in) :: ydata(ndata)
+    real(wp),intent(in) :: wdata(ndata)
+    real(wp),intent(in) :: xmin(ndim)
+    real(wp),intent(in) :: xmax(ndim)
+    real(wp),intent(in) :: xtrap
+    integer,intent(in) :: nodes(ndim)
     real(wp) :: work(nwrk)
-
-    real(wp) :: x(4)
-    real(wp) :: dx(4)
-    real(wp) :: dxin(4)
-    real(wp) :: xrng
-    real(wp) :: swght
-    real(wp) :: rowwt
-    real(wp) :: rhs
-    real(wp) :: basm
-    real(wp) :: reserr
-    real(wp) :: totlwt
-    real(wp) :: bump
-    real(wp) :: wtprrc
-    real(wp) :: expect
-    real(wp) :: dcwght
-    integer :: nodes(ndim)
-    integer :: nderiv(4),in(4),inmx(4)
+    real(wp),intent(out) :: coef(ncf)
     integer,intent(out) :: ierror
 
+    real(wp) :: x(4),dx(4),dxin(4)
+    integer :: nderiv(4),in(4),inmx(4)
     integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    !  The restriction that NDIM be less than are equal to 4 can be
+    !  eliminated by increasing the above dimensions, but the required
+    !  length of WORK becomes quite large.
+
     common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
 
+    real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,bump,wtprrc,expect,dcwght
     integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
                idata,icol,it,lserr,iin,nrect,idimc,idm,&
                jdm,inidim
     logical :: boundary
 
     save
-    !
-    !  The restriction that NDIM be less than are equat to 4 can be
-    !  eliminated by increasing the above dimensions, but the required
-    !  length of WORK becomes quite large.
 
     real(wp),parameter :: spcrit = 0.75_wp
         !! SPCRIT is used to determine data sparseness as follows -
@@ -707,7 +694,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (mdim<1 .or. mdim>4) then
         ierror = 101
         call cfaerr(ierror, &
-            ' SPLCCD or SPLCWD - NDIM is less than 1 or is greater than 4')
+            ' splcc or splcw - NDIM is less than 1 or is greater than 4')
         return
     end if
     ncol = 1
@@ -716,7 +703,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         if (nod<4) then
             ierror = 102
             call cfaerr(ierror, &
-                ' SPLCCD or SPLCWD - NODES(IDIM) is less than 4 for some IDIM')
+                ' splcc or splcw - NODES(IDIM) is less than 4 for some IDIM')
             return
         end if
 
@@ -727,7 +714,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         if (xrng==0.0_wp) then
             ierror = 103
             call cfaerr(ierror, &
-                ' SPLCCD or SPLCWD - XMIN(IDIM) equals XMAX(IDIM) for some IDIM')
+                ' splcc or splcw - XMIN(IDIM) equals XMAX(IDIM) for some IDIM')
             return
         end if
 
@@ -739,7 +726,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (ncol>ncf) then
         ierror = 104
         call cfaerr(ierror, &
-            ' SPLCCD or SPLCWD - NCF (size of COEF) is too small')
+            ' splcc or splcw - NCF (size of COEF) is too small')
         return
     end if
     nwrk1 = 1
@@ -747,7 +734,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (mdata<1) then
         ierror = 105
         call cfaerr(ierror, &
-            ' SPLCCD or SPLCWD - Ndata Is less than 1')
+            ' splcc or splcw - Ndata Is less than 1')
         return
     end if
 
@@ -764,7 +751,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (nwlft<1) then
         ierror = 106
         call cfaerr(ierror, &
-            ' SPLCCD or SPLCWD - NWRK (size of WORK) is too small')
+            ' splcc or splcw - NWRK (size of WORK) is too small')
         return
     end if
     irow = 0
@@ -818,7 +805,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             !  Begining of basis index loop - traverse all indices corresponding
             !  to basis functions which are nonzero at X.  The indices are in
             !  IB and are passed through common to BASCMP.
-            call bascmpd(x,nderiv,xmin,nodes,icol,basm)
+            call bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  BASCMP computes ICOL and BASM where BASM is the value at X of
             !  the N-dimensional basis function corresponding to column ICOL.
@@ -834,11 +821,11 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         end do basis_index
 
         !  Send a row of the least squares matrix to the reduction routine.
-        call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
         if (lserr/=0) then
             ierror = 107
             call cfaerr(ierror, &
-                ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+                ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
         end if
     end do
 
@@ -992,7 +979,7 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                             !  Begining of basis index loop - traverse all indices corresponding
                             !  to basis functions which are non-zero at X.
                             !  The indices are in IB and are passed through common to BASCMP.
-                            call bascmpd(x,nderiv,xmin,nodes,icol,basm)
+                            call bascmp(x,nderiv,xmin,nodes,icol,basm)
 
                             !  BASCMP computes ICOL and BASM where BASM is the value at X of the
                             !  N-dimensional basis function corresponding to column ICOL.
@@ -1010,11 +997,11 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                         end do basis
 
                         !  Send row of least squares matrix to reduction routine.
-                        call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+                        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
                         if (lserr/=0) then
                             ierror = 107
                             call cfaerr(ierror, &
-                                ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+                                ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
                         end if
                     end do
                 end do
@@ -1036,14 +1023,14 @@ subroutine splcwd(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
     !  Call for least squares solution in COEF array.
     irow = 0
-    call suprld(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+    call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
     if (lserr/=0) then
         ierror = 107
         call cfaerr(ierror, &
-            ' SPLCCD or SPLCWD - SUPRLS failure (this usually indicates insufficient input data')
+            ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
     end if
 
-end subroutine splcwd
+end subroutine splcw
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -1052,38 +1039,36 @@ end subroutine splcwd
 !@note The original version of this routine would stop for an error.
 !      Now it just returns.
 
-function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
+    real(wp) :: splde
     integer,intent(in) :: ndim
-    real(wp) :: splded
-    real(wp) :: x(ndim)
-    real(wp) :: coef(*)
-    real(wp) :: xmin(ndim)
-    real(wp) :: xmax(ndim)
-    real(wp) :: dx(4)
-    real(wp) :: dxin(4)
-    real(wp) :: xrng
-    real(wp) :: sum
-    real(wp) :: basm
-    integer :: nderiv(ndim), nodes(ndim)
+    real(wp),intent(in) :: x(ndim)
+    real(wp),intent(out) :: coef(*)
+    real(wp),intent(in) :: xmin(ndim)
+    real(wp),intent(in) :: xmax(ndim)
+    integer,intent(in) :: nderiv(ndim)
+    integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
+    real(wp) :: dx(4),dxin(4)
     integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    ! The restriction for NDIM to be <= 4 can be eliminated by increasing
+    ! the above dimensions.
+
     common /splcomd/dx,dxin,mdim,ib,ibmn,ibmx
 
+    real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
 
     save
-    !
-    ! The restriction for NDIM to be <= 4 can be eliminated by increasing
-    ! the above dimensions.
 
     ierror = 0
     mdim = ndim
     if (mdim<1 .or. mdim>4) then
         ierror = 101
         call cfaerr(ierror, &
-            ' SPLFED or SPLDED - NDIM is less than 1 or greater than 4')
+            ' splfe or splde - NDIM is less than 1 or greater than 4')
         return
     end if
     iibmx = 1
@@ -1092,20 +1077,20 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         if (nod<4) then
             ierror = 102
             call cfaerr(ierror, &
-                ' SPLFED or SPLDED - NODES(IDIM) is less than  4for some IDIM')
+                ' splfe or splde - NODES(IDIM) is less than  4for some IDIM')
             return
         end if
         xrng = xmax(idim) - xmin(idim)
         if (xrng==0.0_wp) then
             ierror = 103
             call cfaerr(ierror, &
-                ' SPLFED or SPLDED - XMIN(IDIM) = XMAX(IDIM) for some IDIM')
+                ' splfe or splde - XMIN(IDIM) = XMAX(IDIM) for some IDIM')
             return
         end if
         if (nderiv(idim)<0 .or. nderiv(idim)>2) then
             ierror = 104
             call cfaerr(ierror, &
-                ' SPLDED - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM')
+                ' splde - NDERIV(IDIM) IS less than 0 or greater than 2 for some IDIM')
         end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
@@ -1133,7 +1118,7 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         iib = iib + 1
 
         !  The indices are in IB and are passed through common to BASCMP.
-        call bascmpd(x,nderiv,xmin,nodes,icof,basm)
+        call bascmp(x,nderiv,xmin,nodes,icof,basm)
 
         !  BASCMP computes ICOF and BASM where BASM is the value at X of the
         !  N-dimensional basis function corresponding to COEF(ICOF).
@@ -1150,42 +1135,40 @@ function splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         exit basis_index !  End of basis index loop.
     end do basis_index
 
-    splded = sum
+    splde = sum
 
-end function splded
+end function splde
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !
-function splfed(ndim,x,coef,xmin,xmax,nodes,ierror)
+function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
 
+    real(wp) :: splfe
     integer,intent(in) :: ndim
-    real(wp) :: splfed
-    real(wp) :: x(ndim)
-    real(wp) :: coef(*)
-    real(wp) :: xmin(ndim)
-    real(wp) :: xmax(ndim)
-    real(wp) :: splded
-    integer :: nodes(ndim)
+    real(wp),intent(in) :: x(ndim)
+    real(wp),intent(out) :: coef(*)
+    real(wp),intent(in) :: xmin(ndim)
+    real(wp),intent(in) :: xmax(ndim)
+    integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
     integer,dimension(4),parameter :: nderiv = [0,0,0,0]
+    ! The restriction for NDIM to be <= 4 can be eliminated by
+    ! increasing the above dimension and those in splde.
 
     save
 
-    ! The restriction for NDIM to be <= 4 can be eliminated by
-    ! increasing the above dimension and those in SPLDED.
+    splfe = splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
-    splfed = splded(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
-
-end function splfed
+end function splfe
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !
-subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
+subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
 
     integer :: i
     integer :: nn
@@ -1238,7 +1221,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
             if (nn<nreq) then
                 ier = 32
                 call cfaerr(ier, &
-                            ' SUPRLD - insufficient scratch storage provided. '//&
+                            ' suprls - insufficient scratch storage provided. '//&
                             'at least ((N+5)*N+2)/2 locations needed')
                 return
             end if
@@ -1248,7 +1231,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
         !  Error exit if (I-IOLD)/=1.
         if ((i-iold)/=1) then
             ier = 35
-            call cfaerr(ier,' SUPRLD - values of I not in sequence')
+            call cfaerr(ier,' suprls - values of I not in sequence')
             return
         end if
 
@@ -1437,7 +1420,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
         ! Error exit if L less than N.
         if (l<n) then
             ier = 33
-            call cfaerr(ier,' SUPRLD - array has too few rows.')
+            call cfaerr(ier,' suprls - array has too few rows.')
             return
         end if
 
@@ -1450,7 +1433,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     if (a(ilast-1)==0.0_wp) then
         ! Error return if system is singular.
         ier = 34
-        call cfaerr(ier,' SUPRLD - system is singular.')
+        call cfaerr(ier,' suprls - system is singular.')
         return
     end if
 
@@ -1469,7 +1452,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
         if (a(ilii)==0.0_wp) then
             ! Error return if system is singular.
             ier = 34
-            call cfaerr(ier,' SUPRLD - system is singular.')
+            call cfaerr(ier,' suprls - system is singular.')
             return
         end if
         npii = np1 - ii
@@ -1479,7 +1462,7 @@ subroutine suprld(i,rowi,n,bi,a,nn,soln,err,ier)
     ! Store residual norm.
     err = sqrt(errsum)
 
-end subroutine suprld
+end subroutine suprls
 !*****************************************************************************************
 
 !*****************************************************************************************
