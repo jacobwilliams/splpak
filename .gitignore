@@ -34,3 +34,7 @@
 # misc
 .DS_Store
 /doc
+
+# test
+/*.png
+/*.py
