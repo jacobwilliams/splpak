@@ -1,8 +1,8 @@
 name = "spkpak"
 author = "Jacob Williams"
 maintainer = "Jacob Williams"
-copyright = "Copyright (c) 2022, Jacob Williams"
-license = "BSD"
+copyright = "Copyright (C) 2000 University Corporation for Atmospheric Research"
+license = "Apache"
 description = "spkpak"
 homepage = "https://github.com/jacobwilliams/spkpak"
 
