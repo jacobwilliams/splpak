@@ -21,7 +21,7 @@ jobs:
         submodules: recursive
 
     - name: Install Python
-      uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
+      uses: actions/setup-python@v4 # Use pip to install latest CMake, & FORD/Jin2For, etc.
       with:
         python-version: ${{ matrix.python-version }}
 
