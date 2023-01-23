@@ -16,17 +16,17 @@
 !  SPLCC, SPLCW, SPLFE, AND SPLDE.
 !
 !  The user first calls SPLCC by
-!
+!```fortran
 !    CALL SPLCC (NDIM,XDATA,L1XDAT,YDATA,NDATA,
 !                XMIN,XMAX,NODES,XTRAP,COEF,NCF,
 !                WORK,NWRK,IERROR)
-!
+!```
 !  or SPLCW by
-!
+!```fortran
 !    CALL SPLCW (NDIM,XDATA,L1XDATA,YDATA,WDATA,
 !                NDATA,XMIN,XMAX,NODES,XTRAP,
 !                COEF,NCF,WORK,NWRK,IERROR)
-!
+!```
 !  The parameter NDATA in the call to SPLCW
 !  enables the user to weight some of the data
 !  points more heavily than others.  Both
@@ -41,13 +41,13 @@
 !  XMAX, and NODES, are preserved between calls.
 !
 !  SPLFE and SPLDE are called in the following way:
-!
+!```fortran
 !    F = SPLFE (NDIM,X,COEF,XMIN,XMAX,NODES,IERROR)
-!
+!```
 !  or
-!
+!```fortran
 !    F = SPLDE (NDIM,X,NDERIV,COEF,XMIN,XMAX,NODES,IERROR)
-!
+!```
 !  The routine SPLFE returns an interpolated
 !  value at the point defined by the array X.
 !  SPLDE affords the user the additional
@@ -117,23 +117,19 @@
 
 subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
 
-    real(wp) :: x(4)
-    real(wp) :: xmin(4)
-    real(wp) :: basm
-    real(wp) :: dx(4)
-    real(wp) :: dxin(4)
-    real(wp) :: xb
-    real(wp) :: bas1
-    real(wp) :: z
-    real(wp) :: fact
-    real(wp) :: z1
-    integer :: nderiv(4),nodes(4)
-    integer :: icol
+    real(wp),intent(in) :: x(4)
+    integer,intent(in) :: nderiv(4)
+    real(wp),intent(in) :: xmin(4)
+    integer,intent(in) :: nodes(4)
+    integer,intent(out) :: icol
+    real(wp),intent(out) :: basm
 
+    real(wp) :: xb,bas1,z,fact,z1
+    integer :: idim,mdmid,ntyp,ngo
+
+    real(wp) :: dx(4),dxin(4)
     integer :: mdim,ib(4),ibmn(4),ibmx(4)
     common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
-
-    integer :: idim,mdmid,ntyp,ngo
 
     save
 
@@ -335,34 +331,36 @@ end subroutine cfaerr
 !
 !  The usage and arguments of this routine are
 !  identical to those for [[SPLCW]] except for the
-!  omission of the array of weights, WDATA.  See
-!  entry [[SPLCW]] description immediately below for a
+!  omission of the array of weights, `WDATA`.  See
+!  entry [[SPLCW]] description for a
 !  complete description.
 
 subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
-                  xtrap,coef,ncf,work,nwrk,ierror)
+                 xtrap,coef,ncf,work,nwrk,ierror)
+
 
     integer,intent(in) :: ndim
     integer,intent(in) :: l1xdat
     integer,intent(in) :: ncf
     integer,intent(in) :: nwrk
     integer,intent(in) :: ndata
-    real(wp) :: xdata(l1xdat,ndata)
-    real(wp) :: ydata(ndata)
-    real(wp) :: xmin(ndim)
-    real(wp) :: xmax(ndim)
-    real(wp) :: xtrap
-    real(wp) :: coef(ncf)
+    real(wp),intent(in) :: xdata(l1xdat,ndata)
+    real(wp),intent(in) :: ydata(ndata)
+    real(wp),intent(in) :: xmin(ndim)
+    real(wp),intent(in) :: xmax(ndim)
+    real(wp),intent(in) :: xtrap
+    integer,intent(in) :: nodes(ndim)
     real(wp) :: work(nwrk)
-    real(wp) :: w(1)
-    integer :: nodes(ndim)
-    integer :: ierror
+    real(wp),intent(out) :: coef(ncf)
+    integer,intent(out) :: ierror
+
+    real(wp),dimension(1),parameter :: wdata = -1.0_wp !! indicates to [[splcw]]
+                                                       !! that weights are not used
 
     save
 
-    w(1) = -1.0_wp
-    call splcw(ndim,xdata,l1xdat,ydata,w,ndata,xmin,xmax,nodes,xtrap, &
-                coef,ncf,work,nwrk,ierror)
+    call splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
+               nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
 end subroutine splcc
 !*****************************************************************************************
@@ -409,215 +407,6 @@ end subroutine splcc
 !  the splines is determined by the choice of the
 !  node grid.
 !
-! ARGUMENTS
-!
-! ON INPUT               NDIM
-!                          The dimensionality of the problem.  The
-!                          spline is a function of NDIM variables or
-!                          coordinates and thus a point in the
-!                          independent variable space is an NDIM vector.
-!                          NDIM must be in the range 1 <= NDIM <= 4.
-!
-!                        XDATA
-!                          A collection of locations for the data
-!                          values, i.e., points from the independent
-!                          variable space.  This collection is a
-!                          2-dimensional array whose 1st dimension
-!                          indexes the NDIM coordinates of a given point
-!                          and whose 2nd dimension labels the data
-!                          point.  For example, the data point with
-!                          label IDATA is located at the point
-!                          (XDATA(1,IDATA),...,XDATA(NDIM,IDATA)) where
-!                          the elements of this vector are the values of
-!                          the NDIM coordinates.  The location, number
-!                          and ordering of the data points is arbitrary.
-!                          The dimension of XDATA is assumed to be
-!                          XDATA(L1XDAT,NDATA).
-!
-!                        L1XDAT
-!                          The length of the 1st dimension of XDATA in
-!                          the calling program.  L1XDAT must be >=
-!                          NDIM.
-!
-!                               NOTE:  For 1-dimensional problems L1XDAT
-!                                      is usually 1.
-!
-!                        YDATA
-!                          A collection of data values corresponding to
-!                          the points in XDATA.  YDATA(IDATA) is the
-!                          data value associated with the point
-!                          (XDATA(1,IDATA),...,XDATA(NDIM,IDATA)) in the
-!                          independent variable space.  The spline whose
-!                          coefficients are computed by this routine
-!                          approximates these data values in the least
-!                          squares sense.  The dimension is assumed to be
-!                          YDATA(NDATA).
-!
-!                        WDATA
-!                          A collection of weights.  WDATA(IDATA) is a
-!                          weight associated with the data point
-!                          labelled IDATA.  It should be non-negative,
-!                          but may be of any magnitude.  The weights
-!                          have the effect of forcing greater or lesser
-!                          accuracy at a given point as follows: this
-!                          routine chooses coefficients to minimize the
-!                          sum over all data points of the quantity
-!
-!                            (WDATA(IDATA)*(YDATA(IDATA) - spline value
-!                            at XDATA(IDATA)))**2.
-!
-!                          Thus, if the reliability
-!                          of a data point is known to be low, the
-!                          corresponding weight may be made small
-!                          (relative to the other weights) so that the
-!                          sum over all data points is affected less by
-!                          discrepencies at the unreliable point.  Data
-!                          points with zero weight are completely
-!                          ignored.
-!
-!                               NOTE:  If WDATA(1) is < 0, the other
-!                                      elements of WDATA are not
-!                                      referenced, and all weights are
-!                                      assumed to be unity.
-!
-!                          The dimension is assumed to be WDATA(NDATA)
-!                          unless WDATA(1) < 0., in which case the
-!                          dimension is assumed to be 1.
-!
-!                        NDATA
-!                          The number of data points mentioned in the
-!                          above arguments.
-!
-!                        XMIN
-!                          A vector describing the lower extreme corner
-!                          of the node grid.  A set of evenly spaced
-!                          nodes is formed along each coordinate axis
-!                          and XMIN(IDIM) is the location of the first
-!                          node along the IDIM axis.  The dimension is
-!                          assumed to be XMIN(NDIM).
-!
-!                        XMAX
-!                          A vector describing the upper extreme corner
-!                          of the node grid.  A set of evenly spaced
-!                          nodes is formed along each coordinate axis
-!                          and XMAX(IDIM) is the location of the last
-!                          node along the IDIM axis.  The dimension is
-!                          assumed to be XMAX(NDIM).
-!
-!                        NODES
-!                          A vector of integers describing the number of
-!                          nodes along each axis.  NODES(IDIM) is the
-!                          number of nodes (counting endpoints) along
-!                          the IDIM axis and determines the flexibility
-!                          of the spline in that coordinate direction.
-!                          NODES(IDIM) must be >= 4, but may be as
-!                          large as the arrays COEF and WORK allow.
-!                          The dimension is assumed to be NODES(NDIM).
-!
-!                          NOTE:  The node grid is completely defined by
-!                                 the arguments XMIN, XMAX and NODES.
-!                                 The spacing of this grid in the IDIM
-!                                 coordinate direction is:
-!
-!                                   DX(IDIM) = (XMAX(IDIM)-XMIN(IDIM)) /
-!                                              (NODES(IDIM)-1).
-!
-!                                 A node in this grid may be indexed by
-!                                 an NDIM vector of integers
-!                                 (IN(1),...,IN(NDIM)) where
-!                                 1 <= IN(IDIM) <= NODES(IDIM).
-!                                 The location of such a node may be
-!                                 represented by an NDIM vector
-!                                 (X(1),...,X(NDIM)) where
-!                                 X(IDIM) = XMIN(IDIM) + (IN(IDIM)-1) *
-!                                                         DX(IDIM).
-!
-!                        XTRAP
-!                          A parameter to control extrapolation to data
-!                          sparse areas.  The region described by XMIN
-!                          and XMAX is divided into rectangles, the
-!                          number of which is determined by NODES, and
-!                          any rectangle containing a disproportionately
-!                          small number of data points is considered to
-!                          be data sparse (rectangle is used here to
-!                          mean NDIM-dimensional rectangle).  If XTRAP
-!                          is nonzero the least squares problem is
-!                          augmented with derivative constraints in the
-!                          data sparse areas to prevent the matrix from
-!                          becoming poorly conditioned.  XTRAP serves as
-!                          a weight for these constraints, and thus may
-!                          be used to control smoothness in data sparse
-!                          areas.  Experience indicates that unity is a
-!                          good first guess for this parameter.
-!
-!                               NOTE:  If XTRAP is zero, substantial
-!                                      portions of the routine will be
-!                                      skipped, but a singular matrix
-!                                      can result if large portions of
-!                                      the region are without data.
-!
-!                        NCF
-!                          The length of the array COEF in the calling
-!                          program.  If NCF is <
-!                          NODES(1)*...*NODES(NDIM), a fatal error is
-!                          diagnosed.
-!
-!                        WORK
-!                          A workspace array for solving the least
-!                          squares matrix generated by this routine.
-!                          Its required size is a function of the total
-!                          number of nodes in the node grid.  This
-!                          total, NCOL = NODES(1)*...*NODES(NDIM), is
-!                          also the number of columns in the least
-!                          squares matrix.  The length of the array WORK
-!                          must equal or exceed NCOL*(NCOL+1).
-!
-!                        NWRK
-!                          The length of the array WORK in the calling
-!                          program.  If
-!                          NCOL = NODES(1)*...*NODES(NDIM) is the total
-!                          number of nodes, then a fatal error is
-!                          diagnosed if NWRK is less than
-!                          NCOL*(NCOL+1).
-!
-! ON OUTPUT              COEF
-!                          The array of coefficients computed by this
-!                          routine.  Each coefficient corresponds to a
-!                          particular basis function which in turn
-!                          corresponds to a node in the node grid.  This
-!                          correspondence between the node grid and the
-!                          array COEF is as if COEF were an
-!                          NDIM-dimensional Fortran array with
-!                          dimensions NODES(1),...,NODES(NDIM), i.e., to
-!                          store the array linearly, the leftmost
-!                          indices are incremented most frequently.
-!                          Hence the length of the COEF array must equal
-!                          or exceed the total number of nodes, which is
-!                          NODES(1)*...*NODES(NDIM).  The computed array
-!                          COEF may be used with function SPLFE
-!                          (or SPLDE) to evaluate the spline (or its
-!                          derivatives) at an arbitrary point in NDIM
-!                          space.  The dimension is assumed to be COEF(NCF).
-!
-!                        WORK
-!                          The workspace containing intermediate
-!                          calculations.  It need not be saved.
-!
-!                        IERROR
-!                          An error flag with the following meanings:
-!                              0  No error.
-!                            101  NDIM is < 1 or is > 4.
-!                            102  NODES(IDIM) is < 4 fOR some IDIM.
-!                            103  XMIN(IDIM) = XMAX(IDIM) for some IDIM.
-!                            104  NCF (size of COEF) is
-!                                 < NODES(1)*...*NODES(NDIM).
-!                            105  NDATA is < 1.
-!                            106  NWRK (size of WORK) is too small.
-!                            107  suprls failure (usually insufficient
-!                                 data) -- ordinarily occurs only if
-!                                 XTRAP is zero or WDATA contains all
-!                                 zeros.
-!
 !### Algorithm
 !  An overdetermined system of linear equations
 !  is formed -- one equation for each data point
@@ -637,27 +426,182 @@ end subroutine splcc
 !
 !### Timing
 !  The execution time is roughly proportional
-!  to NDATA*NCOF**2 where NCOF = NODES(1)*...*
-!  NODES(NDIM).
+!  to `NDATA*NCOF**2` where `NCOF = NODES(1)*...*NODES(NDIM)`.
 
 subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                   nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
-    integer,intent(in) :: ndim
-    integer,intent(in) :: l1xdat
-    integer,intent(in) :: ncf
-    integer,intent(in) :: nwrk
-    integer,intent(in) :: ndata
-    real(wp),intent(in) :: xdata(l1xdat,ndata)
-    real(wp),intent(in) :: ydata(ndata)
-    real(wp),intent(in) :: wdata(ndata)
-    real(wp),intent(in) :: xmin(ndim)
-    real(wp),intent(in) :: xmax(ndim)
-    real(wp),intent(in) :: xtrap
-    integer,intent(in) :: nodes(ndim)
-    real(wp) :: work(nwrk)
-    real(wp),intent(out) :: coef(ncf)
-    integer,intent(out) :: ierror
+    integer,intent(in) :: ndim !! The dimensionality of the problem.  The
+                               !! spline is a function of `NDIM` variables or
+                               !! coordinates and thus a point in the
+                               !! independent variable space is an `NDIM` vector.
+                               !! `NDIM` must be in the range `1 <= NDIM <= 4`.
+    integer,intent(in) :: l1xdat !! The length of the 1st dimension of `XDATA` in
+                                 !! the calling program.  `L1XDAT` must be `>= NDIM`.
+                                 !!
+                                 !!#### Note:
+                                 !! For 1-dimensional problems `L1XDAT` is usually 1.
+    integer,intent(in) :: ncf !! The length of the array `COEF` in the calling
+                              !! program.  If `NCF` is `< NODES(1)*...*NODES(NDIM)`,
+                              !! a fatal error is diagnosed.
+    integer,intent(in) :: nwrk !! The length of the array `WORK` in the calling
+                               !! program.  If
+                               !! `NCOL = NODES(1)*...*NODES(NDIM)` is the total
+                               !! number of nodes, then a fatal error is
+                               !! diagnosed if `NWRK` is less than
+                               !! `NCOL*(NCOL+1)`.
+    integer,intent(in) :: ndata !! The number of data points mentioned in the
+                                !! above arguments.
+    real(wp),intent(in) :: xdata(l1xdat,ndata) !! A collection of locations for the data
+                                               !! values, i.e., points from the independent
+                                               !! variable space.  This collection is a
+                                               !! 2-dimensional array whose 1st dimension
+                                               !! indexes the `NDIM` coordinates of a given point
+                                               !! and whose 2nd dimension labels the data
+                                               !! point.  For example, the data point with
+                                               !! label `IDATA` is located at the point
+                                               !! `(XDATA(1,IDATA),...,XDATA(NDIM,IDATA))` where
+                                               !! the elements of this vector are the values of
+                                               !! the `NDIM` coordinates.  The location, number
+                                               !! and ordering of the data points is arbitrary.
+                                               !! The dimension of `XDATA` is assumed to be
+                                               !! `XDATA(L1XDAT,NDATA)`.
+    real(wp),intent(in) :: ydata(ndata) !! A collection of data values corresponding to
+                                        !! the points in `XDATA`.  `YDATA(IDATA)` is the
+                                        !! data value associated with the point
+                                        !! `(XDATA(1,IDATA),...,XDATA(NDIM,IDATA))` in the
+                                        !! independent variable space.  The spline whose
+                                        !! coefficients are computed by this routine
+                                        !! approximates these data values in the least
+                                        !! squares sense.  The dimension is assumed to be
+                                        !! `YDATA(NDATA)`.
+    real(wp),intent(in) :: wdata(:) !! A collection of weights.  `WDATA(IDATA)` is a
+                                    !! weight associated with the data point
+                                    !! labelled `IDATA`.  It should be non-negative,
+                                    !! but may be of any magnitude.  The weights
+                                    !! have the effect of forcing greater or lesser
+                                    !! accuracy at a given point as follows: this
+                                    !! routine chooses coefficients to minimize the
+                                    !! sum over all data points of the quantity
+                                    !!```fortran
+                                    !!   (WDATA(IDATA)*(YDATA(IDATA) ! spline value at XDATA(IDATA)))**2.
+                                    !!```
+                                    !! Thus, if the reliability
+                                    !! of a data point is known to be low, the
+                                    !! corresponding weight may be made small
+                                    !! (relative to the other weights) so that the
+                                    !! sum over all data points is affected less by
+                                    !! discrepencies at the unreliable point.  Data
+                                    !! points with zero weight are completely
+                                    !! ignored.
+                                    !!
+                                    !!#### Note:
+                                    !! If `WDATA(1)` is `< 0`, the other
+                                    !! elements of `WDATA` are not
+                                    !! referenced, and all weights are
+                                    !! assumed to be unity.
+                                    !!
+                                    !! The dimension is assumed to be `WDATA(NDATA)`
+                                    !! unless `WDATA(1) < 0.`, in which case the
+                                    !! dimension is assumed to be 1.
+    real(wp),intent(in) :: xmin(ndim) !! A vector describing the lower extreme corner
+                                      !! of the node grid.  A set of evenly spaced
+                                      !! nodes is formed along each coordinate axis
+                                      !! and `XMIN(IDIM)` is the location of the first
+                                      !! node along the `IDIM` axis.  The dimension is
+                                      !! assumed to be `XMIN(NDIM)`.
+    real(wp),intent(in) :: xmax(ndim) !! A vector describing the upper extreme corner
+                                      !! of the node grid.  A set of evenly spaced
+                                      !! nodes is formed along each coordinate axis
+                                      !! and `XMAX(IDIM)` is the location of the last
+                                      !! node along the `IDIM` axis.  The dimension is
+                                      !! assumed to be `XMAX(NDIM)`.
+    real(wp),intent(in) :: xtrap !! A parameter to control extrapolation to data
+                                 !! sparse areas.  The region described by `XMIN`
+                                 !! and `XMAX` is divided into rectangles, the
+                                 !! number of which is determined by `NODES`, and
+                                 !! any rectangle containing a disproportionately
+                                 !! small number of data points is considered to
+                                 !! be data sparse (rectangle is used here to
+                                 !! mean `NDIM`-dimensional rectangle).  If `XTRAP`
+                                 !! is nonzero the least squares problem is
+                                 !! augmented with derivative constraints in the
+                                 !! data sparse areas to prevent the matrix from
+                                 !! becoming poorly conditioned.  `XTRAP` serves as
+                                 !! a weight for these constraints, and thus may
+                                 !! be used to control smoothness in data sparse
+                                 !! areas.  Experience indicates that unity is a
+                                 !! good first guess for this parameter.
+                                 !!
+                                 !!#### Note:
+                                 !! If `XTRAP` is zero, substantial
+                                 !! portions of the routine will be
+                                 !! skipped, but a singular matrix
+                                 !! can result if large portions of
+                                 !! the region are without data.
+    integer,intent(in) :: nodes(ndim) !! A vector of integers describing the number of
+                                      !! nodes along each axis.  `NODES(IDIM)` is the
+                                      !! number of nodes (counting endpoints) along
+                                      !! the `IDIM` axis and determines the flexibility
+                                      !! of the spline in that coordinate direction.
+                                      !! `NODES(IDIM)` must be `>= 4`, but may be as
+                                      !! large as the arrays `COEF` and `WORK` allow.
+                                      !! The dimension is assumed to be `NODES(NDIM)`.
+                                      !!
+                                      !!#### Note:
+                                      !! The node grid is completely defined by
+                                      !! the arguments `XMIN`, `XMAX` and `NODES`.
+                                      !! The spacing of this grid in the `IDIM`
+                                      !! coordinate direction is:
+                                      !!```fortran
+                                      !!   DX(IDIM) = (XMAX(IDIM)-XMIN(IDIM)) / (NODES(IDIM)-1).
+                                      !!```
+                                      !! A node in this grid may be indexed by
+                                      !! an `NDIM` vector of integers
+                                      !! `(IN(1),...,IN(NDIM))` where
+                                      !! `1 <= IN(IDIM) <= NODES(IDIM)`.
+                                      !! The location of such a node may be
+                                      !! represented by an `NDIM` vector
+                                      !! `(X(1),...,X(NDIM))` where
+                                      !! `X(IDIM) = XMIN(IDIM) + (IN(IDIM)-1) * DX(IDIM)`.
+    real(wp) :: work(nwrk) !! A workspace array for solving the least
+                           !! squares matrix generated by this routine.
+                           !! Its required size is a function of the total
+                           !! number of nodes in the node grid.  This
+                           !! total, `NCOL = NODES(1)*...*NODES(NDIM)`, is
+                           !! also the number of columns in the least
+                           !! squares matrix.  The length of the array `WORK`
+                           !! must equal or exceed `NCOL*(NCOL+1)`.
+    real(wp),intent(out) :: coef(ncf) !! The array of coefficients computed by this
+                                      !! routine.  Each coefficient corresponds to a
+                                      !! particular basis function which in turn
+                                      !! corresponds to a node in the node grid.  This
+                                      !! correspondence between the node grid and the
+                                      !! array `COEF` is as if `COEF` were an
+                                      !! `NDIM`-dimensional Fortran array with
+                                      !! dimensions `NODES(1),...,NODES(NDIM)`, i.e., to
+                                      !! store the array linearly, the leftmost
+                                      !! indices are incremented most frequently.
+                                      !! Hence the length of the `COEF` array must equal
+                                      !! or exceed the total number of nodes, which is
+                                      !! `NODES(1)*...*NODES(NDIM)`.  The computed array
+                                      !! `COEF` may be used with function [[SPLFE]]
+                                      !! (or [[SPLDE]]) to evaluate the spline (or its
+                                      !! derivatives) at an arbitrary point in `NDIM`
+                                      !! space.  The dimension is assumed to be `COEF(NCF)`.
+    integer,intent(out) :: ierror !! An error flag with the following meanings:
+                                  !!
+                                  !! * `  0`  No error.
+                                  !! * `101`  `NDIM` is < 1 or is > 4.
+                                  !! * `102`  `NODES(IDIM)` is < 4 for some `IDIM`.
+                                  !! * `103`  `XMIN(IDIM) = XMAX(IDIM)` for some `IDIM`.
+                                  !! * `104`  `NCF` (size of `COEF`) is `< NODES(1)*...*NODES(NDIM)`.
+                                  !! * `105`  `NDATA` is `< 1`.
+                                  !! * `106`  `NWRK` (size of `WORK`) is too small.
+                                  !! * `107`  [[suprls]] failure (usually insufficient
+                                  !!   data) -- ordinarily occurs only if
+                                  !!   `XTRAP` is zero or `WDATA` contains all
+                                  !!   zeros.
 
     real(wp) :: x(4),dx(4),dxin(4)
     integer :: nderiv(4),in(4),inmx(4)
@@ -825,7 +769,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         if (lserr/=0) then
             ierror = 107
             call cfaerr(ierror, &
-                ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
+                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
         end if
     end do
 
@@ -1001,7 +945,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                         if (lserr/=0) then
                             ierror = 107
                             call cfaerr(ierror, &
-                                ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
+                                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
                         end if
                     end do
                 end do
@@ -1027,7 +971,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (lserr/=0) then
         ierror = 107
         call cfaerr(ierror, &
-            ' splcc or splcw - suprls failure (this usually indicates insufficient input data')
+            ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
     end if
 
 end subroutine splcw
@@ -1035,6 +979,11 @@ end subroutine splcw
 
 !*****************************************************************************************
 !>
+!  Returns an interpolated
+!  value for one of several partial derivatives.
+!
+!### See also
+!  * [[splfe]]
 !
 !@note The original version of this routine would stop for an error.
 !      Now it just returns.
@@ -1142,7 +1091,11 @@ end function splde
 
 !*****************************************************************************************
 !>
+!  Returns an interpolated value at the point defined by the array X.
 !
+!### See also
+!  * [[splde]]
+
 function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
 
     real(wp) :: splfe
@@ -1167,7 +1120,8 @@ end function splfe
 
 !*****************************************************************************************
 !>
-!
+!  Solve the overdetermined system of linear equations.
+
 subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
 
     integer :: i
@@ -1220,6 +1174,8 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
             !  Error exit if insufficient scratch storage provided.
             if (nn<nreq) then
                 ier = 32
+                write(*,*) 'nn   = ', nn
+                write(*,*) 'nreq = ', nreq
                 call cfaerr(ier, &
                             ' suprls - insufficient scratch storage provided. '//&
                             'at least ((N+5)*N+2)/2 locations needed')
@@ -1231,6 +1187,8 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
         !  Error exit if (I-IOLD)/=1.
         if ((i-iold)/=1) then
             ier = 35
+            write(*,*) 'i    =',i
+            write(*,*) 'iold =',iold
             call cfaerr(ier,' suprls - values of I not in sequence')
             return
         end if

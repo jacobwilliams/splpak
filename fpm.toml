@@ -1,0 +1,21 @@
+name = "spkpak"
+author = "Jacob Williams"
+maintainer = "Jacob Williams"
+copyright = "Copyright (c) 2022, Jacob Williams"
+license = "BSD"
+description = "spkpak"
+homepage = "https://github.com/jacobwilliams/spkpak"
+
+[build]
+auto-executables = false
+auto-examples = false
+auto-tests = true
+
+[dev-dependencies]
+pyplot-fortran = { git = "https://github.com/jacobwilliams/pyplot-fortran", tag = "3.3.0" }
+
+[library]
+source-dir = "src"
+
+[install]
+library = true
