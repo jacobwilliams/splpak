@@ -338,7 +338,6 @@ end subroutine cfaerr
 subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
                  xtrap,coef,ncf,work,nwrk,ierror)
 
-
     integer,intent(in) :: ndim
     integer,intent(in) :: l1xdat
     integer,intent(in) :: ncf
