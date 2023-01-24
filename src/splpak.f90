@@ -78,7 +78,7 @@
 
     type,public :: splpak_type
 
-        ! common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+        ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
 
         integer :: mdim = 0
         ! originally these were all size 4:
@@ -127,21 +127,20 @@
         ! if (allocated(me%ib))   deallocate(me%ib)
         ! if (allocated(me%ibmn)) deallocate(me%ibmn)
         ! if (allocated(me%ibmx)) deallocate(me%ibmx)
+        me%dx     = 0.0_wp
+        me%dxin   = 0.0_wp
+        me%ib     = 0
+        me%ibmn   = 0
+        me%ibmx   = 0
 
-        me%dx = 0.0_wp
-        me%dxin = 0.0_wp
-        me%ib = 0
-        me%ibmn = 0
-        me%ibmx = 0
-
-        me%ilast = 0
-        me%isav = 0
-        me%iold = 0
-        me%np1 = 0
-        me%l = 0
-        me%il1 = 0
-        me%k = 0
-        me%k1 = 0
+        me%ilast  = 0
+        me%isav   = 0
+        me%iold   = 0
+        me%np1    = 0
+        me%l      = 0
+        me%il1    = 0
+        me%k      = 0
+        me%k1     = 0
         me%errsum = 0.0_wp
 
     end subroutine destroy_splpak
@@ -198,9 +197,9 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
     real(wp) :: xb,bas1,z,fact,z1
     integer :: idim,mdmid,ntyp,ngo
 
-    real(wp) :: dx(max_ndim),dxin(max_ndim)
-    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
+    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
+    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
 
     save
 
@@ -209,20 +208,20 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
     ! BASM will be M-dimensional basis function evaluated at X.
     basm = 1.0_wp
-    do idim = 1,mdim
+    do idim = 1,me%mdim
 
         ! Compute ICOL by Horner's method.
-        mdmid = mdim + 1 - idim
-        icol = nodes(mdmid)*icol + ib(mdmid)
+        mdmid = me%mdim + 1 - idim
+        icol = nodes(mdmid)*icol + me%ib(mdmid)
 
         ! NGO depends upon function type and NDERIV.
         ntyp = 1
 
         ! Function type 1 (left linear) for IB = 0 or 1.
-        if (ib(idim)>1) then
+        if (me%ib(idim)>1) then
             ntyp = 2
             ! Function type 2 (chapeau function) for 2 LT IB LT NODES-2.
-            if (ib(idim)>=nodes(idim)-2) then
+            if (me%ib(idim)>=nodes(idim)-2) then
                 ntyp = 3
             end if
         end if
@@ -231,7 +230,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
         ngo = 3*ntyp + nderiv(idim) - 2
 
         !  XB is X value of node IB (center of basis function).
-        xb = xmin(idim) + real(ib(idim),wp)*dx(idim)
+        xb = xmin(idim) + real(me%ib(idim),wp)*me%dx(idim)
 
         !  BAS1 will be the 1-dimensional basis function evaluated at X.
         bas1 = 0.0_wp
@@ -244,7 +243,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
             !
             !  Transform so that XB is at the origin and the other nodes are at
             !  the integers.
-            z = abs(dxin(idim)* (x(idim)-xb)) - 2.0_wp
+            z = abs(me%dxin(idim)* (x(idim)-xb)) - 2.0_wp
 
             !  This chapeau function is then that unique cubic spline which is
             !  identically zero for ABS(Z) GE 2 and is 1 at the origin.  This
@@ -261,7 +260,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
             !  1st derivative.
             z = x(idim) - xb
-            fact = dxin(idim)
+            fact = me%dxin(idim)
             if (z<0.0_wp) fact = -fact
             z = fact*z - 2.0_wp
             if (z<0.0_wp) then
@@ -276,7 +275,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
         case(6) ! 108
 
             !  2nd derivative.
-            fact = dxin(idim)
+            fact = me%dxin(idim)
             z = fact*abs(x(idim)-xb) - 2.0_wp
             if (z<0.0_wp) then
                 bas1 = -1.5_wp*z
@@ -291,9 +290,9 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
             !  1st derivative.
             if (ngo==2) then
-                fact = -dxin(idim)
+                fact = -me%dxin(idim)
             else if (ngo==8) then
-                fact = dxin(idim)
+                fact = me%dxin(idim)
             end if
             z = fact* (x(idim)-xb) + 2.0_wp
             if (z<0.0_wp) then
@@ -313,9 +312,9 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
             !  2nd derivative.
             if (ngo==3) then
-                fact = -dxin(idim)
+                fact = -me%dxin(idim)
             else if (ngo==9) then
-                fact = dxin(idim)
+                fact = me%dxin(idim)
             end if
             z = fact* (x(idim)-xb) + 2.0_wp
             z1 = z - 1.0_wp
@@ -335,12 +334,12 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
                 !
                 !  Transform so that XB is at 2 and the other nodes are at the integers
                 !  (with ordering reversed to form a mirror image).
-                z = dxin(idim)* (xb-x(idim)) + 2.0_wp
+                z = me%dxin(idim)* (xb-x(idim)) + 2.0_wp
             else
                 !  Function type 3 (right linear).
                 !
                 !  Transform so that XB is at 2 and the other nodes are at the integers.
-                z = dxin(idim)* (x(idim)-xb) + 2.0_wp
+                z = me%dxin(idim)* (x(idim)-xb) + 2.0_wp
             end if
 
             !  This right linear function is defined to be that unique cubic spline
@@ -675,9 +674,9 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                   !!   `XTRAP` is zero or `WDATA` contains all
                                   !!   zeros.
 
-    real(wp) :: dx(max_ndim),dxin(max_ndim)
-    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
+    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
+    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
 
     real(wp) :: x(max_ndim)
     integer :: nderiv(max_ndim),in(max_ndim),inmx(max_ndim)
@@ -707,15 +706,15 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !! consideration.
 
     ierror = 0
-    mdim = ndim
-    if (mdim<1 .or. mdim>4) then
+    me%mdim = ndim
+    if (me%mdim<1 .or. me%mdim>4) then
         ierror = 101
         call cfaerr(ierror, &
             ' splcc or splcw - NDIM is less than 1 or is greater than 4')
         return
     end if
     ncol = 1
-    do idim = 1,mdim
+    do idim = 1,me%mdim
         nod = nodes(idim)
         if (nod<4) then
             ierror = 102
@@ -736,8 +735,8 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
-        dx(idim) = xrng/real(nod-1,wp)
-        dxin(idim) = 1.0_wp/dx(idim)
+        me%dx(idim) = xrng/real(nod-1,wp)
+        me%dxin(idim) = 1.0_wp/me%dx(idim)
         nderiv(idim) = 0
     end do
     if (ncol>ncf) then
@@ -796,7 +795,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  point.  The right hand for that row will correspond to the
         !  function value YDATA at that point.
         rhs = rowwt*ydata(idata)
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             x(idim) = xdata(idim,idata)
         end do
 
@@ -810,12 +809,12 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  Compute the indices of basis functions which are nonzero at X.
         !  IBMN is in the range 0 to nodes-2 and IBMX is in range 1
         !  to NODES-1.
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             nod = nodes(idim)
-            it = dxin(idim)* (x(idim)-xmin(idim))
-            ibmn(idim) = min(max(it-1,0),nod-2)
-            ib(idim) = ibmn(idim)
-            ibmx(idim) = max(min(it+2,nod-1),1)
+            it = me%dxin(idim)* (x(idim)-xmin(idim))
+            me%ibmn(idim) = min(max(it-1,0),nod-2)
+            me%ib(idim) = me%ibmn(idim)
+            me%ibmx(idim) = max(min(it+2,nod-1),1)
         end do
 
         basis_index : do
@@ -829,10 +828,10 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             coef(icol) = rowwt*basm
 
             !  Increment the basis indices.
-            do idim = 1,mdim
-                ib(idim) = ib(idim) + 1
-                if (ib(idim)<=ibmx(idim)) cycle basis_index
-                ib(idim) = ibmn(idim)
+            do idim = 1,me%mdim
+                me%ib(idim) = me%ib(idim) + 1
+                if (me%ib(idim)<=me%ibmx(idim)) cycle basis_index
+                me%ib(idim) = me%ibmn(idim)
             end do
             exit basis_index !  End of basis index loop.
         end do basis_index
@@ -860,7 +859,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
         !  Initialize the node indices and compute number of rectangles
         !  formed by the node network.
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             in(idim) = 0
             inmx(idim) = nodes(idim) - 1
             nrect = nrect*inmx(idim)
@@ -884,9 +883,9 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
             ! Find the nearest node.
             iin = 0
-            do idimc = 1,mdim
-                idim = mdim + 1 - idimc
-                inidim = int(dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
+            do idimc = 1,me%mdim
+                idim = me%mdim + 1 - idimc
+                inidim = int(me%dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
                 ! Points not in range (+ or - 1/2 node spacing) are not counted.
                 if (inidim<0 .or. inidim>inmx(idim)) cycle
                 ! Compute linear address of node in workspace by Horner's method.
@@ -916,7 +915,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
             !  Rectangles at edge of network are smaller and hence less weight
             !  should be expected.
-            do idim = 1,mdim
+            do idim = 1,me%mdim
                 if (in(idim)==0 .or. in(idim)==inmx(idim)) expect = 0.5_wp*expect
             end do
 
@@ -928,23 +927,23 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             if (work(iin)<spcrit*expect) then
 
                 dcwght = expect - work(iin)
-                do idim = 1,mdim
+                do idim = 1,me%mdim
                     inidim = in(idim)
 
                     !  Compute the location of the node.
-                    x(idim) = xmin(idim) + real(inidim,wp)*dx(idim)
+                    x(idim) = xmin(idim) + real(inidim,wp)*me%dx(idim)
 
                     !  Compute the indices of the basis functions which are non-zero
                     !  at the node.
-                    ibmn(idim) = inidim - 1
-                    ibmx(idim) = inidim + 1
+                    me%ibmn(idim) = inidim - 1
+                    me%ibmx(idim) = inidim + 1
 
                     !  Distinguish the boundaries.
-                    if (inidim==0) ibmn(idim) = 0
-                    if (inidim==inmx(idim)) ibmx(idim) = inmx(idim)
+                    if (inidim==0) me%ibmn(idim) = 0
+                    if (inidim==inmx(idim)) me%ibmx(idim) = inmx(idim)
 
                     !  Initialize the basis indices.
-                    ib(idim) = ibmn(idim)
+                    me%ib(idim) = me%ibmn(idim)
                 end do
 
                 !  Multiply by the extrapolation parameter (this acts as a
@@ -963,9 +962,9 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                 !  derivatives.  Traverse the upper triangle of this matrix and,
                 !  for each element, compute a row of the least squares matrix.
 
-                do idm = 1,mdim
-                    do jdm = idm,mdim
-                        do idim = 1,mdim
+                do idm = 1,me%mdim
+                    do jdm = idm,me%mdim
+                        do idim = 1,me%mdim
                             nderiv(idim) = 0
                         end do
 
@@ -1003,10 +1002,10 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                             coef(icol) = rowwt*basm
 
                             !  Increment the basis indices.
-                            do idim = 1,mdim
-                                ib(idim) = ib(idim) + 1
-                                if (ib(idim)<=ibmx(idim)) cycle basis
-                                ib(idim) = ibmn(idim)
+                            do idim = 1,me%mdim
+                                me%ib(idim) = me%ib(idim) + 1
+                                if (me%ib(idim)<=me%ibmx(idim)) cycle basis
+                                me%ib(idim) = me%ibmn(idim)
                             end do
 
                             !  End of basis index loop.
@@ -1026,7 +1025,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             end if
 
             !  Increment node indices.
-            do idim = 1,mdim
+            do idim = 1,me%mdim
                 in(idim) = in(idim) + 1
                 if (in(idim)<=inmx(idim)) cycle node_index
                 in(idim) = 0
@@ -1074,9 +1073,9 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    real(wp) :: dx(max_ndim),dxin(max_ndim)
-    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
+    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
+    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
     ! The restriction for NDIM to be <= 4 can be eliminated by increasing
     ! the above dimensions.
 
@@ -1086,15 +1085,15 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     save
 
     ierror = 0
-    mdim = ndim
-    if (mdim<1 .or. mdim>4) then
+    me%mdim = ndim
+    if (me%mdim<1 .or. me%mdim>4) then
         ierror = 101
         call cfaerr(ierror, &
             ' splfe or splde - NDIM is less than 1 or greater than 4')
         return
     end if
     iibmx = 1
-    do idim = 1,mdim
+    do idim = 1,me%mdim
         nod = nodes(idim)
         if (nod<4) then
             ierror = 102
@@ -1116,19 +1115,19 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
-        dx(idim) = xrng/real(nod-1,wp)
-        dxin(idim) = 1.0_wp/dx(idim)
+        me%dx(idim) = xrng/real(nod-1,wp)
+        me%dxin(idim) = 1.0_wp/me%dx(idim)
 
         !  Compute indices of basis functions which are nonzero at X.
-        it = dxin(idim)*(x(idim)-xmin(idim))
+        it = me%dxin(idim)*(x(idim)-xmin(idim))
 
         !  IBMN must be in the range 0 to NODES-2.
-        ibmn(idim) = min(max(it-1,0),nod-2)
+        me%ibmn(idim) = min(max(it-1,0),nod-2)
 
         !  IBMX must be in the range 1 to NODES-1.
-        ibmx(idim) = max(min(it+2,nod-1),1)
-        iibmx = iibmx* (ibmx(idim)-ibmn(idim)+1)
-        ib(idim) = ibmn(idim)
+        me%ibmx(idim) = max(min(it+2,nod-1),1)
+        iibmx = iibmx* (me%ibmx(idim)-me%ibmn(idim)+1)
+        me%ib(idim) = me%ibmn(idim)
     end do
 
     sum = 0.0_wp
@@ -1147,10 +1146,10 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         sum = sum + coef(icof)*basm
         if (iib<iibmx) then
             !  Increment the basis indices.
-            do idim = 1,mdim
-                ib(idim) = ib(idim) + 1
-                if (ib(idim)<=ibmx(idim)) cycle basis_index
-                ib(idim) = ibmn(idim)
+            do idim = 1,me%mdim
+                me%ib(idim) = me%ib(idim) + 1
+                if (me%ib(idim)<=me%ibmx(idim)) cycle basis_index
+                me%ib(idim) = me%ibmn(idim)
             end do
         end if
 
