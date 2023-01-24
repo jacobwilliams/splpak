@@ -197,12 +197,6 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
     real(wp) :: xb,bas1,z,fact,z1
     integer :: idim,mdmid,ntyp,ngo
 
-    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
-    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
-    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
-
-    !save
-
     ! ICOL will be a linear address corresponding to the indices in IB.
     icol = 0
 
@@ -426,8 +420,6 @@ subroutine splcc(me,ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
 
     real(wp),dimension(1),parameter :: wdata = -1.0_wp !! indicates to [[splcw]]
                                                        !! that weights are not used
-
-    !save
 
     call me%splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
                   nodes,xtrap,coef,ncf,work,nwrk,ierror)
@@ -674,23 +666,14 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                   !!   `XTRAP` is zero or `WDATA` contains all
                                   !!   zeros.
 
-    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
-    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
-    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
-
     real(wp) :: x(max_ndim)
     integer :: nderiv(max_ndim),in(max_ndim),inmx(max_ndim)
-    !  The restriction that NDIM be less than are equal to 4 can be
-    !  eliminated by increasing the above dimensions, but the required
-    !  length of WORK becomes quite large.
 
     real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,bump,wtprrc,expect,dcwght
     integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
                idata,icol,it,lserr,iin,nrect,idimc,idm,&
                jdm,inidim
     logical :: boundary
-
-    !save
 
     real(wp),parameter :: spcrit = 0.75_wp
         !! SPCRIT is used to determine data sparseness as follows -
@@ -1073,16 +1056,8 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    ! real(wp) :: me%dx(max_ndim),me%dxin(max_ndim)
-    ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
-    ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
-    ! The restriction for NDIM to be <= 4 can be eliminated by increasing
-    ! the above dimensions.
-
     real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
-
-    !save
 
     ierror = 0
     me%mdim = ndim
@@ -1180,11 +1155,7 @@ function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    integer,dimension(max_ndim),parameter :: nderiv = 0 ! [0,0,0,0]
-    ! The restriction for NDIM to be <= 4 can be eliminated by
-    ! increasing the above dimension and those in splde.
-
-    !save
+    integer,dimension(max_ndim),parameter :: nderiv = 0
 
     splfe = me%splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
@@ -1209,7 +1180,7 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
     integer :: ier
 
     real(wp) :: s,temp,temp1,cn,sn
-    integer :: j,ilj,ilnp,&
+    integer :: j,ilj,ilnp,nreq,k,&
                idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
                i1jd,k11,k1m1,i11,np1mk,lmk,imov,iii,iiim,iim1,&
                ilk,npk,ilii,npii
@@ -1217,10 +1188,6 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                                   !! the reduction and store the solution in `SOLN`.
 
     real(wp),parameter :: tol = 1.0e-18_wp !! small number tolerance
-
-    !save
-    integer,save :: iold,np1,l,ilast,il1,k,k1,nreq,isav
-    real(wp),save :: errsum
 
     ier = 0
     complete_reduction = i <= 0
@@ -1230,16 +1197,16 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
         if (i<=1) then
 
             !  Set up quantities on first call.
-            iold = 0
-            np1 = n + 1
+            me%iold = 0
+            me%np1 = n + 1
 
             !  Compute how many rows can be input now.
-            l = nn/np1
-            ilast = 0
-            il1 = 0
-            k = 0
-            k1 = 0
-            errsum = 0.0_wp
+            me%l = nn/me%np1
+            me%ilast = 0
+            me%il1 = 0
+            me%k = 0
+            me%k1 = 0
+            me%errsum = 0.0_wp
             nreq = ((n+5)*n+2)/2
 
             !  Error exit if insufficient scratch storage provided.
@@ -1256,25 +1223,25 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
         end if
 
         !  Error exit if (I-IOLD)/=1.
-        if ((i-iold)/=1) then
+        if ((i-me%iold)/=1) then
             ier = 35
             write(*,*) 'i    =',i
-            write(*,*) 'iold =',iold
+            write(*,*) 'me%iold =',me%iold
             call cfaerr(ier,' suprls - values of I not in sequence')
             return
         end if
 
         !  Store the row in the scratch storage.
-        iold = i
+        me%iold = i
         do j = 1,n
-            ilj = ilast + j
+            ilj = me%ilast + j
             a(ilj) = rowi(j)
         end do
-        ilnp = ilast + np1
+        ilnp = me%ilast + me%np1
         a(ilnp) = bi
-        ilast = ilast + np1
-        isav = i
-        if (i<l) return
+        me%ilast = me%ilast + me%np1
+        me%isav = i
+        if (i<me%l) return
 
     end if
 
@@ -1282,14 +1249,14 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
 
         if (.not. complete_reduction) then
 
-            if (k/=0) then
-                k1 = min(k,n)
-                idiag = -np1
-                if (l-k==1) then
+            if (me%k/=0) then
+                me%k1 = min(me%k,n)
+                idiag = -me%np1
+                if (me%l-me%k==1) then
                     !  Apply rotations to zero out the single new row.
-                    do j = 1,k1
-                        idiag = idiag + (np1-j+2)
-                        i1 = il1 + j
+                    do j = 1,me%k1
+                        idiag = idiag + (me%np1-j+2)
+                        i1 = me%il1 + j
                         if (abs(a(i1))<=tol) then
                             s = sqrt(a(idiag)*a(idiag))
                         else if (abs(a(idiag))<tol) then
@@ -1304,7 +1271,7 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                         cn = temp*s
                         sn = a(i1)*s
                         jp1 = j + 1
-                        do j1 = jp1,np1
+                        do j1 = jp1,me%np1
                             jdel = j1 - j
                             idj = idiag + jdel
                             temp = a(idj)
@@ -1315,12 +1282,12 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                     end do
                 else
                     !  Apply householder transformations to zero out new rows.
-                    do j = 1,k1
-                        idiag = idiag + (np1-j+2)
-                        i1 = il1 + j
-                        i2 = i1 + np1* (l-k-1)
+                    do j = 1,me%k1
+                        idiag = idiag + (me%np1-j+2)
+                        i1 = me%il1 + j
+                        i2 = i1 + me%np1* (me%l-me%k-1)
                         s = a(idiag)*a(idiag)
-                        do ii = i1,i2,np1
+                        do ii = i1,i2,me%np1
                             s = s + a(ii)*a(ii)
                         end do
                         if (s==0.0_wp) cycle
@@ -1330,17 +1297,17 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                         temp = temp - a(idiag)
                         temp1 = 1.0_wp / (temp*a(idiag))
                         jp1 = j + 1
-                        do j1 = jp1,np1
+                        do j1 = jp1,me%np1
                             jdel = j1 - j
                             idj = idiag + jdel
                             s = temp*a(idj)
-                            do ii = i1,i2,np1
+                            do ii = i1,i2,me%np1
                                 iijd = ii + jdel
                                 s = s + a(ii)*a(iijd)
                             end do
                             s = s*temp1
                             a(idj) = a(idj) + s*temp
-                            do ii = i1,i2,np1
+                            do ii = i1,i2,me%np1
                                 iijd = ii + jdel
                                 a(iijd) = a(iijd) + s*a(ii)
                             end do
@@ -1348,38 +1315,38 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                     end do
                 end if
 
-                if (k>=n) then
-                    lmkm1 = l - k
+                if (me%k>=n) then
+                    lmkm1 = me%l - me%k
 
                     !  Accumulate residual sum of squares.
                     do ii = 1,lmkm1
-                        ilnp = il1 + ii*np1
-                        errsum = errsum + a(ilnp)*a(ilnp)
+                        ilnp = me%il1 + ii*me%np1
+                        me%errsum = me%errsum + a(ilnp)*a(ilnp)
                     end do
                     if (i<=0) exit main
-                    k = l
-                    ilast = il1
+                    me%k = me%l
+                    me%ilast = me%il1
 
                     !  Determine how many new rows may be input on next iteration.
-                    l = k + (nn-ilast)/np1
+                    me%l = me%k + (nn-me%ilast)/me%np1
                     return
                 end if
             end if
 
-            k11 = k1 + 1
-            k1 = min(l,n)
-            if (l-k/=1) then
-                k1m1 = k1 - 1
-                if (l>n) k1m1 = n
-                i1 = il1 + k11 - np1 - 1
+            k11 = me%k1 + 1
+            me%k1 = min(me%l,n)
+            if (me%l-me%k/=1) then
+                k1m1 = me%k1 - 1
+                if (me%l>n) k1m1 = n
+                i1 = me%il1 + k11 - me%np1 - 1
 
                 !  Perform householder transformations to reduce rows to upper
                 !  triangular form.
                 do j = k11,k1m1
-                    i1 = i1 + (np1+1)
-                    i2 = i1 + (l-j)*np1
+                    i1 = i1 + (me%np1+1)
+                    i2 = i1 + (me%l-j)*me%np1
                     s = 0.0_wp
-                    do ii = i1,i2,np1
+                    do ii = i1,i2,me%np1
                         s = s + a(ii)*a(ii)
                     end do
                     if (s==0.0_wp) cycle
@@ -1389,77 +1356,77 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                     temp = temp - a(i1)
                     temp1 = 1.0_wp/ (temp*a(i1))
                     jp1 = j + 1
-                    i11 = i1 + np1
-                    do j1 = jp1,np1
+                    i11 = i1 + me%np1
+                    do j1 = jp1,me%np1
                         jdel = j1 - j
                         i1jd = i1 + jdel
                         s = temp*a(i1jd)
-                        do ii = i11,i2,np1
+                        do ii = i11,i2,me%np1
                             iijd = ii + jdel
                             s = s + a(ii)*a(iijd)
                         end do
                         s = s*temp1
                         i1jd = i1 + jdel
                         a(i1jd) = a(i1jd) + s*temp
-                        do ii = i11,i2,np1
+                        do ii = i11,i2,me%np1
                             iijd = ii + jdel
                             a(iijd) = a(iijd) + s*a(ii)
                         end do
                     end do
                 end do
-                if (l>n) then
-                    np1mk = np1 - k
-                    lmk = l - k
+                if (me%l>n) then
+                    np1mk = me%np1 - me%k
+                    lmk = me%l - me%k
                     ! Accumulate residual sum of squares.
                     do ii = np1mk,lmk
-                        ilnp = il1 + ii*np1
-                        errsum = errsum + a(ilnp)*a(ilnp)
+                        ilnp = me%il1 + ii*me%np1
+                        me%errsum = me%errsum + a(ilnp)*a(ilnp)
                     end do
                 end if
             end if
             imov = 0
-            i1 = il1 + k11 - np1 - 1
+            i1 = me%il1 + k11 - me%np1 - 1
 
             !  Squeeze the unnecessary elements out of scratch storage to
             !  allow space for more rows.
-            do ii = k11,k1
+            do ii = k11,me%k1
                 imov = imov + (ii-1)
-                i1 = i1 + np1 + 1
-                i2 = i1 + np1 - ii
+                i1 = i1 + me%np1 + 1
+                i2 = i1 + me%np1 - ii
                 do iii = i1,i2
                     iiim = iii - imov
                     a(iiim) = a(iii)
                 end do
             end do
-            ilast = i2 - imov
-            il1 = ilast
+            me%ilast = i2 - imov
+            me%il1 = me%ilast
             if (i<=0) exit main
-            k = l
+            me%k = me%l
 
             !  Determine how many new rows may be input on next iteration.
-            l = k + (nn-ilast)/np1
+            me%l = me%k + (nn-me%ilast)/me%np1
             return
 
         end if
 
         ! Complete reduction and store solution in SOLN.
         complete_reduction = .false. ! reset this flag
-        l = isav
+        me%l = me%isav
 
         ! Error exit if L less than N.
-        if (l<n) then
+        if (me%l<n) then
             ier = 33
             call cfaerr(ier,' suprls - array has too few rows.')
             return
         end if
 
         ! K/=ISAV means further reduction needed.
-        if (k==isav) exit main
+        if (me%k==me%isav) exit main
 
     end do main
 
-    ilast = (np1* (np1+1))/2 - 1
-    if (a(ilast-1)==0.0_wp) then
+    me%ilast = (me%np1* (me%np1+1))/2 - 1
+    if (a(me%ilast-1)==0.0_wp) then
         ! Error return if system is singular.
         ier = 34
         call cfaerr(ier,' suprls - system is singular.')
@@ -1467,29 +1434,30 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
     end if
 
     ! Solve triangular system into ROWI.
-    soln(n) = a(ilast)/a(ilast-1)
+    soln(n) = a(me%ilast)/a(me%ilast-1)
     do ii = 2,n
         iim1 = ii - 1
-        ilast = ilast - ii
-        s = a(ilast)
+        me%ilast = me%ilast - ii
+        s = a(me%ilast)
         do k = 1,iim1
-            ilk = ilast - k
-            npk = np1 - k
+            ilk = me%ilast - k
+            npk = me%np1 - k
             s = s - a(ilk)*soln(npk)
         end do
-        ilii = ilast - ii
+        me%k = k ! JW : is this necessary ???
+        ilii = me%ilast - ii
         if (a(ilii)==0.0_wp) then
             ! Error return if system is singular.
             ier = 34
             call cfaerr(ier,' suprls - system is singular.')
             return
         end if
-        npii = np1 - ii
+        npii = me%np1 - ii
         soln(npii) = s/a(ilii)
     end do
 
     ! Store residual norm.
-    err = sqrt(errsum)
+    err = sqrt(me%errsum)
 
 end subroutine suprls
 !*****************************************************************************************
