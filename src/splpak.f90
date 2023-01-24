@@ -10,51 +10,6 @@
 !  subroutines [[splcc]] or [[splcw]] and evaluation is
 !  performed by functions [[splfe]] or [[splde]].
 !
-!### Usage
-!
-!  Package SPLPAK contains four user entries --
-!  SPLCC, SPLCW, SPLFE, AND SPLDE.
-!
-!  The user first calls SPLCC by
-!```fortran
-!    CALL SPLCC (NDIM,XDATA,L1XDAT,YDATA,NDATA,
-!                XMIN,XMAX,NODES,XTRAP,COEF,NCF,
-!                WORK,NWRK,IERROR)
-!```
-!  or SPLCW by
-!```fortran
-!    CALL SPLCW (NDIM,XDATA,L1XDATA,YDATA,WDATA,
-!                NDATA,XMIN,XMAX,NODES,XTRAP,
-!                COEF,NCF,WORK,NWRK,IERROR)
-!```
-!  The parameter NDATA in the call to SPLCW
-!  enables the user to weight some of the data
-!  points more heavily than others.  Both
-!  routines return a set of coefficients in the
-!  array COEF.  These coefficients are
-!  subsequently used in the computation of
-!  function values and partial derivatives.
-!  To compute values on the spline approximation
-!  the user then calls SPLFE or SPLDE any
-!  number of times in any order provided that
-!  the values of the inputs, NDIM, COEF, XMIN,
-!  XMAX, and NODES, are preserved between calls.
-!
-!  SPLFE and SPLDE are called in the following way:
-!```fortran
-!    F = SPLFE (NDIM,X,COEF,XMIN,XMAX,NODES,IERROR)
-!```
-!  or
-!```fortran
-!    F = SPLDE (NDIM,X,NDERIV,COEF,XMIN,XMAX,NODES,IERROR)
-!```
-!  The routine SPLFE returns an interpolated
-!  value at the point defined by the array X.
-!  SPLDE affords the user the additional
-!  capability of calculating an interpolated
-!  value for one of several partial derivatives
-!  specified by the array NDERIV.
-!
 !### History
 !  * Developed in 1972-73 by NCAR's Scientific Computing Division.
 !  * Cleaned up and added to the Ngmath library in 1998.
@@ -77,6 +32,51 @@
     private
 
     type,public :: splpak_type
+
+        !!### Usage
+        !!
+        !!  The class contains four user entries:
+        !!  [[splcc]], [[splcw]], [[splfe]], and [[splde]].
+        !!
+        !!  The user first calls [[splcc]] by
+        !!```fortran
+        !!    call me%splcc (ndim,xdata,l1xdat,ydata,ndata,
+        !!                   xmin,xmax,nodes,xtrap,coef,ncf,
+        !!                   work,nwrk,ierror)
+        !!```
+        !!  or sp[[lcw by
+        !!```fortran
+        !!    call me%splcw (ndim,xdata,l1xdata,ydata,wdata,
+        !!                   ndata,xmin,xmax,nodes,xtrap,
+        !!                   coef,ncf,work,nwrk,ierror)
+        !!```
+        !!  The parameter NDATA in the call to [[splcw]]
+        !!  enables the user to weight some of the data
+        !!  points more heavily than others.  Both
+        !!  routines return a set of coefficients in the
+        !!  array COEF.  These coefficients are
+        !!  subsequently used in the computation of
+        !!  function values and partial derivatives.
+        !!  To compute values on the spline approximation
+        !!  the user then calls [[splfe]] or [[splde]] any
+        !!  number of times in any order provided that
+        !!  the values of the inputs, NDIM, COEF, XMIN,
+        !!  XMAX, and NODES, are preserved between calls.
+        !!
+        !!  [[splfe]] and [[splde]] are called in the following way:
+        !!```fortran
+        !!    f = me%splfe (ndim,x,coef,xmin,xmax,nodes,ierror)
+        !!```
+        !!  or
+        !!```fortran
+        !!    f = me%splde (ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+        !!```
+        !!  The routine [[splfe]] returns an interpolated
+        !!  value at the point defined by the array X.
+        !!  [[splde]] affords the user the additional
+        !!  capability of calculating an interpolated
+        !!  value for one of several partial derivatives
+        !!  specified by the array NDERIV.
 
         ! formerly in splcomd common block:
         integer :: mdim = 0
