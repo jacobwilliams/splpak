@@ -500,7 +500,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                !! spline is a function of `NDIM` variables or
                                !! coordinates and thus a point in the
                                !! independent variable space is an `NDIM` vector.
-                               !! `NDIM` must be in the range `1 <= NDIM <= 4`.
+                               !! `NDIM` must be `>= 1`.
     integer,intent(in) :: l1xdat !! The length of the 1st dimension of `XDATA` in
                                  !! the calling program.  `L1XDAT` must be `>= NDIM`.
                                  !!
@@ -657,7 +657,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     integer,intent(out) :: ierror !! An error flag with the following meanings:
                                   !!
                                   !! * `  0`  No error.
-                                  !! * `101`  `NDIM` is < 1 or is > 4.
+                                  !! * `101`  `NDIM` is < 1.
                                   !! * `102`  `NODES(IDIM)` is < 4 for some `IDIM`.
                                   !! * `103`  `XMIN(IDIM) = XMAX(IDIM)` for some `IDIM`.
                                   !! * `104`  `NCF` (size of `COEF`) is `< NODES(1)*...*NODES(NDIM)`.
@@ -698,10 +698,10 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
     ierror = 0
     me%mdim = ndim
-    if (me%mdim<1 .or. me%mdim>4) then
+    if (me%mdim<1) then
         ierror = 101
         call cfaerr(ierror, &
-            ' splcc or splcw - NDIM is less than 1 or is greater than 4')
+            ' splcc or splcw - NDIM is less than 1')
         return
     end if
 
@@ -1072,10 +1072,10 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
     ierror = 0
     me%mdim = ndim
-    if (me%mdim<1 .or. me%mdim>4) then
+    if (me%mdim<1) then
         ierror = 101
         call cfaerr(ierror, &
-            ' splfe or splde - NDIM is less than 1 or greater than 4')
+            ' splfe or splde - NDIM is less than 1')
         return
     end if
     iibmx = 1
