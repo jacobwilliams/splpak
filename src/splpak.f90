@@ -74,28 +74,27 @@
 
     implicit none
 
-    integer,parameter :: max_ndim = 4
+    private
 
     type,public :: splpak_type
 
-        ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
-
+        ! formerly in splcomd common block:
         integer :: mdim = 0
-        ! originally these were all size 4:
-        real(wp),dimension(max_ndim) :: dx   = 0.0_wp
-        real(wp),dimension(max_ndim) :: dxin = 0.0_wp
-        integer,dimension(max_ndim)  :: ib   = 0
-        integer,dimension(max_ndim)  :: ibmn = 0
-        integer,dimension(max_ndim)  :: ibmx = 0
+        real(wp),dimension(:),allocatable :: dx ! originally these were all size 4
+        real(wp),dimension(:),allocatable :: dxin
+        integer,dimension(:),allocatable  :: ib
+        integer,dimension(:),allocatable  :: ibmn
+        integer,dimension(:),allocatable  :: ibmx
 
+        ! formerly saved variables in suprls
         integer :: ilast = 0
-        integer :: isav = 0
-        integer :: iold = 0
-        integer :: np1 = 0
-        integer :: l = 0
-        integer :: il1 = 0
-        integer :: k = 0
-        integer :: k1 = 0
+        integer :: isav  = 0
+        integer :: iold  = 0
+        integer :: np1   = 0
+        integer :: l     = 0
+        integer :: il1   = 0
+        integer :: k     = 0
+        integer :: k1    = 0
         real(wp) :: errsum = 0.0_wp
 
         contains
@@ -117,22 +116,25 @@
 !>
 !  Destroy the internal class variables.
 
-    subroutine destroy_splpak(me)
+    subroutine destroy_splpak(me,ndim)
 
         class(splpak_type),intent(inout) :: me
+        integer,intent(in),optional :: ndim
 
-        me%mdim = 0
-        ! if (allocated(me%dx))   deallocate(me%dx)
-        ! if (allocated(me%dxin)) deallocate(me%dxin)
-        ! if (allocated(me%ib))   deallocate(me%ib)
-        ! if (allocated(me%ibmn)) deallocate(me%ibmn)
-        ! if (allocated(me%ibmx)) deallocate(me%ibmx)
-        me%dx     = 0.0_wp
-        me%dxin   = 0.0_wp
-        me%ib     = 0
-        me%ibmn   = 0
-        me%ibmx   = 0
+        if (allocated(me%dx))   deallocate(me%dx)
+        if (allocated(me%dxin)) deallocate(me%dxin)
+        if (allocated(me%ib))   deallocate(me%ib)
+        if (allocated(me%ibmn)) deallocate(me%ibmn)
+        if (allocated(me%ibmx)) deallocate(me%ibmx)
+        if (present(ndim)) then
+            allocate(me%dx  (ndim)); me%dx   = 0.0_wp
+            allocate(me%dxin(ndim)); me%dxin = 0.0_wp
+            allocate(me%ib  (ndim)); me%ib   = 0
+            allocate(me%ibmn(ndim)); me%ibmn = 0
+            allocate(me%ibmx(ndim)); me%ibmx = 0
+        end if
 
+        me%mdim   = 0
         me%ilast  = 0
         me%isav   = 0
         me%iold   = 0
@@ -187,10 +189,10 @@
 subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
     class(splpak_type),intent(inout) :: me
-    real(wp),intent(in) :: x(max_ndim)
-    integer,intent(in) :: nderiv(max_ndim)
-    real(wp),intent(in) :: xmin(max_ndim)
-    integer,intent(in) :: nodes(max_ndim)
+    real(wp),intent(in) :: x(:)
+    integer,intent(in) :: nderiv(:)
+    real(wp),intent(in) :: xmin(:)
+    integer,intent(in) :: nodes(:)
     integer,intent(out) :: icol
     real(wp),intent(out) :: basm
 
@@ -666,13 +668,12 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                   !!   `XTRAP` is zero or `WDATA` contains all
                                   !!   zeros.
 
-    real(wp) :: x(max_ndim)
-    integer :: nderiv(max_ndim),in(max_ndim),inmx(max_ndim)
-
-    real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,bump,wtprrc,expect,dcwght
-    integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
-               idata,icol,it,lserr,iin,nrect,idimc,idm,&
-               jdm,inidim
+    real(wp),dimension(:),allocatable :: x
+    integer,dimension(:),allocatable :: nderiv,in,inmx
+    real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,&
+                bump,wtprrc,expect,dcwght
+    integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,idata,&
+               icol,it,lserr,iin,nrect,idimc,idm,jdm,inidim
     logical :: boundary
 
     real(wp),parameter :: spcrit = 0.75_wp
@@ -688,6 +689,13 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !! comparing the area of the rectangle with the total area under
         !! consideration.
 
+    ! size the arrays:
+    call me%destroy(ndim)
+    allocate(x(ndim))
+    allocate(nderiv(ndim))
+    allocate(in(ndim))
+    allocate(inmx(ndim))
+
     ierror = 0
     me%mdim = ndim
     if (me%mdim<1 .or. me%mdim>4) then
@@ -696,6 +704,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             ' splcc or splcw - NDIM is less than 1 or is greater than 4')
         return
     end if
+
     ncol = 1
     do idim = 1,me%mdim
         nod = nodes(idim)
@@ -823,8 +832,8 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
         if (lserr/=0) then
             ierror = 107
-            call cfaerr(ierror, &
-                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+            call cfaerr(ierror, ' splcc or splcw - suprls failure '//&
+                                '(this usually indicates insufficient input data)')
         end if
     end do
 
@@ -1000,7 +1009,8 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                         if (lserr/=0) then
                             ierror = 107
                             call cfaerr(ierror, &
-                                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+                                ' splcc or splcw - suprls failure '//&
+                                '(this usually indicates insufficient input data)')
                         end if
                     end do
                 end do
@@ -1026,7 +1036,8 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     if (lserr/=0) then
         ierror = 107
         call cfaerr(ierror, &
-            ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+            ' splcc or splcw - suprls failure '//&
+            '(this usually indicates insufficient input data)')
     end if
 
 end subroutine splcw
@@ -1155,8 +1166,9 @@ function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    integer,dimension(max_ndim),parameter :: nderiv = 0
+    integer,dimension(ndim) :: nderiv
 
+    nderiv = 0
     splfe = me%splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
 end function splfe
