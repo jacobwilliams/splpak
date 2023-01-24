@@ -201,7 +201,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
     ! integer :: me%mdim,me%ib(max_ndim),me%ibmn(max_ndim),me%ibmx(max_ndim)
     ! common /splcomd/ me%dx,me%dxin,me%mdim,me%ib,me%ibmn,me%ibmx
 
-    save
+    !save
 
     ! ICOL will be a linear address corresponding to the indices in IB.
     icol = 0
@@ -427,7 +427,7 @@ subroutine splcc(me,ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
     real(wp),dimension(1),parameter :: wdata = -1.0_wp !! indicates to [[splcw]]
                                                        !! that weights are not used
 
-    save
+    !save
 
     call me%splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
                   nodes,xtrap,coef,ncf,work,nwrk,ierror)
@@ -690,7 +690,7 @@ subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                jdm,inidim
     logical :: boundary
 
-    save
+    !save
 
     real(wp),parameter :: spcrit = 0.75_wp
         !! SPCRIT is used to determine data sparseness as follows -
@@ -1082,7 +1082,7 @@ function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
 
-    save
+    !save
 
     ierror = 0
     me%mdim = ndim
@@ -1184,7 +1184,7 @@ function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
     ! The restriction for NDIM to be <= 4 can be eliminated by
     ! increasing the above dimension and those in splde.
 
-    save
+    !save
 
     splfe = me%splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
@@ -1206,16 +1206,11 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
     real(wp) :: a(nn)
     real(wp) :: soln(n)
     real(wp) :: err
-    real(wp) :: errsum
-    real(wp) :: s
-    real(wp) :: temp
-    real(wp) :: temp1
-    real(wp) :: cn
-    real(wp) :: sn
     integer :: ier
 
-    integer :: iold,np1,l,ilast,il1,k,k1,nreq,j,ilj,ilnp,&
-               isav,idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
+    real(wp) :: s,temp,temp1,cn,sn
+    integer :: j,ilj,ilnp,&
+               idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
                i1jd,k11,k1m1,i11,np1mk,lmk,imov,iii,iiim,iim1,&
                ilk,npk,ilii,npii
     logical :: complete_reduction !! Routine entered with `I<=0` means complete
@@ -1223,7 +1218,9 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
 
     real(wp),parameter :: tol = 1.0e-18_wp !! small number tolerance
 
-    save
+    !save
+    integer,save :: iold,np1,l,ilast,il1,k,k1,nreq,isav
+    real(wp),save :: errsum
 
     ier = 0
     complete_reduction = i <= 0
