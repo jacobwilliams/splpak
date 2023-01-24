@@ -39,6 +39,7 @@
     real(wp) :: r !! random number
     integer(ip) :: isize !! for `random_seed`
     character(len=10) :: nodes_str !! string version of `nodes`
+    type(splpak_type) :: solver
 
     call random_seed(size=isize)
     allocate(iseed(isize)); iseed = 42_ip
@@ -59,7 +60,7 @@
     ! write(*,'(a,*(f8.3,","))') 'ydata = ', ydata
 
     ! initialize:
-    call splcw(1,xdata,1,ydata,wdata,nxdata,xmin,xmax, &
+    call solver%splcw(1,xdata,1,ydata,wdata,nxdata,xmin,xmax, &
                nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
     write(*,*) 'splcw ierror = ', ierror
@@ -69,7 +70,7 @@
     errmax = 0.0_wp
     do i=1,nxdata_est
         xdata_est(i) = real(i-1,wp)/nxdata_est
-        f = splfe (ndim,xdata_est(i),coef,xmin,xmax,nodes,ierror)
+        f = solver%splfe(ndim,xdata_est(i),coef,xmin,xmax,nodes,ierror)
         ydata_est(i) = f
         if (ierror /= 0) error stop 'error calling splfe'
         tru    = f1(xdata_est(i))

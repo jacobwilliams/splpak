@@ -74,7 +74,77 @@
 
     implicit none
 
+    integer,parameter :: max_ndim = 4
+
+    type,public :: splpak_type
+
+        ! common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+
+        integer :: mdim = 0
+        ! originally these were all size 4:
+        real(wp),dimension(max_ndim) :: dx   = 0.0_wp
+        real(wp),dimension(max_ndim) :: dxin = 0.0_wp
+        integer,dimension(max_ndim)  :: ib   = 0
+        integer,dimension(max_ndim)  :: ibmn = 0
+        integer,dimension(max_ndim)  :: ibmx = 0
+
+        integer :: ilast = 0
+        integer :: isav = 0
+        integer :: iold = 0
+        integer :: np1 = 0
+        integer :: l = 0
+        integer :: il1 = 0
+        integer :: k = 0
+        integer :: k1 = 0
+        real(wp) :: errsum = 0.0_wp
+
+        contains
+
+        procedure,public :: splcc
+        procedure,public :: splcw
+        procedure,public :: splfe
+        procedure,public :: splde
+        procedure,public :: destroy => destroy_splpak
+
+        procedure :: bascmp, suprls
+
+    end type splpak_type
+
     contains
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Destroy the internal class variables.
+
+    subroutine destroy_splpak(me)
+
+        class(splpak_type),intent(inout) :: me
+
+        me%mdim = 0
+        ! if (allocated(me%dx))   deallocate(me%dx)
+        ! if (allocated(me%dxin)) deallocate(me%dxin)
+        ! if (allocated(me%ib))   deallocate(me%ib)
+        ! if (allocated(me%ibmn)) deallocate(me%ibmn)
+        ! if (allocated(me%ibmx)) deallocate(me%ibmx)
+
+        me%dx = 0.0_wp
+        me%dxin = 0.0_wp
+        me%ib = 0
+        me%ibmn = 0
+        me%ibmx = 0
+
+        me%ilast = 0
+        me%isav = 0
+        me%iold = 0
+        me%np1 = 0
+        me%l = 0
+        me%il1 = 0
+        me%k = 0
+        me%k1 = 0
+        me%errsum = 0.0_wp
+
+    end subroutine destroy_splpak
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -115,20 +185,21 @@
 !  above transform, are passed through common and the argument
 !  list.
 
-subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
+subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
-    real(wp),intent(in) :: x(4)
-    integer,intent(in) :: nderiv(4)
-    real(wp),intent(in) :: xmin(4)
-    integer,intent(in) :: nodes(4)
+    class(splpak_type),intent(inout) :: me
+    real(wp),intent(in) :: x(max_ndim)
+    integer,intent(in) :: nderiv(max_ndim)
+    real(wp),intent(in) :: xmin(max_ndim)
+    integer,intent(in) :: nodes(max_ndim)
     integer,intent(out) :: icol
     real(wp),intent(out) :: basm
 
     real(wp) :: xb,bas1,z,fact,z1
     integer :: idim,mdmid,ntyp,ngo
 
-    real(wp) :: dx(4),dxin(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    real(wp) :: dx(max_ndim),dxin(max_ndim)
+    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
     common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
 
     save
@@ -335,9 +406,10 @@ end subroutine cfaerr
 !  entry [[SPLCW]] description for a
 !  complete description.
 
-subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
+subroutine splcc(me,ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
                  xtrap,coef,ncf,work,nwrk,ierror)
 
+    class(splpak_type),intent(inout) :: me
     integer,intent(in) :: ndim
     integer,intent(in) :: l1xdat
     integer,intent(in) :: ncf
@@ -358,8 +430,8 @@ subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
 
     save
 
-    call splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
-               nodes,xtrap,coef,ncf,work,nwrk,ierror)
+    call me%splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
+                  nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
 end subroutine splcc
 !*****************************************************************************************
@@ -427,9 +499,10 @@ end subroutine splcc
 !  The execution time is roughly proportional
 !  to `NDATA*NCOF**2` where `NCOF = NODES(1)*...*NODES(NDIM)`.
 
-subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
-                  nodes,xtrap,coef,ncf,work,nwrk,ierror)
+subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
+                 nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
+    class(splpak_type),intent(inout) :: me
     integer,intent(in) :: ndim !! The dimensionality of the problem.  The
                                !! spline is a function of `NDIM` variables or
                                !! coordinates and thus a point in the
@@ -602,14 +675,15 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                   !!   `XTRAP` is zero or `WDATA` contains all
                                   !!   zeros.
 
-    real(wp) :: x(4),dx(4),dxin(4)
-    integer :: nderiv(4),in(4),inmx(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    real(wp) :: dx(max_ndim),dxin(max_ndim)
+    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
+    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
+
+    real(wp) :: x(max_ndim)
+    integer :: nderiv(max_ndim),in(max_ndim),inmx(max_ndim)
     !  The restriction that NDIM be less than are equal to 4 can be
     !  eliminated by increasing the above dimensions, but the required
     !  length of WORK becomes quite large.
-
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
 
     real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,bump,wtprrc,expect,dcwght
     integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
@@ -748,7 +822,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             !  Begining of basis index loop - traverse all indices corresponding
             !  to basis functions which are nonzero at X.  The indices are in
             !  IB and are passed through common to BASCMP.
-            call bascmp(x,nderiv,xmin,nodes,icol,basm)
+            call me%bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  BASCMP computes ICOL and BASM where BASM is the value at X of
             !  the N-dimensional basis function corresponding to column ICOL.
@@ -764,7 +838,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         end do basis_index
 
         !  Send a row of the least squares matrix to the reduction routine.
-        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+        call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
         if (lserr/=0) then
             ierror = 107
             call cfaerr(ierror, &
@@ -922,7 +996,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                             !  Begining of basis index loop - traverse all indices corresponding
                             !  to basis functions which are non-zero at X.
                             !  The indices are in IB and are passed through common to BASCMP.
-                            call bascmp(x,nderiv,xmin,nodes,icol,basm)
+                            call me%bascmp(x,nderiv,xmin,nodes,icol,basm)
 
                             !  BASCMP computes ICOL and BASM where BASM is the value at X of the
                             !  N-dimensional basis function corresponding to column ICOL.
@@ -940,7 +1014,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                         end do basis
 
                         !  Send row of least squares matrix to reduction routine.
-                        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+                        call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
                         if (lserr/=0) then
                             ierror = 107
                             call cfaerr(ierror, &
@@ -966,7 +1040,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
     !  Call for least squares solution in COEF array.
     irow = 0
-    call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+    call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
     if (lserr/=0) then
         ierror = 107
         call cfaerr(ierror, &
@@ -987,8 +1061,9 @@ end subroutine splcw
 !@note The original version of this routine would stop for an error.
 !      Now it just returns.
 
-function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
+    class(splpak_type),intent(inout) :: me
     real(wp) :: splde
     integer,intent(in) :: ndim
     real(wp),intent(in) :: x(ndim)
@@ -999,12 +1074,11 @@ function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    real(wp) :: dx(4),dxin(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
+    real(wp) :: dx(max_ndim),dxin(max_ndim)
+    integer :: mdim,ib(max_ndim),ibmn(max_ndim),ibmx(max_ndim)
+    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
     ! The restriction for NDIM to be <= 4 can be eliminated by increasing
     ! the above dimensions.
-
-    common /splcomd/dx,dxin,mdim,ib,ibmn,ibmx
 
     real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
@@ -1066,7 +1140,7 @@ function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         iib = iib + 1
 
         !  The indices are in IB and are passed through common to BASCMP.
-        call bascmp(x,nderiv,xmin,nodes,icof,basm)
+        call me%bascmp(x,nderiv,xmin,nodes,icof,basm)
 
         !  BASCMP computes ICOF and BASM where BASM is the value at X of the
         !  N-dimensional basis function corresponding to COEF(ICOF).
@@ -1095,8 +1169,9 @@ end function splde
 !### See also
 !  * [[splde]]
 
-function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
+function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
 
+    class(splpak_type),intent(inout) :: me
     real(wp) :: splfe
     integer,intent(in) :: ndim
     real(wp),intent(in) :: x(ndim)
@@ -1106,13 +1181,13 @@ function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    integer,dimension(4),parameter :: nderiv = [0,0,0,0]
+    integer,dimension(max_ndim),parameter :: nderiv = 0 ! [0,0,0,0]
     ! The restriction for NDIM to be <= 4 can be eliminated by
     ! increasing the above dimension and those in splde.
 
     save
 
-    splfe = splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+    splfe = me%splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
 end function splfe
 !*****************************************************************************************
@@ -1121,8 +1196,9 @@ end function splfe
 !>
 !  Solve the overdetermined system of linear equations.
 
-subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
+subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
 
+    class(splpak_type),intent(inout) :: me
     integer :: i
     integer :: nn
     integer,intent(in) :: n
