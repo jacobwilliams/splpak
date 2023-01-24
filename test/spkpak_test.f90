@@ -40,6 +40,7 @@
     integer(ip) :: isize !! for `random_seed`
     character(len=10) :: nodes_str !! string version of `nodes`
     type(splpak_type) :: solver
+    integer,dimension(2),parameter :: figsize = [20,10] !! figure size for plot
 
     call random_seed(size=isize)
     allocate(iseed(isize)); iseed = 42_ip
@@ -86,7 +87,7 @@
     write(nodes_str,'(I10)') nodes(1); nodes_str = adjustl(nodes_str)
 
     call plt%initialize(grid=.true.,xlabel='x',ylabel='y',&
-                        figsize=[20,10],font_size=20,axes_labelsize=20,&
+                        figsize=figsize,font_size=20,axes_labelsize=20,&
                         xtick_labelsize=20, ytick_labelsize=20,&
                         legend_fontsize=20,&
                         title='splpak_test',legend=.true.)
