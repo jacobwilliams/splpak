@@ -29,6 +29,7 @@
     real(wp),dimension(ncf)    :: coef
     real(wp),dimension(nxdata) :: wdata !! weights
     real(wp),dimension(nxdata_est) :: xdata_est, ydata_est
+    real(wp),dimension(ndim)   :: x
 
     integer :: ierror, istat
     integer :: i !! counter
@@ -39,6 +40,8 @@
     real(wp) :: r !! random number
     integer(ip) :: isize !! for `random_seed`
     character(len=10) :: nodes_str !! string version of `nodes`
+    type(splpak_type) :: solver
+    integer,dimension(2),parameter :: figsize = [20,10] !! figure size for plot
 
     call random_seed(size=isize)
     allocate(iseed(isize)); iseed = 42_ip
@@ -59,8 +62,8 @@
     ! write(*,'(a,*(f8.3,","))') 'ydata = ', ydata
 
     ! initialize:
-    call splcw(1,xdata,1,ydata,wdata,nxdata,xmin,xmax, &
-               nodes,xtrap,coef,ncf,work,nwrk,ierror)
+    call solver%initialize(1,xdata,1,ydata,wdata,nxdata,xmin,xmax, &
+                           nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
     write(*,*) 'splcw ierror = ', ierror
     if (ierror /= 0) error stop 'error calling splcw'
@@ -69,7 +72,8 @@
     errmax = 0.0_wp
     do i=1,nxdata_est
         xdata_est(i) = real(i-1,wp)/nxdata_est
-        f = splfe (ndim,xdata_est(i),coef,xmin,xmax,nodes,ierror)
+        x(1) = xdata_est(i)
+        f = solver%evaluate(ndim,x,coef,xmin,xmax,nodes,ierror)
         ydata_est(i) = f
         if (ierror /= 0) error stop 'error calling splfe'
         tru    = f1(xdata_est(i))
@@ -85,7 +89,7 @@
     write(nodes_str,'(I10)') nodes(1); nodes_str = adjustl(nodes_str)
 
     call plt%initialize(grid=.true.,xlabel='x',ylabel='y',&
-                        figsize=[20,10],font_size=20,axes_labelsize=20,&
+                        figsize=figsize,font_size=20,axes_labelsize=20,&
                         xtick_labelsize=20, ytick_labelsize=20,&
                         legend_fontsize=20,&
                         title='splpak_test',legend=.true.)

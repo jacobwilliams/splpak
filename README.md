@@ -9,7 +9,7 @@ Modernization of the double precision SPLPAK files from [NCL](https://github.com
 
 ## Compiling
 
-A `fmp.toml` file is provided for compiling slppak with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
+A `fmp.toml` file is provided for compiling splpak with the [Fortran Package Manager](https://github.com/fortran-lang/fpm). For example, to build:
 
 ```
 fpm build --profile release
