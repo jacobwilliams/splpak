@@ -10,51 +10,6 @@
 !  subroutines [[splcc]] or [[splcw]] and evaluation is
 !  performed by functions [[splfe]] or [[splde]].
 !
-!### Usage
-!
-!  Package SPLPAK contains four user entries --
-!  SPLCC, SPLCW, SPLFE, AND SPLDE.
-!
-!  The user first calls SPLCC by
-!```fortran
-!    CALL SPLCC (NDIM,XDATA,L1XDAT,YDATA,NDATA,
-!                XMIN,XMAX,NODES,XTRAP,COEF,NCF,
-!                WORK,NWRK,IERROR)
-!```
-!  or SPLCW by
-!```fortran
-!    CALL SPLCW (NDIM,XDATA,L1XDATA,YDATA,WDATA,
-!                NDATA,XMIN,XMAX,NODES,XTRAP,
-!                COEF,NCF,WORK,NWRK,IERROR)
-!```
-!  The parameter NDATA in the call to SPLCW
-!  enables the user to weight some of the data
-!  points more heavily than others.  Both
-!  routines return a set of coefficients in the
-!  array COEF.  These coefficients are
-!  subsequently used in the computation of
-!  function values and partial derivatives.
-!  To compute values on the spline approximation
-!  the user then calls SPLFE or SPLDE any
-!  number of times in any order provided that
-!  the values of the inputs, NDIM, COEF, XMIN,
-!  XMAX, and NODES, are preserved between calls.
-!
-!  SPLFE and SPLDE are called in the following way:
-!```fortran
-!    F = SPLFE (NDIM,X,COEF,XMIN,XMAX,NODES,IERROR)
-!```
-!  or
-!```fortran
-!    F = SPLDE (NDIM,X,NDERIV,COEF,XMIN,XMAX,NODES,IERROR)
-!```
-!  The routine SPLFE returns an interpolated
-!  value at the point defined by the array X.
-!  SPLDE affords the user the additional
-!  capability of calculating an interpolated
-!  value for one of several partial derivatives
-!  specified by the array NDERIV.
-!
 !### History
 !  * Developed in 1972-73 by NCAR's Scientific Computing Division.
 !  * Cleaned up and added to the Ngmath library in 1998.
@@ -74,7 +29,129 @@
 
     implicit none
 
+    private
+
+    type,public :: splpak_type
+
+        !!### Usage
+        !!
+        !!  The class contains four user entries:
+        !!  [[splcc]], [[splcw]], [[splfe]], and [[splde]].
+        !!
+        !!  The user first calls [[splcc]] by
+        !!```fortran
+        !!    call me%initialize(ndim,xdata,l1xdat,ydata,ndata,
+        !!                       xmin,xmax,nodes,xtrap,coef,ncf,
+        !!                       work,nwrk,ierror)
+        !!```
+        !!  or [[splcw]] by
+        !!```fortran
+        !!    call me%initialize(ndim,xdata,l1xdata,ydata,wdata,
+        !!                       ndata,xmin,xmax,nodes,xtrap,
+        !!                       coef,ncf,work,nwrk,ierror)
+        !!```
+        !!  The parameter NDATA in the call to [[splcw]]
+        !!  enables the user to weight some of the data
+        !!  points more heavily than others.  Both
+        !!  routines return a set of coefficients in the
+        !!  array COEF.  These coefficients are
+        !!  subsequently used in the computation of
+        !!  function values and partial derivatives.
+        !!  To compute values on the spline approximation
+        !!  the user then calls [[splfe]] or [[splde]] any
+        !!  number of times in any order provided that
+        !!  the values of the inputs, NDIM, COEF, XMIN,
+        !!  XMAX, and NODES, are preserved between calls.
+        !!
+        !!  [[splfe]] and [[splde]] are called in the following way:
+        !!```fortran
+        !!    f = me%evaluate(ndim,x,coef,xmin,xmax,nodes,ierror)
+        !!```
+        !!  or
+        !!```fortran
+        !!    f = me%evaluate(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+        !!```
+        !!  The routine [[splfe]] returns an interpolated
+        !!  value at the point defined by the array X.
+        !!  [[splde]] affords the user the additional
+        !!  capability of calculating an interpolated
+        !!  value for one of several partial derivatives
+        !!  specified by the array NDERIV.
+
+        private
+
+        ! formerly in splcomd common block:
+        integer :: mdim = 0
+        real(wp),dimension(:),allocatable :: dx ! originally these were all size 4
+        real(wp),dimension(:),allocatable :: dxin
+        integer,dimension(:),allocatable  :: ib
+        integer,dimension(:),allocatable  :: ibmn
+        integer,dimension(:),allocatable  :: ibmx
+
+        ! formerly saved variables in suprls
+        integer :: ilast = 0
+        integer :: isav  = 0
+        integer :: iold  = 0
+        integer :: np1   = 0
+        integer :: l     = 0
+        integer :: il1   = 0
+        integer :: k     = 0
+        integer :: k1    = 0
+        real(wp) :: errsum = 0.0_wp
+
+        contains
+
+        private
+
+        generic,public   :: initialize => splcc, splcw !! compute the spline coefficients
+        generic,public   :: evaluate   => splfe, splde !! evaluate the spline
+        procedure,public :: destroy    => destroy_splpak !! destory the internal class variables
+        procedure,private :: splcc
+        procedure,private :: splcw
+        procedure,private :: splfe
+        procedure,private :: splde
+        procedure,private :: bascmp
+        procedure,private :: suprls
+
+    end type splpak_type
+
     contains
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Destroy the internal class variables.
+
+    subroutine destroy_splpak(me,ndim)
+
+        class(splpak_type),intent(inout) :: me
+        integer,intent(in),optional :: ndim
+
+        if (allocated(me%dx))   deallocate(me%dx)
+        if (allocated(me%dxin)) deallocate(me%dxin)
+        if (allocated(me%ib))   deallocate(me%ib)
+        if (allocated(me%ibmn)) deallocate(me%ibmn)
+        if (allocated(me%ibmx)) deallocate(me%ibmx)
+        if (present(ndim)) then
+            allocate(me%dx  (ndim)); me%dx   = 0.0_wp
+            allocate(me%dxin(ndim)); me%dxin = 0.0_wp
+            allocate(me%ib  (ndim)); me%ib   = 0
+            allocate(me%ibmn(ndim)); me%ibmn = 0
+            allocate(me%ibmx(ndim)); me%ibmx = 0
+        end if
+
+        me%mdim   = 0
+        me%ilast  = 0
+        me%isav   = 0
+        me%iold   = 0
+        me%np1    = 0
+        me%l      = 0
+        me%il1    = 0
+        me%k      = 0
+        me%k1     = 0
+        me%errsum = 0.0_wp
+
+    end subroutine destroy_splpak
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -115,43 +192,38 @@
 !  above transform, are passed through common and the argument
 !  list.
 
-subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
+subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
 
-    real(wp),intent(in) :: x(4)
-    integer,intent(in) :: nderiv(4)
-    real(wp),intent(in) :: xmin(4)
-    integer,intent(in) :: nodes(4)
+    class(splpak_type),intent(inout) :: me
+    real(wp),intent(in) :: x(:)
+    integer,intent(in) :: nderiv(:)
+    real(wp),intent(in) :: xmin(:)
+    integer,intent(in) :: nodes(:)
     integer,intent(out) :: icol
     real(wp),intent(out) :: basm
 
     real(wp) :: xb,bas1,z,fact,z1
     integer :: idim,mdmid,ntyp,ngo
 
-    real(wp) :: dx(4),dxin(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
-
-    save
-
     ! ICOL will be a linear address corresponding to the indices in IB.
     icol = 0
 
     ! BASM will be M-dimensional basis function evaluated at X.
     basm = 1.0_wp
-    do idim = 1,mdim
+    do idim = 1,me%mdim
 
         ! Compute ICOL by Horner's method.
-        mdmid = mdim + 1 - idim
-        icol = nodes(mdmid)*icol + ib(mdmid)
+        mdmid = me%mdim + 1 - idim
+        icol = nodes(mdmid)*icol + me%ib(mdmid)
 
         ! NGO depends upon function type and NDERIV.
         ntyp = 1
 
         ! Function type 1 (left linear) for IB = 0 or 1.
-        if (ib(idim)>1) then
+        if (me%ib(idim)>1) then
             ntyp = 2
             ! Function type 2 (chapeau function) for 2 LT IB LT NODES-2.
-            if (ib(idim)>=nodes(idim)-2) then
+            if (me%ib(idim)>=nodes(idim)-2) then
                 ntyp = 3
             end if
         end if
@@ -160,7 +232,7 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
         ngo = 3*ntyp + nderiv(idim) - 2
 
         !  XB is X value of node IB (center of basis function).
-        xb = xmin(idim) + real(ib(idim),wp)*dx(idim)
+        xb = xmin(idim) + real(me%ib(idim),wp)*me%dx(idim)
 
         !  BAS1 will be the 1-dimensional basis function evaluated at X.
         bas1 = 0.0_wp
@@ -173,7 +245,7 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
             !
             !  Transform so that XB is at the origin and the other nodes are at
             !  the integers.
-            z = abs(dxin(idim)* (x(idim)-xb)) - 2.0_wp
+            z = abs(me%dxin(idim)* (x(idim)-xb)) - 2.0_wp
 
             !  This chapeau function is then that unique cubic spline which is
             !  identically zero for ABS(Z) GE 2 and is 1 at the origin.  This
@@ -190,7 +262,7 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  1st derivative.
             z = x(idim) - xb
-            fact = dxin(idim)
+            fact = me%dxin(idim)
             if (z<0.0_wp) fact = -fact
             z = fact*z - 2.0_wp
             if (z<0.0_wp) then
@@ -205,7 +277,7 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
         case(6) ! 108
 
             !  2nd derivative.
-            fact = dxin(idim)
+            fact = me%dxin(idim)
             z = fact*abs(x(idim)-xb) - 2.0_wp
             if (z<0.0_wp) then
                 bas1 = -1.5_wp*z
@@ -220,9 +292,9 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  1st derivative.
             if (ngo==2) then
-                fact = -dxin(idim)
+                fact = -me%dxin(idim)
             else if (ngo==8) then
-                fact = dxin(idim)
+                fact = me%dxin(idim)
             end if
             z = fact* (x(idim)-xb) + 2.0_wp
             if (z<0.0_wp) then
@@ -242,9 +314,9 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  2nd derivative.
             if (ngo==3) then
-                fact = -dxin(idim)
+                fact = -me%dxin(idim)
             else if (ngo==9) then
-                fact = dxin(idim)
+                fact = me%dxin(idim)
             end if
             z = fact* (x(idim)-xb) + 2.0_wp
             z1 = z - 1.0_wp
@@ -264,12 +336,12 @@ subroutine bascmp(x,nderiv,xmin,nodes,icol,basm)
                 !
                 !  Transform so that XB is at 2 and the other nodes are at the integers
                 !  (with ordering reversed to form a mirror image).
-                z = dxin(idim)* (xb-x(idim)) + 2.0_wp
+                z = me%dxin(idim)* (xb-x(idim)) + 2.0_wp
             else
                 !  Function type 3 (right linear).
                 !
                 !  Transform so that XB is at 2 and the other nodes are at the integers.
-                z = dxin(idim)* (x(idim)-xb) + 2.0_wp
+                z = me%dxin(idim)* (x(idim)-xb) + 2.0_wp
             end if
 
             !  This right linear function is defined to be that unique cubic spline
@@ -335,9 +407,10 @@ end subroutine cfaerr
 !  entry [[SPLCW]] description for a
 !  complete description.
 
-subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
+subroutine splcc(me,ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
                  xtrap,coef,ncf,work,nwrk,ierror)
 
+    class(splpak_type),intent(inout) :: me
     integer,intent(in) :: ndim
     integer,intent(in) :: l1xdat
     integer,intent(in) :: ncf
@@ -356,10 +429,8 @@ subroutine splcc(ndim,xdata,l1xdat,ydata,ndata,xmin,xmax,nodes, &
     real(wp),dimension(1),parameter :: wdata = -1.0_wp !! indicates to [[splcw]]
                                                        !! that weights are not used
 
-    save
-
-    call splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
-               nodes,xtrap,coef,ncf,work,nwrk,ierror)
+    call me%splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax,&
+                  nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
 end subroutine splcc
 !*****************************************************************************************
@@ -427,14 +498,15 @@ end subroutine splcc
 !  The execution time is roughly proportional
 !  to `NDATA*NCOF**2` where `NCOF = NODES(1)*...*NODES(NDIM)`.
 
-subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
-                  nodes,xtrap,coef,ncf,work,nwrk,ierror)
+subroutine splcw(me,ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
+                 nodes,xtrap,coef,ncf,work,nwrk,ierror)
 
+    class(splpak_type),intent(inout) :: me
     integer,intent(in) :: ndim !! The dimensionality of the problem.  The
                                !! spline is a function of `NDIM` variables or
                                !! coordinates and thus a point in the
                                !! independent variable space is an `NDIM` vector.
-                               !! `NDIM` must be in the range `1 <= NDIM <= 4`.
+                               !! `NDIM` must be `>= 1`.
     integer,intent(in) :: l1xdat !! The length of the 1st dimension of `XDATA` in
                                  !! the calling program.  `L1XDAT` must be `>= NDIM`.
                                  !!
@@ -591,7 +663,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
     integer,intent(out) :: ierror !! An error flag with the following meanings:
                                   !!
                                   !! * `  0`  No error.
-                                  !! * `101`  `NDIM` is < 1 or is > 4.
+                                  !! * `101`  `NDIM` is < 1.
                                   !! * `102`  `NODES(IDIM)` is < 4 for some `IDIM`.
                                   !! * `103`  `XMIN(IDIM) = XMAX(IDIM)` for some `IDIM`.
                                   !! * `104`  `NCF` (size of `COEF`) is `< NODES(1)*...*NODES(NDIM)`.
@@ -602,22 +674,13 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                                   !!   `XTRAP` is zero or `WDATA` contains all
                                   !!   zeros.
 
-    real(wp) :: x(4),dx(4),dxin(4)
-    integer :: nderiv(4),in(4),inmx(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
-    !  The restriction that NDIM be less than are equal to 4 can be
-    !  eliminated by increasing the above dimensions, but the required
-    !  length of WORK becomes quite large.
-
-    common /splcomd/ dx,dxin,mdim,ib,ibmn,ibmx
-
-    real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,bump,wtprrc,expect,dcwght
-    integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,&
-               idata,icol,it,lserr,iin,nrect,idimc,idm,&
-               jdm,inidim
+    real(wp),dimension(:),allocatable :: x
+    integer,dimension(:),allocatable :: nderiv,in,inmx
+    real(wp) :: xrng,swght,rowwt,rhs,basm,reserr,totlwt,&
+                bump,wtprrc,expect,dcwght
+    integer :: ncol,idim,nod,nwrk1,mdata,nwlft,irow,idata,&
+               icol,it,lserr,iin,nrect,idimc,idm,jdm,inidim
     logical :: boundary
-
-    save
 
     real(wp),parameter :: spcrit = 0.75_wp
         !! SPCRIT is used to determine data sparseness as follows -
@@ -632,16 +695,24 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !! comparing the area of the rectangle with the total area under
         !! consideration.
 
+    ! size the arrays:
+    call me%destroy(ndim)
+    allocate(x(ndim))
+    allocate(nderiv(ndim))
+    allocate(in(ndim))
+    allocate(inmx(ndim))
+
     ierror = 0
-    mdim = ndim
-    if (mdim<1 .or. mdim>4) then
+    me%mdim = ndim
+    if (me%mdim<1) then
         ierror = 101
         call cfaerr(ierror, &
-            ' splcc or splcw - NDIM is less than 1 or is greater than 4')
+            ' splcc or splcw - NDIM is less than 1')
         return
     end if
+
     ncol = 1
-    do idim = 1,mdim
+    do idim = 1,me%mdim
         nod = nodes(idim)
         if (nod<4) then
             ierror = 102
@@ -662,8 +733,8 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
-        dx(idim) = xrng/real(nod-1,wp)
-        dxin(idim) = 1.0_wp/dx(idim)
+        me%dx(idim) = xrng/real(nod-1,wp)
+        me%dxin(idim) = 1.0_wp/me%dx(idim)
         nderiv(idim) = 0
     end do
     if (ncol>ncf) then
@@ -722,7 +793,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  point.  The right hand for that row will correspond to the
         !  function value YDATA at that point.
         rhs = rowwt*ydata(idata)
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             x(idim) = xdata(idim,idata)
         end do
 
@@ -736,39 +807,39 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
         !  Compute the indices of basis functions which are nonzero at X.
         !  IBMN is in the range 0 to nodes-2 and IBMX is in range 1
         !  to NODES-1.
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             nod = nodes(idim)
-            it = dxin(idim)* (x(idim)-xmin(idim))
-            ibmn(idim) = min(max(it-1,0),nod-2)
-            ib(idim) = ibmn(idim)
-            ibmx(idim) = max(min(it+2,nod-1),1)
+            it = me%dxin(idim)* (x(idim)-xmin(idim))
+            me%ibmn(idim) = min(max(it-1,0),nod-2)
+            me%ib(idim) = me%ibmn(idim)
+            me%ibmx(idim) = max(min(it+2,nod-1),1)
         end do
 
         basis_index : do
             !  Begining of basis index loop - traverse all indices corresponding
             !  to basis functions which are nonzero at X.  The indices are in
             !  IB and are passed through common to BASCMP.
-            call bascmp(x,nderiv,xmin,nodes,icol,basm)
+            call me%bascmp(x,nderiv,xmin,nodes,icol,basm)
 
             !  BASCMP computes ICOL and BASM where BASM is the value at X of
             !  the N-dimensional basis function corresponding to column ICOL.
             coef(icol) = rowwt*basm
 
             !  Increment the basis indices.
-            do idim = 1,mdim
-                ib(idim) = ib(idim) + 1
-                if (ib(idim)<=ibmx(idim)) cycle basis_index
-                ib(idim) = ibmn(idim)
+            do idim = 1,me%mdim
+                me%ib(idim) = me%ib(idim) + 1
+                if (me%ib(idim)<=me%ibmx(idim)) cycle basis_index
+                me%ib(idim) = me%ibmn(idim)
             end do
             exit basis_index !  End of basis index loop.
         end do basis_index
 
         !  Send a row of the least squares matrix to the reduction routine.
-        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+        call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
         if (lserr/=0) then
             ierror = 107
-            call cfaerr(ierror, &
-                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+            call cfaerr(ierror, ' splcc or splcw - suprls failure '//&
+                                '(this usually indicates insufficient input data)')
         end if
     end do
 
@@ -786,7 +857,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
         !  Initialize the node indices and compute number of rectangles
         !  formed by the node network.
-        do idim = 1,mdim
+        do idim = 1,me%mdim
             in(idim) = 0
             inmx(idim) = nodes(idim) - 1
             nrect = nrect*inmx(idim)
@@ -810,9 +881,9 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
             ! Find the nearest node.
             iin = 0
-            do idimc = 1,mdim
-                idim = mdim + 1 - idimc
-                inidim = int(dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
+            do idimc = 1,me%mdim
+                idim = me%mdim + 1 - idimc
+                inidim = int(me%dxin(idim)* (xdata(idim,idata)-xmin(idim))+0.5_wp)
                 ! Points not in range (+ or - 1/2 node spacing) are not counted.
                 if (inidim<0 .or. inidim>inmx(idim)) cycle
                 ! Compute linear address of node in workspace by Horner's method.
@@ -842,7 +913,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
             !  Rectangles at edge of network are smaller and hence less weight
             !  should be expected.
-            do idim = 1,mdim
+            do idim = 1,me%mdim
                 if (in(idim)==0 .or. in(idim)==inmx(idim)) expect = 0.5_wp*expect
             end do
 
@@ -854,23 +925,23 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             if (work(iin)<spcrit*expect) then
 
                 dcwght = expect - work(iin)
-                do idim = 1,mdim
+                do idim = 1,me%mdim
                     inidim = in(idim)
 
                     !  Compute the location of the node.
-                    x(idim) = xmin(idim) + real(inidim,wp)*dx(idim)
+                    x(idim) = xmin(idim) + real(inidim,wp)*me%dx(idim)
 
                     !  Compute the indices of the basis functions which are non-zero
                     !  at the node.
-                    ibmn(idim) = inidim - 1
-                    ibmx(idim) = inidim + 1
+                    me%ibmn(idim) = inidim - 1
+                    me%ibmx(idim) = inidim + 1
 
                     !  Distinguish the boundaries.
-                    if (inidim==0) ibmn(idim) = 0
-                    if (inidim==inmx(idim)) ibmx(idim) = inmx(idim)
+                    if (inidim==0) me%ibmn(idim) = 0
+                    if (inidim==inmx(idim)) me%ibmx(idim) = inmx(idim)
 
                     !  Initialize the basis indices.
-                    ib(idim) = ibmn(idim)
+                    me%ib(idim) = me%ibmn(idim)
                 end do
 
                 !  Multiply by the extrapolation parameter (this acts as a
@@ -889,9 +960,9 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                 !  derivatives.  Traverse the upper triangle of this matrix and,
                 !  for each element, compute a row of the least squares matrix.
 
-                do idm = 1,mdim
-                    do jdm = idm,mdim
-                        do idim = 1,mdim
+                do idm = 1,me%mdim
+                    do jdm = idm,me%mdim
+                        do idim = 1,me%mdim
                             nderiv(idim) = 0
                         end do
 
@@ -922,17 +993,17 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                             !  Begining of basis index loop - traverse all indices corresponding
                             !  to basis functions which are non-zero at X.
                             !  The indices are in IB and are passed through common to BASCMP.
-                            call bascmp(x,nderiv,xmin,nodes,icol,basm)
+                            call me%bascmp(x,nderiv,xmin,nodes,icol,basm)
 
                             !  BASCMP computes ICOL and BASM where BASM is the value at X of the
                             !  N-dimensional basis function corresponding to column ICOL.
                             coef(icol) = rowwt*basm
 
                             !  Increment the basis indices.
-                            do idim = 1,mdim
-                                ib(idim) = ib(idim) + 1
-                                if (ib(idim)<=ibmx(idim)) cycle basis
-                                ib(idim) = ibmn(idim)
+                            do idim = 1,me%mdim
+                                me%ib(idim) = me%ib(idim) + 1
+                                if (me%ib(idim)<=me%ibmx(idim)) cycle basis
+                                me%ib(idim) = me%ibmn(idim)
                             end do
 
                             !  End of basis index loop.
@@ -940,11 +1011,12 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
                         end do basis
 
                         !  Send row of least squares matrix to reduction routine.
-                        call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+                        call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
                         if (lserr/=0) then
                             ierror = 107
                             call cfaerr(ierror, &
-                                ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+                                ' splcc or splcw - suprls failure '//&
+                                '(this usually indicates insufficient input data)')
                         end if
                     end do
                 end do
@@ -952,7 +1024,7 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
             end if
 
             !  Increment node indices.
-            do idim = 1,mdim
+            do idim = 1,me%mdim
                 in(idim) = in(idim) + 1
                 if (in(idim)<=inmx(idim)) cycle node_index
                 in(idim) = 0
@@ -966,11 +1038,12 @@ subroutine splcw(ndim,xdata,l1xdat,ydata,wdata,ndata,xmin,xmax, &
 
     !  Call for least squares solution in COEF array.
     irow = 0
-    call suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
+    call me%suprls(irow,coef,ncol,rhs,work(nwrk1),nwlft,coef,reserr,lserr)
     if (lserr/=0) then
         ierror = 107
         call cfaerr(ierror, &
-            ' splcc or splcw - suprls failure (this usually indicates insufficient input data)')
+            ' splcc or splcw - suprls failure '//&
+            '(this usually indicates insufficient input data)')
     end if
 
 end subroutine splcw
@@ -987,8 +1060,9 @@ end subroutine splcw
 !@note The original version of this routine would stop for an error.
 !      Now it just returns.
 
-function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
+    class(splpak_type),intent(inout) :: me
     real(wp) :: splde
     integer,intent(in) :: ndim
     real(wp),intent(in) :: x(ndim)
@@ -999,28 +1073,19 @@ function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    real(wp) :: dx(4),dxin(4)
-    integer :: mdim,ib(4),ibmn(4),ibmx(4)
-    ! The restriction for NDIM to be <= 4 can be eliminated by increasing
-    ! the above dimensions.
-
-    common /splcomd/dx,dxin,mdim,ib,ibmn,ibmx
-
     real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
 
-    save
-
     ierror = 0
-    mdim = ndim
-    if (mdim<1 .or. mdim>4) then
+    me%mdim = ndim
+    if (me%mdim<1) then
         ierror = 101
         call cfaerr(ierror, &
-            ' splfe or splde - NDIM is less than 1 or greater than 4')
+            ' splfe or splde - NDIM is less than 1')
         return
     end if
     iibmx = 1
-    do idim = 1,mdim
+    do idim = 1,me%mdim
         nod = nodes(idim)
         if (nod<4) then
             ierror = 102
@@ -1042,19 +1107,19 @@ function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         end if
 
         !  DX(IDIM) is the node spacing along the IDIM coordinate.
-        dx(idim) = xrng/real(nod-1,wp)
-        dxin(idim) = 1.0_wp/dx(idim)
+        me%dx(idim) = xrng/real(nod-1,wp)
+        me%dxin(idim) = 1.0_wp/me%dx(idim)
 
         !  Compute indices of basis functions which are nonzero at X.
-        it = dxin(idim)*(x(idim)-xmin(idim))
+        it = me%dxin(idim)*(x(idim)-xmin(idim))
 
         !  IBMN must be in the range 0 to NODES-2.
-        ibmn(idim) = min(max(it-1,0),nod-2)
+        me%ibmn(idim) = min(max(it-1,0),nod-2)
 
         !  IBMX must be in the range 1 to NODES-1.
-        ibmx(idim) = max(min(it+2,nod-1),1)
-        iibmx = iibmx* (ibmx(idim)-ibmn(idim)+1)
-        ib(idim) = ibmn(idim)
+        me%ibmx(idim) = max(min(it+2,nod-1),1)
+        iibmx = iibmx* (me%ibmx(idim)-me%ibmn(idim)+1)
+        me%ib(idim) = me%ibmn(idim)
     end do
 
     sum = 0.0_wp
@@ -1066,17 +1131,17 @@ function splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         iib = iib + 1
 
         !  The indices are in IB and are passed through common to BASCMP.
-        call bascmp(x,nderiv,xmin,nodes,icof,basm)
+        call me%bascmp(x,nderiv,xmin,nodes,icof,basm)
 
         !  BASCMP computes ICOF and BASM where BASM is the value at X of the
         !  N-dimensional basis function corresponding to COEF(ICOF).
         sum = sum + coef(icof)*basm
         if (iib<iibmx) then
             !  Increment the basis indices.
-            do idim = 1,mdim
-                ib(idim) = ib(idim) + 1
-                if (ib(idim)<=ibmx(idim)) cycle basis_index
-                ib(idim) = ibmn(idim)
+            do idim = 1,me%mdim
+                me%ib(idim) = me%ib(idim) + 1
+                if (me%ib(idim)<=me%ibmx(idim)) cycle basis_index
+                me%ib(idim) = me%ibmn(idim)
             end do
         end if
 
@@ -1095,8 +1160,9 @@ end function splde
 !### See also
 !  * [[splde]]
 
-function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
+function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
 
+    class(splpak_type),intent(inout) :: me
     real(wp) :: splfe
     integer,intent(in) :: ndim
     real(wp),intent(in) :: x(ndim)
@@ -1106,13 +1172,10 @@ function splfe(ndim,x,coef,xmin,xmax,nodes,ierror)
     integer,intent(in) :: nodes(ndim)
     integer,intent(out) :: ierror
 
-    integer,dimension(4),parameter :: nderiv = [0,0,0,0]
-    ! The restriction for NDIM to be <= 4 can be eliminated by
-    ! increasing the above dimension and those in splde.
+    integer,dimension(ndim) :: nderiv
 
-    save
-
-    splfe = splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+    nderiv = 0
+    splfe = me%splde(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
 end function splfe
 !*****************************************************************************************
@@ -1121,8 +1184,9 @@ end function splfe
 !>
 !  Solve the overdetermined system of linear equations.
 
-subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
+subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
 
+    class(splpak_type),intent(inout) :: me
     integer :: i
     integer :: nn
     integer,intent(in) :: n
@@ -1131,24 +1195,17 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
     real(wp) :: a(nn)
     real(wp) :: soln(n)
     real(wp) :: err
-    real(wp) :: errsum
-    real(wp) :: s
-    real(wp) :: temp
-    real(wp) :: temp1
-    real(wp) :: cn
-    real(wp) :: sn
     integer :: ier
 
-    integer :: iold,np1,l,ilast,il1,k,k1,nreq,j,ilj,ilnp,&
-               isav,idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
+    real(wp) :: s,temp,temp1,cn,sn
+    integer :: j,ilj,ilnp,nreq,k,&
+               idiag,i1,i2,ii,jp1,lmkm1,j1,jdel,idj,iijd,&
                i1jd,k11,k1m1,i11,np1mk,lmk,imov,iii,iiim,iim1,&
                ilk,npk,ilii,npii
     logical :: complete_reduction !! Routine entered with `I<=0` means complete
                                   !! the reduction and store the solution in `SOLN`.
 
     real(wp),parameter :: tol = 1.0e-18_wp !! small number tolerance
-
-    save
 
     ier = 0
     complete_reduction = i <= 0
@@ -1158,16 +1215,16 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
         if (i<=1) then
 
             !  Set up quantities on first call.
-            iold = 0
-            np1 = n + 1
+            me%iold = 0
+            me%np1 = n + 1
 
             !  Compute how many rows can be input now.
-            l = nn/np1
-            ilast = 0
-            il1 = 0
-            k = 0
-            k1 = 0
-            errsum = 0.0_wp
+            me%l = nn/me%np1
+            me%ilast = 0
+            me%il1 = 0
+            me%k = 0
+            me%k1 = 0
+            me%errsum = 0.0_wp
             nreq = ((n+5)*n+2)/2
 
             !  Error exit if insufficient scratch storage provided.
@@ -1184,25 +1241,25 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
         end if
 
         !  Error exit if (I-IOLD)/=1.
-        if ((i-iold)/=1) then
+        if ((i-me%iold)/=1) then
             ier = 35
             write(*,*) 'i    =',i
-            write(*,*) 'iold =',iold
+            write(*,*) 'me%iold =',me%iold
             call cfaerr(ier,' suprls - values of I not in sequence')
             return
         end if
 
         !  Store the row in the scratch storage.
-        iold = i
+        me%iold = i
         do j = 1,n
-            ilj = ilast + j
+            ilj = me%ilast + j
             a(ilj) = rowi(j)
         end do
-        ilnp = ilast + np1
+        ilnp = me%ilast + me%np1
         a(ilnp) = bi
-        ilast = ilast + np1
-        isav = i
-        if (i<l) return
+        me%ilast = me%ilast + me%np1
+        me%isav = i
+        if (i<me%l) return
 
     end if
 
@@ -1210,14 +1267,14 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
 
         if (.not. complete_reduction) then
 
-            if (k/=0) then
-                k1 = min(k,n)
-                idiag = -np1
-                if (l-k==1) then
+            if (me%k/=0) then
+                me%k1 = min(me%k,n)
+                idiag = -me%np1
+                if (me%l-me%k==1) then
                     !  Apply rotations to zero out the single new row.
-                    do j = 1,k1
-                        idiag = idiag + (np1-j+2)
-                        i1 = il1 + j
+                    do j = 1,me%k1
+                        idiag = idiag + (me%np1-j+2)
+                        i1 = me%il1 + j
                         if (abs(a(i1))<=tol) then
                             s = sqrt(a(idiag)*a(idiag))
                         else if (abs(a(idiag))<tol) then
@@ -1232,7 +1289,7 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
                         cn = temp*s
                         sn = a(i1)*s
                         jp1 = j + 1
-                        do j1 = jp1,np1
+                        do j1 = jp1,me%np1
                             jdel = j1 - j
                             idj = idiag + jdel
                             temp = a(idj)
@@ -1243,12 +1300,12 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
                     end do
                 else
                     !  Apply householder transformations to zero out new rows.
-                    do j = 1,k1
-                        idiag = idiag + (np1-j+2)
-                        i1 = il1 + j
-                        i2 = i1 + np1* (l-k-1)
+                    do j = 1,me%k1
+                        idiag = idiag + (me%np1-j+2)
+                        i1 = me%il1 + j
+                        i2 = i1 + me%np1* (me%l-me%k-1)
                         s = a(idiag)*a(idiag)
-                        do ii = i1,i2,np1
+                        do ii = i1,i2,me%np1
                             s = s + a(ii)*a(ii)
                         end do
                         if (s==0.0_wp) cycle
@@ -1258,17 +1315,17 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
                         temp = temp - a(idiag)
                         temp1 = 1.0_wp / (temp*a(idiag))
                         jp1 = j + 1
-                        do j1 = jp1,np1
+                        do j1 = jp1,me%np1
                             jdel = j1 - j
                             idj = idiag + jdel
                             s = temp*a(idj)
-                            do ii = i1,i2,np1
+                            do ii = i1,i2,me%np1
                                 iijd = ii + jdel
                                 s = s + a(ii)*a(iijd)
                             end do
                             s = s*temp1
                             a(idj) = a(idj) + s*temp
-                            do ii = i1,i2,np1
+                            do ii = i1,i2,me%np1
                                 iijd = ii + jdel
                                 a(iijd) = a(iijd) + s*a(ii)
                             end do
@@ -1276,38 +1333,38 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
                     end do
                 end if
 
-                if (k>=n) then
-                    lmkm1 = l - k
+                if (me%k>=n) then
+                    lmkm1 = me%l - me%k
 
                     !  Accumulate residual sum of squares.
                     do ii = 1,lmkm1
-                        ilnp = il1 + ii*np1
-                        errsum = errsum + a(ilnp)*a(ilnp)
+                        ilnp = me%il1 + ii*me%np1
+                        me%errsum = me%errsum + a(ilnp)*a(ilnp)
                     end do
                     if (i<=0) exit main
-                    k = l
-                    ilast = il1
+                    me%k = me%l
+                    me%ilast = me%il1
 
                     !  Determine how many new rows may be input on next iteration.
-                    l = k + (nn-ilast)/np1
+                    me%l = me%k + (nn-me%ilast)/me%np1
                     return
                 end if
             end if
 
-            k11 = k1 + 1
-            k1 = min(l,n)
-            if (l-k/=1) then
-                k1m1 = k1 - 1
-                if (l>n) k1m1 = n
-                i1 = il1 + k11 - np1 - 1
+            k11 = me%k1 + 1
+            me%k1 = min(me%l,n)
+            if (me%l-me%k/=1) then
+                k1m1 = me%k1 - 1
+                if (me%l>n) k1m1 = n
+                i1 = me%il1 + k11 - me%np1 - 1
 
                 !  Perform householder transformations to reduce rows to upper
                 !  triangular form.
                 do j = k11,k1m1
-                    i1 = i1 + (np1+1)
-                    i2 = i1 + (l-j)*np1
+                    i1 = i1 + (me%np1+1)
+                    i2 = i1 + (me%l-j)*me%np1
                     s = 0.0_wp
-                    do ii = i1,i2,np1
+                    do ii = i1,i2,me%np1
                         s = s + a(ii)*a(ii)
                     end do
                     if (s==0.0_wp) cycle
@@ -1317,77 +1374,77 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
                     temp = temp - a(i1)
                     temp1 = 1.0_wp/ (temp*a(i1))
                     jp1 = j + 1
-                    i11 = i1 + np1
-                    do j1 = jp1,np1
+                    i11 = i1 + me%np1
+                    do j1 = jp1,me%np1
                         jdel = j1 - j
                         i1jd = i1 + jdel
                         s = temp*a(i1jd)
-                        do ii = i11,i2,np1
+                        do ii = i11,i2,me%np1
                             iijd = ii + jdel
                             s = s + a(ii)*a(iijd)
                         end do
                         s = s*temp1
                         i1jd = i1 + jdel
                         a(i1jd) = a(i1jd) + s*temp
-                        do ii = i11,i2,np1
+                        do ii = i11,i2,me%np1
                             iijd = ii + jdel
                             a(iijd) = a(iijd) + s*a(ii)
                         end do
                     end do
                 end do
-                if (l>n) then
-                    np1mk = np1 - k
-                    lmk = l - k
+                if (me%l>n) then
+                    np1mk = me%np1 - me%k
+                    lmk = me%l - me%k
                     ! Accumulate residual sum of squares.
                     do ii = np1mk,lmk
-                        ilnp = il1 + ii*np1
-                        errsum = errsum + a(ilnp)*a(ilnp)
+                        ilnp = me%il1 + ii*me%np1
+                        me%errsum = me%errsum + a(ilnp)*a(ilnp)
                     end do
                 end if
             end if
             imov = 0
-            i1 = il1 + k11 - np1 - 1
+            i1 = me%il1 + k11 - me%np1 - 1
 
             !  Squeeze the unnecessary elements out of scratch storage to
             !  allow space for more rows.
-            do ii = k11,k1
+            do ii = k11,me%k1
                 imov = imov + (ii-1)
-                i1 = i1 + np1 + 1
-                i2 = i1 + np1 - ii
+                i1 = i1 + me%np1 + 1
+                i2 = i1 + me%np1 - ii
                 do iii = i1,i2
                     iiim = iii - imov
                     a(iiim) = a(iii)
                 end do
             end do
-            ilast = i2 - imov
-            il1 = ilast
+            me%ilast = i2 - imov
+            me%il1 = me%ilast
             if (i<=0) exit main
-            k = l
+            me%k = me%l
 
             !  Determine how many new rows may be input on next iteration.
-            l = k + (nn-ilast)/np1
+            me%l = me%k + (nn-me%ilast)/me%np1
             return
 
         end if
 
         ! Complete reduction and store solution in SOLN.
         complete_reduction = .false. ! reset this flag
-        l = isav
+        me%l = me%isav
 
         ! Error exit if L less than N.
-        if (l<n) then
+        if (me%l<n) then
             ier = 33
             call cfaerr(ier,' suprls - array has too few rows.')
             return
         end if
 
         ! K/=ISAV means further reduction needed.
-        if (k==isav) exit main
+        if (me%k==me%isav) exit main
 
     end do main
 
-    ilast = (np1* (np1+1))/2 - 1
-    if (a(ilast-1)==0.0_wp) then
+    me%ilast = (me%np1* (me%np1+1))/2 - 1
+    if (a(me%ilast-1)==0.0_wp) then
         ! Error return if system is singular.
         ier = 34
         call cfaerr(ier,' suprls - system is singular.')
@@ -1395,29 +1452,30 @@ subroutine suprls(i,rowi,n,bi,a,nn,soln,err,ier)
     end if
 
     ! Solve triangular system into ROWI.
-    soln(n) = a(ilast)/a(ilast-1)
+    soln(n) = a(me%ilast)/a(me%ilast-1)
     do ii = 2,n
         iim1 = ii - 1
-        ilast = ilast - ii
-        s = a(ilast)
+        me%ilast = me%ilast - ii
+        s = a(me%ilast)
         do k = 1,iim1
-            ilk = ilast - k
-            npk = np1 - k
+            ilk = me%ilast - k
+            npk = me%np1 - k
             s = s - a(ilk)*soln(npk)
         end do
-        ilii = ilast - ii
+        me%k = k ! JW : is this necessary ???
+        ilii = me%ilast - ii
         if (a(ilii)==0.0_wp) then
             ! Error return if system is singular.
             ier = 34
             call cfaerr(ier,' suprls - system is singular.')
             return
         end if
-        npii = np1 - ii
+        npii = me%np1 - ii
         soln(npii) = s/a(ilii)
     end do
 
     ! Store residual norm.
-    err = sqrt(errsum)
+    err = sqrt(me%errsum)
 
 end subroutine suprls
 !*****************************************************************************************

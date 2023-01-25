@@ -52,14 +52,16 @@
             <li><a href="../sourcefile/splpak.f90.html">Source File</a></li>
             <li><a href="../lists/modules.html">Modules</a></li>
             <li><a href="../lists/procedures.html">Procedures</a></li>
-              
+                   <li><a href="../lists/types.html">Derived Types</a></li>
+       
             </ul>
         
             </li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../sourcefile/splpak.f90.html">Source File</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-                                       </ul>
+                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+          </ul>
         <form action="../search.html" class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
@@ -86,7 +88,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title="100.0% of total for modules and submodules.">676 statements</a>
+               title="100.0% of total for modules and submodules.">731 statements</a>
           </li>
 
             <li id="source-file">
@@ -123,7 +125,19 @@
   
   
   
-  
+      <div class="panel panel-primary">
+      <div class="panel-heading text-left">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#types-0">Derived Types</a>
+        </h3>
+      </div>
+      <div id="types-0" class="panel-collapse collapse">
+        <div class="list-group">
+            <a class="list-group-item" href="../module/splpak_module.html#type-splpak_type">splpak_type</a>
+        </div>
+      </div>
+    </div>
+
       <div class="panel panel-primary">
       <div class="panel-heading text-left">
         <h3 class="panel-title">
@@ -146,6 +160,7 @@
       </div>
       <div id="subs-0" class="panel-collapse collapse">
         <div class="list-group">
+            <a class="list-group-item" href="../module/splpak_module.html#proc-destroy_splpak">destroy_splpak</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-bascmp">bascmp</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-cfaerr">cfaerr</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-splcc">splcc</a>
@@ -176,47 +191,6 @@
 <p>Coefficient calculation is performed in
   subroutines <a href="../proc/splcc.html">splcc</a> or <a href="../proc/splcw.html">splcw</a> and evaluation is
   performed by functions <a href="../proc/splfe.html">splfe</a> or <a href="../proc/splde.html">splde</a>.</p>
-<h3>Usage</h3>
-<p>Package SPLPAK contains four user entries --
-  SPLCC, SPLCW, SPLFE, AND SPLDE.</p>
-<p>The user first calls SPLCC by</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">CALL </span><span class="n">SPLCC</span><span class="w"> </span><span class="p">(</span><span class="n">NDIM</span><span class="p">,</span><span class="n">XDATA</span><span class="p">,</span><span class="n">L1XDAT</span><span class="p">,</span><span class="n">YDATA</span><span class="p">,</span><span class="n">NDATA</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">XMIN</span><span class="p">,</span><span class="n">XMAX</span><span class="p">,</span><span class="n">NODES</span><span class="p">,</span><span class="n">XTRAP</span><span class="p">,</span><span class="n">COEF</span><span class="p">,</span><span class="n">NCF</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">WORK</span><span class="p">,</span><span class="n">NWRK</span><span class="p">,</span><span class="n">IERROR</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-<p>or SPLCW by</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">CALL </span><span class="n">SPLCW</span><span class="w"> </span><span class="p">(</span><span class="n">NDIM</span><span class="p">,</span><span class="n">XDATA</span><span class="p">,</span><span class="n">L1XDATA</span><span class="p">,</span><span class="n">YDATA</span><span class="p">,</span><span class="n">WDATA</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">NDATA</span><span class="p">,</span><span class="n">XMIN</span><span class="p">,</span><span class="n">XMAX</span><span class="p">,</span><span class="n">NODES</span><span class="p">,</span><span class="n">XTRAP</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="n">COEF</span><span class="p">,</span><span class="n">NCF</span><span class="p">,</span><span class="n">WORK</span><span class="p">,</span><span class="n">NWRK</span><span class="p">,</span><span class="n">IERROR</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-<p>The parameter NDATA in the call to SPLCW
-  enables the user to weight some of the data
-  points more heavily than others.  Both
-  routines return a set of coefficients in the
-  array COEF.  These coefficients are
-  subsequently used in the computation of
-  function values and partial derivatives.
-  To compute values on the spline approximation
-  the user then calls SPLFE or SPLDE any
-  number of times in any order provided that
-  the values of the inputs, NDIM, COEF, XMIN,
-  XMAX, and NODES, are preserved between calls.</p>
-<p>SPLFE and SPLDE are called in the following way:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SPLFE</span><span class="w"> </span><span class="p">(</span><span class="n">NDIM</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">COEF</span><span class="p">,</span><span class="n">XMIN</span><span class="p">,</span><span class="n">XMAX</span><span class="p">,</span><span class="n">NODES</span><span class="p">,</span><span class="n">IERROR</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-<p>or</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SPLDE</span><span class="w"> </span><span class="p">(</span><span class="n">NDIM</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">NDERIV</span><span class="p">,</span><span class="n">COEF</span><span class="p">,</span><span class="n">XMIN</span><span class="p">,</span><span class="n">XMAX</span><span class="p">,</span><span class="n">NODES</span><span class="p">,</span><span class="n">IERROR</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-<p>The routine SPLFE returns an interpolated
-  value at the point defined by the array X.
-  SPLDE affords the user the additional
-  capability of calculating an interpolated
-  value for one of several partial derivatives
-  specified by the array NDERIV.</p>
 <h3>History</h3>
 <ul>
 <li>Developed in 1972-73 by NCAR's Scientific Computing Division.</li>
@@ -352,7 +326,19 @@
   
   
   
-  
+      <div class="panel panel-primary">
+      <div class="panel-heading text-left">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#types-1">Derived Types</a>
+        </h3>
+      </div>
+      <div id="types-1" class="panel-collapse collapse">
+        <div class="list-group">
+            <a class="list-group-item" href="../module/splpak_module.html#type-splpak_type">splpak_type</a>
+        </div>
+      </div>
+    </div>
+
       <div class="panel panel-primary">
       <div class="panel-heading text-left">
         <h3 class="panel-title">
@@ -375,6 +361,7 @@
       </div>
       <div id="subs-1" class="panel-collapse collapse">
         <div class="list-group">
+            <a class="list-group-item" href="../module/splpak_module.html#proc-destroy_splpak">destroy_splpak</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-bascmp">bascmp</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-cfaerr">cfaerr</a>
             <a class="list-group-item" href="../module/splpak_module.html#proc-splcc">splcc</a>
@@ -400,12 +387,387 @@
     
 
     
+    <section>
+     <h2>Derived Types</h2>
+       <div class="panel panel-default">
+    <div class="panel-heading codesum">
+      <span class="anchor" id="type-splpak_type"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/splpak_type.html'>splpak_type</a>
+        
+      </h3>
+    </div>
+    <div class="panel-body">
+      <p>The class contains four user entries:
+  <a href="../proc/splcc.html">splcc</a>, <a href="../proc/splcw.html">splcw</a>, <a href="../proc/splfe.html">splfe</a>, and <a href="../proc/splde.html">splde</a>.</p><a href="../type/splpak_type.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Visibility</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+<th></th><th>Initial</th>        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mdim"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mdim</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dx</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxin"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dxin</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ib"></span>
+              integer,
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>ib</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ibmn"></span>
+              integer,
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>ibmn</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ibmx"></span>
+              integer,
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>ibmx</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ilast"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ilast</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-isav"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>isav</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iold"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iold</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np1"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np1</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-il1"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>il1</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k1"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k1</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-errsum"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>errsum</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>
+generic,
+                  public
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-initialize'>initialize</a></strong>
+ =>
+                    <a href='../type/splpak_type.html#boundprocedure-splcc'>splcc</a>, <a href='../type/splpak_type.html#boundprocedure-splcw'>splcw</a>
+                </td>
+                <td><p>compute the spline coefficients</p></td>
+              </tr>
+              <tr>
+                <td>
+generic,
+                  public
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-evaluate'>evaluate</a></strong>
+ =>
+                    <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde'>splde</a>
+                </td>
+                <td><p>evaluate the spline</p></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  public
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-destroy'>destroy</a></strong>
+ =>
+                    <a href='../proc/destroy_splpak.html'>destroy_splpak</a>
+<small>Subroutine</small>                </td>
+                <td><p>destory the internal class variables</p></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splcc'>splcc</a></strong>
+<small>Subroutine</small>                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splcw'>splcw</a></strong>
+<small>Subroutine</small>                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a></strong>
+<small>Function</small>                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splde'>splde</a></strong>
+<small>Function</small>                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-bascmp'>bascmp</a></strong>
+<small>Subroutine</small>                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                    procedure
+                    ,                  private
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-suprls'>suprls</a></strong>
+<small>Subroutine</small>                </td>
+                <td></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+    </section>
+  <br>
     
  
     <section>
     <h2>Functions</h2>
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-splde"></span><h3>public  function <a href='../proc/splde.html'>splde</a>(ndim, x, nderiv, coef, xmin, xmax, nodes, ierror)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-splde"></span><h3>private  function <a href='../proc/splde.html'>splde</a>(me, ndim, x, nderiv, coef, xmin, xmax, nodes, ierror)  
 </h3></div>
     <div class="panel-body">
           
@@ -423,6 +785,21 @@
         <th></th>
     </thead>
     <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
@@ -556,7 +933,7 @@
   </div>
 
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-splfe"></span><h3>public  function <a href='../proc/splfe.html'>splfe</a>(ndim, x, coef, xmin, xmax, nodes, ierror)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-splfe"></span><h3>private  function <a href='../proc/splfe.html'>splfe</a>(me, ndim, x, coef, xmin, xmax, nodes, ierror)  
 </h3></div>
     <div class="panel-body">
           
@@ -573,6 +950,21 @@
         <th></th>
     </thead>
     <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
@@ -696,7 +1088,62 @@
     <section>
     <h2>Subroutines</h2>
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-bascmp"></span><h3>public  subroutine <a href='../proc/bascmp.html'>bascmp</a>(x, nderiv, xmin, nodes, icol, basm)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-destroy_splpak"></span><h3>private  subroutine <a href='../proc/destroy_splpak.html'>destroy_splpak</a>(me, ndim)  
+</h3></div>
+    <div class="panel-body">
+          
+  <p>Destroy the internal class variables.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ndim</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+      <div class="panel panel-default">
+    <div class="panel-heading codesum"><span class="anchor" id="proc-bascmp"></span><h3>private  subroutine <a href='../proc/bascmp.html'>bascmp</a>(me, x, nderiv, xmin, nodes, icol, basm)  
 </h3></div>
     <div class="panel-body">
           
@@ -718,29 +1165,14 @@ to compute ICOL and BASM, which are defined as follows:</p><a href="../proc/basc
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp),
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>x</strong>(4)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nderiv</strong>(4)</td>
+            <td><strong>me</strong></td>
             <td>
 
             </td>
@@ -755,7 +1187,7 @@ to compute ICOL and BASM, which are defined as follows:</p><a href="../proc/basc
               
             </td>
             <td>::</td>
-            <td><strong>xmin</strong>(4)</td>
+            <td><strong>x</strong>(:)</td>
             <td>
 
             </td>
@@ -770,7 +1202,37 @@ to compute ICOL and BASM, which are defined as follows:</p><a href="../proc/basc
               
             </td>
             <td>::</td>
-            <td><strong>nodes</strong>(4)</td>
+            <td><strong>nderiv</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>xmin</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nodes</strong>(:)</td>
             <td>
 
             </td>
@@ -813,7 +1275,7 @@ to compute ICOL and BASM, which are defined as follows:</p><a href="../proc/basc
   </div>
 
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-cfaerr"></span><h3>public  subroutine <a href='../proc/cfaerr.html'>cfaerr</a>(ierr, mess)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-cfaerr"></span><h3>private  subroutine <a href='../proc/cfaerr.html'>cfaerr</a>(ierr, mess)  
 </h3></div>
     <div class="panel-body">
           
@@ -869,7 +1331,7 @@ or just an error message.</p><a href="../proc/cfaerr.html" class="pull-right"><e
   </div>
 
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-splcc"></span><h3>public  subroutine <a href='../proc/splcc.html'>splcc</a>(ndim, xdata, l1xdat, ydata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-splcc"></span><h3>private  subroutine <a href='../proc/splcc.html'>splcc</a>(me, ndim, xdata, l1xdat, ydata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3></div>
     <div class="panel-body">
           
@@ -887,6 +1349,21 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <th></th>
     </thead>
     <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
@@ -1105,7 +1582,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
   </div>
 
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-splcw"></span><h3>public  subroutine <a href='../proc/splcw.html'>splcw</a>(ndim, xdata, l1xdat, ydata, wdata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-splcw"></span><h3>private  subroutine <a href='../proc/splcw.html'>splcw</a>(me, ndim, xdata, l1xdat, ydata, wdata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3></div>
     <div class="panel-body">
           
@@ -1127,6 +1604,21 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <tr>
             <td>
               <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1140,7 +1632,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 spline is a function of <code>NDIM</code> variables or
 coordinates and thus a point in the
 independent variable space is an <code>NDIM</code> vector.
-<code>NDIM</code> must be in the range <code>1 &lt;= NDIM &lt;= 4</code>.</p>
+<code>NDIM</code> must be <code>&gt;= 1</code>.</p>
             </td>
         </tr>
         <tr>
@@ -1453,7 +1945,7 @@ diagnosed if <code>NWRK</code> is less than
   </div>
 
       <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-suprls"></span><h3>public  subroutine <a href='../proc/suprls.html'>suprls</a>(i, rowi, n, bi, a, nn, soln, err, ier)  
+    <div class="panel-heading codesum"><span class="anchor" id="proc-suprls"></span><h3>private  subroutine <a href='../proc/suprls.html'>suprls</a>(me, i, rowi, n, bi, a, nn, soln, err, ier)  
 </h3></div>
     <div class="panel-body">
           
@@ -1470,6 +1962,21 @@ diagnosed if <code>NWRK</code> is less than
         <th></th>
     </thead>
     <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
