@@ -1,4 +1,5 @@
-Modernization of the double precision SPLPAK files from [NCL](https://github.com/NCAR/ncl). A work in progress.
+This library contains routines for fitting (least squares) a multidimensional cubic spline to arbitrarily located data.  It also contains routines for evaluating this spline (or its partial derivatives) at any point.
+This is a Modernization of the double precision SPLPAK files from [NCL](https://github.com/NCAR/ncl).
 
 ## Status
 
