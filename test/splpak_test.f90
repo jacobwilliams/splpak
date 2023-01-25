@@ -7,19 +7,19 @@
 
     program splpak_test
 
-    use splpak_module
-    use iso_fortran_env, only: wp => real64, ip => int32
+    use splpak_module, wp => splpak_wp
+    use iso_fortran_env
     use pyplot_module
 
     implicit none
 
     integer,parameter :: ndim = 1    !! 1d problem
-    integer(ip),parameter :: nxdata = 20 !! number of points in x
+    integer,parameter :: nxdata = 20 !! number of points in x
     integer,dimension(ndim),parameter :: nodes = [10]
     integer,parameter :: ncol = product(nodes)
     integer,parameter :: nwrk = ncol*(ncol+1) + 1   ! is doc wrong? do we need the + 1 (otherwise, it fails)...
     integer,parameter :: ncf = ncol
-    integer(ip),parameter :: nxdata_est = 100 !! number of points for estimate plot
+    integer,parameter :: nxdata_est = 100 !! number of points for estimate plot
 
     real(wp),dimension(ndim,nxdata) :: xdata
     real(wp),dimension(nxdata) :: ydata
@@ -36,15 +36,15 @@
     real(wp) :: xtrap
     real(wp) :: tru, err, errmax, f
     type(pyplot) :: plt
-    integer(ip),dimension(:),allocatable :: iseed
+    integer,dimension(:),allocatable :: iseed
     real(wp) :: r !! random number
-    integer(ip) :: isize !! for `random_seed`
+    integer :: isize !! for `random_seed`
     character(len=10) :: nodes_str !! string version of `nodes`
     type(splpak_type) :: solver
     integer,dimension(2),parameter :: figsize = [20,10] !! figure size for plot
 
     call random_seed(size=isize)
-    allocate(iseed(isize)); iseed = 42_ip
+    allocate(iseed(isize)); iseed = 42
     call random_seed(put=iseed)
 
     xtrap = 1.0_wp

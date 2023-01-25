@@ -16,6 +16,38 @@ A `fmp.toml` file is provided for compiling splpak with the [Fortran Package Man
 fpm build --profile release
 ```
 
+By default, the library is built with double precision (`real64`) real values. Explicitly specifying the real kind can be done using the following processor flags:
+
+Preprocessor flag | Kind  | Number of bytes
+----------------- | ----- | ---------------
+`REAL32`  | `real(kind=real32)`  | 4
+`REAL64`  | `real(kind=real64)`  | 8
+`REAL128` | `real(kind=real128)` | 16
+
+For example, to build a single precision version of the library, use:
+
+```
+fpm build --profile release --flag "-DREAL32"
+```
+
+To run the unit tests:
+
+```
+fpm test --profile release
+```
+
+To use `splpak` within your fpm project, add the following to your `fpm.toml` file:
+```toml
+[dependencies]
+splpak = { git="https://github.com/jacobwilliams/splpak.git" }
+```
+
+or, to use a specific version:
+```toml
+[dependencies]
+splpak = { git="https://github.com/jacobwilliams/splpak.git", tag = "2.0.0"  }
+```
+
 ## Documentation
 
 The latest API documentation can be found [here](https://jacobwilliams.github.io/splpak/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford) (i.e. by running `ford ford.md`).
