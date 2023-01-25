@@ -99,6 +99,51 @@ This is a Modernization of the double precision SPLPAK files from <a href="https
 <div class="codehilite"><pre><span></span><code>fpm build --profile release
 </code></pre></div>
 
+<p>By default, the library is built with double precision (<code>real64</code>) real values. Explicitly specifying the real kind can be done using the following processor flags:</p>
+<table>
+<thead>
+<tr>
+<th>Preprocessor flag</th>
+<th>Kind</th>
+<th>Number of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REAL32</code></td>
+<td><code>real(kind=real32)</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>REAL64</code></td>
+<td><code>real(kind=real64)</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>REAL128</code></td>
+<td><code>real(kind=real128)</code></td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to build a single precision version of the library, use:</p>
+<div class="codehilite"><pre><span></span><code>fpm build --profile release --flag &quot;-DREAL32&quot;
+</code></pre></div>
+
+<p>To run the unit tests:</p>
+<div class="codehilite"><pre><span></span><code>fpm test --profile release
+</code></pre></div>
+
+<p>To use <code>splpak</code> within your fpm project, add the following to your <code>fpm.toml</code> file:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span><span class="w"></span>
+<span class="n">splpak</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="o">=</span><span class="s">&quot;https://github.com/jacobwilliams/splpak.git&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>or, to use a specific version:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span><span class="w"></span>
+<span class="n">splpak</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="o">=</span><span class="s">&quot;https://github.com/jacobwilliams/splpak.git&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.0.0&quot;</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
 <h2>Documentation</h2>
 <p>The latest API documentation can be found <a href="https://jacobwilliams.github.io/splpak/">here</a>. This was generated from the source code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a> (i.e. by running <code>ford ford.md</code>).</p>
 <h2>See also</h2>
@@ -121,7 +166,7 @@ This is a Modernization of the double precision SPLPAK files from <a href="https
       <div class="row">
         <div class="col-xs-6 col-sm-3">
               <h3>Source Files</h3>
-              <ul>                    <li><a href='./sourcefile/splpak.f90.html'>splpak.f90</a></li>
+              <ul>                    <li><a href='./sourcefile/splpak.f90.html'>splpak.F90</a></li>
 </ul>
           </div>
 		  <div class="col-xs-6 col-sm-3">

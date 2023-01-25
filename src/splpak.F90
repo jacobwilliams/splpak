@@ -24,12 +24,23 @@
 
     module splpak_module
 
-    use iso_fortran_env, only: output_unit
-    use iso_fortran_env, only: wp => real64
+    use iso_fortran_env
 
     implicit none
 
     private
+
+#ifdef REAL32
+    integer,parameter :: wp = real32   !! Real working precision [4 bytes]
+#elif REAL64
+    integer,parameter :: wp = real64   !! Real working precision [8 bytes]
+#elif REAL128
+    integer,parameter :: wp = real128  !! Real working precision [16 bytes]
+#else
+    integer,parameter :: wp = real64   !! Real working precision if not specified [8 bytes]
+#endif
+
+    integer,parameter,public :: splpak_wp = wp   !! Working precision
 
     type,public :: splpak_type
 
