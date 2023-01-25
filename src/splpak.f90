@@ -40,15 +40,15 @@
         !!
         !!  The user first calls [[splcc]] by
         !!```fortran
-        !!    call me%splcc (ndim,xdata,l1xdat,ydata,ndata,
-        !!                   xmin,xmax,nodes,xtrap,coef,ncf,
-        !!                   work,nwrk,ierror)
+        !!    call me%initialize(ndim,xdata,l1xdat,ydata,ndata,
+        !!                       xmin,xmax,nodes,xtrap,coef,ncf,
+        !!                       work,nwrk,ierror)
         !!```
-        !!  or sp[[lcw by
+        !!  or [[splcw]] by
         !!```fortran
-        !!    call me%splcw (ndim,xdata,l1xdata,ydata,wdata,
-        !!                   ndata,xmin,xmax,nodes,xtrap,
-        !!                   coef,ncf,work,nwrk,ierror)
+        !!    call me%initialize(ndim,xdata,l1xdata,ydata,wdata,
+        !!                       ndata,xmin,xmax,nodes,xtrap,
+        !!                       coef,ncf,work,nwrk,ierror)
         !!```
         !!  The parameter NDATA in the call to [[splcw]]
         !!  enables the user to weight some of the data
@@ -65,11 +65,11 @@
         !!
         !!  [[splfe]] and [[splde]] are called in the following way:
         !!```fortran
-        !!    f = me%splfe (ndim,x,coef,xmin,xmax,nodes,ierror)
+        !!    f = me%evaluate(ndim,x,coef,xmin,xmax,nodes,ierror)
         !!```
         !!  or
         !!```fortran
-        !!    f = me%splde (ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
+        !!    f = me%evaluate(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         !!```
         !!  The routine [[splfe]] returns an interpolated
         !!  value at the point defined by the array X.
@@ -77,6 +77,8 @@
         !!  capability of calculating an interpolated
         !!  value for one of several partial derivatives
         !!  specified by the array NDERIV.
+
+        private
 
         ! formerly in splcomd common block:
         integer :: mdim = 0
@@ -99,13 +101,17 @@
 
         contains
 
-        procedure,public :: splcc
-        procedure,public :: splcw
-        procedure,public :: splfe
-        procedure,public :: splde
-        procedure,public :: destroy => destroy_splpak
+        private
 
-        procedure :: bascmp, suprls
+        generic,public   :: initialize => splcc, splcw !! compute the spline coefficients
+        generic,public   :: evaluate   => splfe, splde !! evaluate the spline
+        procedure,public :: destroy    => destroy_splpak !! destory the internal class variables
+        procedure,private :: splcc
+        procedure,private :: splcw
+        procedure,private :: splfe
+        procedure,private :: splde
+        procedure,private :: bascmp
+        procedure,private :: suprls
 
     end type splpak_type
 
