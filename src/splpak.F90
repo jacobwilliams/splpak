@@ -11,9 +11,9 @@
 !  performed by functions [[splfe]] or [[splde]].
 !
 !### History
-!  * Developed in 1972-73 by NCAR's Scientific Computing Division.
+!  * Developed in 1972-73 by Dave Fulker of NCAR's Scientific Computing Division.
 !  * Cleaned up and added to the Ngmath library in 1998.
-!  * Latest revision to the Fortran 77 code: August, 1998
+!  * Latest revision to the original Fortran code: August, 1998
 !  * Jacob Williams : Jan 2023 : modernized this code.
 !
 !### License
