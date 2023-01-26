@@ -55,3 +55,4 @@ The latest API documentation can be found [here](https://jacobwilliams.github.io
 ## See also
  * [bspline-fortran](https://github.com/jacobwilliams/bspline-fortran) Multidimensional B-Spline Interpolation of Data on a Regular Grid
  * [bspline](https://github.com/NCAR/bspline) - Cubic B-Spline implementation in C++ templates. Also has a copy of [splpak.f](https://github.com/NCAR/bspline/tree/master/Tests/Fortran)
+ * [Ngmath Library Overview](https://ngwww.ucar.edu/ngmath/)
