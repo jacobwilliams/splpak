@@ -1394,8 +1394,8 @@ subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
                                    !! at least `n`.
     real(wp),intent(in) :: bi !! on the `i`th call, `bi` contains the `i`th element
                               !! of the right hand side vector `b`.
-    real(wp),intent(in) :: a(nn) !! a working array which must not be changed
-                                 !! between the successive calls to [[suprls]].
+    real(wp),intent(inout) :: a(nn) !! a working array which must not be changed
+                                    !! between the successive calls to [[suprls]].
     real(wp),intent(out) :: soln(n) !! the `n`-components of the solution vector are
                                     !! returned in this array after the final call
                                     !! to [[suprls]].
