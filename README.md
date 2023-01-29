@@ -56,6 +56,9 @@ splpak = { git="https://github.com/jacobwilliams/splpak.git", tag = "2.0.0"  }
 The latest API documentation can be found [here](https://jacobwilliams.github.io/splpak/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford) (i.e. by running `ford ford.md`).
 
 ## See also
- * [bspline-fortran](https://github.com/jacobwilliams/bspline-fortran) Multidimensional B-Spline Interpolation of Data on a Regular Grid
+ *  [The NCAR Command Language ](https://github.com/NCAR/ncl) (specificially, the [csagrid](https://github.com/NCAR/ncl/tree/develop/ngmath/src/lib/gridpack/csagrid) directory)
  * [bspline](https://github.com/NCAR/bspline) - Cubic B-Spline implementation in C++ templates. Also has a copy of [splpak.f](https://github.com/NCAR/bspline/tree/master/Tests/Fortran)
  * [Ngmath Library Overview](https://ngwww.ucar.edu/ngmath/)
+ * [bspline-fortran](https://github.com/jacobwilliams/bspline-fortran) Multidimensional B-Spline Interpolation of Data on a Regular Grid
+ * [regridpack](https://github.com/jacobwilliams/regridpack) Linear or cubic interapolation for 1D-4D grids
+ * [finterp](https://github.com/jacobwilliams/finterp) 1D-6D linear or nearest-neighbor interpolation
