@@ -210,18 +210,18 @@
 <span class="w">                       </span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
-<p>The parameter NDATA in the call to <a href="../proc/splcw.html">splcw</a>
+<p>The parameter <code>NDATA</code> in the call to <a href="../proc/splcw.html">splcw</a>
   enables the user to weight some of the data
   points more heavily than others.  Both
   routines return a set of coefficients in the
-  array COEF.  These coefficients are
+  array <code>COEF</code>.  These coefficients are
   subsequently used in the computation of
   function values and partial derivatives.
   To compute values on the spline approximation
   the user then calls <a href="../proc/splfe.html">splfe</a> or <a href="../proc/splde.html">splde</a> any
   number of times in any order provided that
-  the values of the inputs, NDIM, COEF, XMIN,
-  XMAX, and NODES, are preserved between calls.</p>
+  the values of the inputs, <code>NDIM</code>, <code>COEF</code>, <code>XMIN</code>,
+  <code>XMAX</code>, and <code>NODES</code>, are preserved between calls.</p>
 <p><a href="../proc/splfe.html">splfe</a> and <a href="../proc/splde.html">splde</a> are called in the following way:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
@@ -231,11 +231,11 @@
 </code></pre></div>
 
 <p>The routine <a href="../proc/splfe.html">splfe</a> returns an interpolated
-  value at the point defined by the array X.
+  value at the point defined by the array <code>X</code>.
   <a href="../proc/splde.html">splde</a> affords the user the additional
   capability of calculating an interpolated
   value for one of several partial derivatives
-  specified by the array NDERIV.</p>
+  specified by the array <code>NDERIV</code>.</p>
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
@@ -2807,30 +2807,34 @@ spline evaluated at <code>x</code>.</p>
 </h3>
     
   <p>This routine does basis function computations for natural
-splines.  This routine is called by routines SPLCW and SPLDE
-to compute ICOL and BASM, which are defined as follows:</p>
-<p>The MDIM indices in IB (defined through common) determine
-   a specific node in the node grid (see routine SPLCC for a
+splines.  This routine is called by routines <a href="../proc/splcw.html">splcw</a> and <a href="../proc/splde.html">splde</a>
+to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p>
+<ul>
+<li>The <code>MDIM</code> indices in <code>IB</code> (defined in <a href="../type/splpak_type.html">splpak_type</a>) determine
+   a specific node in the node grid (see routine <a href="../proc/splcc.html">splcc</a> for a
    description of the node grid).  Every node is associated
-   with an MDIM-dimensional basis function and a corresponding
+   with an <code>MDIM</code>-dimensional basis function and a corresponding
    column in the least squares matrix (or element of the
    coefficient vector).  The column index (which may be thought
-   of as a linear address for the MDIM-dimensional node grid)
-   corresponding to the specified node is computed as ICOL.  The
-   associated basis function evaluated at X (an MDIM-vector) is
-   computed as BASM (a scalar).</p>
-<p>In case NDERIV is not all zero, BASM will not be the value of
+   of as a linear address for the <code>MDIM</code>-dimensional node grid)
+   corresponding to the specified node is computed as <code>ICOL</code>.  The
+   associated basis function evaluated at <code>X</code> (an <code>MDIM</code>-vector) is
+   computed as <code>BASM</code> (a scalar).</li>
+</ul>
+<p>In case <code>NDERIV</code> is not all zero, <code>BASM</code> will not be the value of
 the basis function but rather a partial derivative of that
 function as follows:</p>
-<p>The order of the partial derivative in the direction of the
-   IDIM coordinate is NDERIV(IDIM) (for IDIM &lt;= MDIM).  This
-   routine will compute incorrect values if NDERIV(IDIM) is not
-   in the range 0 to 2.</p>
+<ul>
+<li>The order of the partial derivative in the direction of the
+   <code>IDIM</code> coordinate is <code>NDERIV(IDIM)</code> (for <code>IDIM &lt;= MDIM</code>).  This
+   routine will compute incorrect values if <code>NDERIV(IDIM)</code> is not
+   in the range 0 to 2.</li>
+</ul>
 <p>The technique of this routine is to transform the independent
 variable in each dimension such that the nodes fall on
 suitably chosen integers.  On this transformed space, the
 1-dimensional basis functions and their derivatives have a
-particularly simple form.  The desired MDIM-dimensional basis
+particularly simple form.  The desired <code>MDIM</code>-dimensional basis
 function (or any of its partial derivatives) is computed as
 a product of such 1-dimensional functions (tensor product
 method of defining multi-dimensional splines).  The values
@@ -3274,18 +3278,18 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
 <span class="w">        </span><span class="c">!!                       ndata,xmin,xmax,nodes,xtrap,</span>
 <span class="w">        </span><span class="c">!!                       coef,ncf,work,nwrk,ierror)</span>
 <span class="w">        </span><span class="c">!!```</span>
-<span class="w">        </span><span class="c">!!  The parameter NDATA in the call to [[splcw]]</span>
+<span class="w">        </span><span class="c">!!  The parameter `NDATA` in the call to [[splcw]]</span>
 <span class="w">        </span><span class="c">!!  enables the user to weight some of the data</span>
 <span class="w">        </span><span class="c">!!  points more heavily than others.  Both</span>
 <span class="w">        </span><span class="c">!!  routines return a set of coefficients in the</span>
-<span class="w">        </span><span class="c">!!  array COEF.  These coefficients are</span>
+<span class="w">        </span><span class="c">!!  array `COEF`.  These coefficients are</span>
 <span class="w">        </span><span class="c">!!  subsequently used in the computation of</span>
 <span class="w">        </span><span class="c">!!  function values and partial derivatives.</span>
 <span class="w">        </span><span class="c">!!  To compute values on the spline approximation</span>
 <span class="w">        </span><span class="c">!!  the user then calls [[splfe]] or [[splde]] any</span>
 <span class="w">        </span><span class="c">!!  number of times in any order provided that</span>
-<span class="w">        </span><span class="c">!!  the values of the inputs, NDIM, COEF, XMIN,</span>
-<span class="w">        </span><span class="c">!!  XMAX, and NODES, are preserved between calls.</span>
+<span class="w">        </span><span class="c">!!  the values of the inputs, `NDIM`, `COEF`, `XMIN`,</span>
+<span class="w">        </span><span class="c">!!  `XMAX`, and `NODES`, are preserved between calls.</span>
 <span class="w">        </span><span class="c">!!</span>
 <span class="w">        </span><span class="c">!!  [[splfe]] and [[splde]] are called in the following way:</span>
 <span class="w">        </span><span class="c">!!```fortran</span>
@@ -3296,11 +3300,11 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
 <span class="w">        </span><span class="c">!!    f = me%evaluate(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)</span>
 <span class="w">        </span><span class="c">!!```</span>
 <span class="w">        </span><span class="c">!!  The routine [[splfe]] returns an interpolated</span>
-<span class="w">        </span><span class="c">!!  value at the point defined by the array X.</span>
+<span class="w">        </span><span class="c">!!  value at the point defined by the array `X`.</span>
 <span class="w">        </span><span class="c">!!  [[splde]] affords the user the additional</span>
 <span class="w">        </span><span class="c">!!  capability of calculating an interpolated</span>
 <span class="w">        </span><span class="c">!!  value for one of several partial derivatives</span>
-<span class="w">        </span><span class="c">!!  specified by the array NDERIV.</span>
+<span class="w">        </span><span class="c">!!  specified by the array `NDERIV`.</span>
 
 <span class="w">        </span><span class="k">private</span><span class="w"></span>
 

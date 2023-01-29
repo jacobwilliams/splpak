@@ -61,18 +61,18 @@
         !!                       ndata,xmin,xmax,nodes,xtrap,
         !!                       coef,ncf,work,nwrk,ierror)
         !!```
-        !!  The parameter NDATA in the call to [[splcw]]
+        !!  The parameter `NDATA` in the call to [[splcw]]
         !!  enables the user to weight some of the data
         !!  points more heavily than others.  Both
         !!  routines return a set of coefficients in the
-        !!  array COEF.  These coefficients are
+        !!  array `COEF`.  These coefficients are
         !!  subsequently used in the computation of
         !!  function values and partial derivatives.
         !!  To compute values on the spline approximation
         !!  the user then calls [[splfe]] or [[splde]] any
         !!  number of times in any order provided that
-        !!  the values of the inputs, NDIM, COEF, XMIN,
-        !!  XMAX, and NODES, are preserved between calls.
+        !!  the values of the inputs, `NDIM`, `COEF`, `XMIN`,
+        !!  `XMAX`, and `NODES`, are preserved between calls.
         !!
         !!  [[splfe]] and [[splde]] are called in the following way:
         !!```fortran
@@ -83,11 +83,11 @@
         !!    f = me%evaluate(ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
         !!```
         !!  The routine [[splfe]] returns an interpolated
-        !!  value at the point defined by the array X.
+        !!  value at the point defined by the array `X`.
         !!  [[splde]] affords the user the additional
         !!  capability of calculating an interpolated
         !!  value for one of several partial derivatives
-        !!  specified by the array NDERIV.
+        !!  specified by the array `NDERIV`.
 
         private
 
@@ -168,34 +168,34 @@
 !*****************************************************************************************
 !>
 !  This routine does basis function computations for natural
-!  splines.  This routine is called by routines SPLCW and SPLDE
-!  to compute ICOL and BASM, which are defined as follows:
+!  splines.  This routine is called by routines [[SPLCW]] and [[SPLDE]]
+!  to compute `ICOL` and `BASM`, which are defined as follows:
 !
-!     The MDIM indices in IB (defined through common) determine
-!     a specific node in the node grid (see routine SPLCC for a
+!   * The `MDIM` indices in `IB` (defined in [[splpak_type]]) determine
+!     a specific node in the node grid (see routine [[SPLCC]] for a
 !     description of the node grid).  Every node is associated
-!     with an MDIM-dimensional basis function and a corresponding
+!     with an `MDIM`-dimensional basis function and a corresponding
 !     column in the least squares matrix (or element of the
 !     coefficient vector).  The column index (which may be thought
-!     of as a linear address for the MDIM-dimensional node grid)
-!     corresponding to the specified node is computed as ICOL.  The
-!     associated basis function evaluated at X (an MDIM-vector) is
-!     computed as BASM (a scalar).
+!     of as a linear address for the `MDIM`-dimensional node grid)
+!     corresponding to the specified node is computed as `ICOL`.  The
+!     associated basis function evaluated at `X` (an `MDIM`-vector) is
+!     computed as `BASM` (a scalar).
 !
-!  In case NDERIV is not all zero, BASM will not be the value of
+!  In case `NDERIV` is not all zero, `BASM` will not be the value of
 !  the basis function but rather a partial derivative of that
 !  function as follows:
 !
-!     The order of the partial derivative in the direction of the
-!     IDIM coordinate is NDERIV(IDIM) (for IDIM <= MDIM).  This
-!     routine will compute incorrect values if NDERIV(IDIM) is not
+!   * The order of the partial derivative in the direction of the
+!     `IDIM` coordinate is `NDERIV(IDIM)` (for `IDIM <= MDIM`).  This
+!     routine will compute incorrect values if `NDERIV(IDIM)` is not
 !     in the range 0 to 2.
 !
 !  The technique of this routine is to transform the independent
 !  variable in each dimension such that the nodes fall on
 !  suitably chosen integers.  On this transformed space, the
 !  1-dimensional basis functions and their derivatives have a
-!  particularly simple form.  The desired MDIM-dimensional basis
+!  particularly simple form.  The desired `MDIM`-dimensional basis
 !  function (or any of its partial derivatives) is computed as
 !  a product of such 1-dimensional functions (tensor product
 !  method of defining multi-dimensional splines).  The values

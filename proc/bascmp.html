@@ -153,30 +153,34 @@
     
 
     <p>This routine does basis function computations for natural
-splines.  This routine is called by routines SPLCW and SPLDE
-to compute ICOL and BASM, which are defined as follows:</p>
-<p>The MDIM indices in IB (defined through common) determine
-   a specific node in the node grid (see routine SPLCC for a
+splines.  This routine is called by routines <a href="../proc/splcw.html">splcw</a> and <a href="../proc/splde.html">splde</a>
+to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p>
+<ul>
+<li>The <code>MDIM</code> indices in <code>IB</code> (defined in <a href="../type/splpak_type.html">splpak_type</a>) determine
+   a specific node in the node grid (see routine <a href="../proc/splcc.html">splcc</a> for a
    description of the node grid).  Every node is associated
-   with an MDIM-dimensional basis function and a corresponding
+   with an <code>MDIM</code>-dimensional basis function and a corresponding
    column in the least squares matrix (or element of the
    coefficient vector).  The column index (which may be thought
-   of as a linear address for the MDIM-dimensional node grid)
-   corresponding to the specified node is computed as ICOL.  The
-   associated basis function evaluated at X (an MDIM-vector) is
-   computed as BASM (a scalar).</p>
-<p>In case NDERIV is not all zero, BASM will not be the value of
+   of as a linear address for the <code>MDIM</code>-dimensional node grid)
+   corresponding to the specified node is computed as <code>ICOL</code>.  The
+   associated basis function evaluated at <code>X</code> (an <code>MDIM</code>-vector) is
+   computed as <code>BASM</code> (a scalar).</li>
+</ul>
+<p>In case <code>NDERIV</code> is not all zero, <code>BASM</code> will not be the value of
 the basis function but rather a partial derivative of that
 function as follows:</p>
-<p>The order of the partial derivative in the direction of the
-   IDIM coordinate is NDERIV(IDIM) (for IDIM &lt;= MDIM).  This
-   routine will compute incorrect values if NDERIV(IDIM) is not
-   in the range 0 to 2.</p>
+<ul>
+<li>The order of the partial derivative in the direction of the
+   <code>IDIM</code> coordinate is <code>NDERIV(IDIM)</code> (for <code>IDIM &lt;= MDIM</code>).  This
+   routine will compute incorrect values if <code>NDERIV(IDIM)</code> is not
+   in the range 0 to 2.</li>
+</ul>
 <p>The technique of this routine is to transform the independent
 variable in each dimension such that the nodes fall on
 suitably chosen integers.  On this transformed space, the
 1-dimensional basis functions and their derivatives have a
-particularly simple form.  The desired MDIM-dimensional basis
+particularly simple form.  The desired <code>MDIM</code>-dimensional basis
 function (or any of its partial derivatives) is computed as
 a product of such 1-dimensional functions (tensor product
 method of defining multi-dimensional splines).  The values
