@@ -1062,27 +1062,103 @@ end subroutine splcw
 
 !*****************************************************************************************
 !>
-!  Returns an interpolated
-!  value for one of several partial derivatives.
+!  N-dimensional cubic spline derivative evaluation.
+!
+!  A grid of evenly spaced nodes in `ndim` space is
+!  defined by the arguments `xmin`, `xmax` and `nodes`.
+!  A linear basis for the class of natural splines
+!  on these nodes is formed, and to each basis
+!  function corresponds a coefficient in the array
+!  `coef` (computed in [[splcc]] or [[splcw]]).  Using
+!  `nderiv` to indicate the appropriate partial
+!  derivatives, each basis function is evaluated
+!  at the point `x` in `ndim` space.  These values are
+!  then multiplied by the corresponding
+!  coefficient and summed to form the function
+!  result.
 !
 !### See also
 !  * [[splfe]]
 !
 !@note The original version of this routine would stop for an error.
 !      Now it just returns.
+!
+!@note `coef`, `xmin`, `xmax` and `nodes` must be exactly
+!      retained from the call to [[splcc]] (or [[splcw]]).
 
 function splde(me,ndim,x,nderiv,coef,xmin,xmax,nodes,ierror)
 
     class(splpak_type),intent(inout) :: me
-    real(wp) :: splde
-    integer,intent(in) :: ndim
-    real(wp),intent(in) :: x(ndim)
-    real(wp),intent(out) :: coef(*)
-    real(wp),intent(in) :: xmin(ndim)
-    real(wp),intent(in) :: xmax(ndim)
-    integer,intent(in) :: nderiv(ndim)
-    integer,intent(in) :: nodes(ndim)
-    integer,intent(out) :: ierror
+    real(wp) :: splde !! the function value returned is the partial
+                      !! derivative (indicated by `nderiv`) of the
+                      !! spline evaluated at `x`.
+    integer,intent(in) :: ndim !! the dimensionality of the problem.  the
+                               !! spline is a function of `ndim` variables or
+                               !! coordinates and thus a point in the
+                               !! independent variable space is an `ndim` vector.
+                               !! `ndim` must be in the range `1 <= ndim <= 4`.
+    real(wp),intent(in) :: x(ndim) !! an `ndim` vector describing the point in the
+                                   !! independent variable space at which the
+                                   !! spline is to be evaluated.
+    real(wp),intent(out) :: coef(*) !! the array of coefficients which determine the
+                                    !! spline.  each coefficient corresponds to a
+                                    !! particular basis function which in turn
+                                    !! corresponds to a node in the node grid.  this
+                                    !! correspondence between the node grid and the
+                                    !! array `coef` is as if `coef` were an
+                                    !! ndim-dimensional fortran array with
+                                    !! dimensions `nodes(1),...,nodes(ndim)`, i.e., to
+                                    !! store the array linearly, the leftmost
+                                    !! indices are incremented most frequently.
+                                    !! coef may be computed by using routines [[splcc]]
+                                    !! or [[splcw]].
+                                    !!
+                                    !! the dimension is assumed to be
+                                    !! `coef(nodes(1)*...*nodes(ndim))`.
+    real(wp),intent(in) :: xmin(ndim) !! a vector describing the lower extreme corner
+                                      !! of the node grid.  a set of evenly spaced
+                                      !! nodes is formed along each coordinate axis
+                                      !! and `xmin(idim)` is the location of the first
+                                      !! node along the `idim` axis.
+    real(wp),intent(in) :: xmax(ndim) !! a vector describing the upper extreme corner
+                                      !! of the node grid.  a set of evenly spaced
+                                      !! nodes is formed along each coordinate axis
+                                      !! and `xmax(idim)` is the location of the last
+                                      !! node along the `idim` axis.
+    integer,intent(in) :: nderiv(ndim) !! an `ndim` vector of integers specifying the
+                                       !! partial derivative to be evaluated.  the
+                                       !! order of the derivative along the `idim` axis
+                                       !! is `nderiv(idim)`.  these integers must be in
+                                       !! the range `0 <= nderiv(idim) <= 2`.
+    integer,intent(in) :: nodes(ndim) !! a vector of integers describing the number of
+                                      !! nodes along each axis.  `nodes(idim)` is the
+                                      !! the number of nodes (counting endpoints)
+                                      !! along the `idim` axis and determines the
+                                      !! flexibility of the spline in that coordinate
+                                      !! direction.  `nodes(idim)` must be >= 4 but
+                                      !! may be as large as the arrays `coef` and `work`
+                                      !! allow.
+                                      !!
+                                      !! *note:*  the node grid is completely defined by
+                                      !! the arguments `xmin`, `xmax` and `nodes`.
+                                      !! the spacing of this grid in the `idim`
+                                      !! coordinate direction is
+                                      !! `dx(idim) = (xmax(idim)-xmin(idim)) / (nodes(idim)-1)`.
+                                      !! a node in this grid may be indexed by
+                                      !! an `ndim` vector of integers
+                                      !! `(in(1),...,in(ndim))` where
+                                      !! `1 <= in(idim) <= nodes(idim)`.  the
+                                      !! location of such a node may be
+                                      !! represented by an `ndim` vector
+                                      !! `(x(1),...,x(ndim)) ` where
+                                      !! `x(idim) = xmin(idim)+(in(idim)-1) * dx(idim)`.
+    integer,intent(out) :: ierror !! an error flag with the following meanings:
+                                  !!
+                                  !! *   0  no error.
+                                  !! * 101  ndim is < 1 or is > 4.
+                                  !! * 102  nodes(idim) is < 4 for some idim.
+                                  !! * 103  xmin(idim) = xmax(idim) for some idim.
+                                  !! * 104  nderiv(idim) is < 0 or is > 2 for some idim.
 
     real(wp) :: xrng,sum,basm
     integer :: iibmx,idim,nod,it,iib,icof
@@ -1166,10 +1242,18 @@ end function splde
 
 !*****************************************************************************************
 !>
-!  Returns an interpolated value at the point defined by the array X.
+!  N-dimensional cubic spline function evaluation.
+!
+!  Except for lack of derivative capability, this
+!  function is identical to function [[splde]] in
+!  usage.  The argument list is also identical
+!  except for the omission of `nderiv`.
 !
 !### See also
 !  * [[splde]]
+!
+!@note `coef`, `xmin`, `xmax` and `nodes` must be exactly
+!      retained from the call to [[splcc]] (or [[splcw]]).
 
 function splfe(me,ndim,x,coef,xmin,xmax,nodes,ierror)
 
@@ -1193,20 +1277,140 @@ end function splfe
 
 !*****************************************************************************************
 !>
-!  Solve the overdetermined system of linear equations.
+!  To determine the least squares solution of a
+!  large overdetermined linear system.
+!
+!  Given the `m` by `n` matrix `r` (`m >= n`)
+!  and the `m`-vector `b`,
+!  this routine calculates the `n`-vector `x` such
+!  that the euclidean norm of the residue (`r*x-b`)
+!  is minimized.  the subroutine accepts rows of
+!  the matrix one by one so that the entire matrix
+!  need not be stored at one time.  this allows
+!  large problems to be solved without peripheral
+!  storage.  the length of the rows is limited by
+!  the amount of scratch storage which can be set
+!  aside for use by the routine.  there is no
+!  restriction on the number of rows.
+!
+!### Usage
+!  [[suprls]] is called once for
+!  each row of the matrix.  A final call returns
+!  the solution vector and the euclidean norm
+!  of the residual. This following sequence would
+!  process the `m` by `n` matrix `r` and the right hand
+!  side `m`-vector `b`
+!
+!```fortran
+!  do i = 1,m
+!    do j = 1,n
+!      ! here set rowi(j) to the (i,j) element of r
+!    end do
+!    ! here set bi to the ith component of b.
+!    call suprls(i,rowi,n,bi,a,nn,soln,err,ier)
+!  end do
+!  call suprls (0,rowi,n,bi,a,nn,soln,err,ier)
+!```
+!
+!### Algorithm
+!  given the `m` by `n` matrix `r` (`m>=n`) and the
+!  `m`-vector `b`, we wish to find an `n`-vector `x`
+!  such that
+!```
+!      e = l2-norm of  r*x-b
+!```
+!  is minimized.  since the euclidean norm is
+!  invariant under orthogonal transformation,
+!  `r` and `b` may be premultiplied by any
+!  orthogonal matrix without changing the
+!  norm of the residual (`r*x-b`).  `r` is reduced
+!  to upper triangular form by premultiplying
+!  `r` and `b` by a sequence of householder and
+!  rotation matrices.  when the reduction is
+!  complete, the norm of the residual takes the
+!  form
+!```
+!    e =  l2 norm(t*x-b(n))+l2 norm(b(m-n))
+!```
+!  where `t` is an `n` by `n` upper triangular
+!  matrix, `b(n)` is a vector of the first `n`
+!  components of `b`, `b(m-n)` is a vector of
+!  the remaining `(m-n)` components of `b`.  `e` is
+!  minimized by taking `x` to be the solution
+!  of the system  `t*x=b(n)`.  this triangular
+!  system is therefore solved to give the
+!  required least squares solution.  the norm
+!  of the residual is then the l2-norm of `b(m-n)`.
+!
+!  at each phase of the reduction, as many rows
+!  as space permits are entered into the scratch
+!  area.  householder transformations are then
+!  used to zero out subdiagonal elements.  space
+!  is saved by eliminating storage for the
+!  zero subdiagonal terms.  if there is room
+!  for only one new row, rotation rather than
+!  householder matrices are used for greater
+!  speed.  when all `m` rows have been entered,
+!  reduction is completed and the triangular
+!  system solved.
+!
+!### Reference
+!  * Hanson, R.J., and Lawson, C.L., "Extensions and
+!  applications of the householder algorithm
+!  for solving linear least squares problems".
+!  Math. of comp. vol.23, pp. 787-812. (1969)
+!
+!### Accuracy
+!  This will depend upon the size and condition
+!  of the matrix.  Near machine accuracy may be
+!  expected for well conditioned systems of
+!  moderate size.  If ill conditioning is
+!  suspect, a version using pivoting may be
+!  necessary.
+!
+!### History
+!  * Original FORTRAN 66 version written in May 1972 by
+!    A.K. Cline of NCAR'S Scientific Computing Division.
 
 subroutine suprls(me,i,rowi,n,bi,a,nn,soln,err,ier)
 
     class(splpak_type),intent(inout) :: me
-    integer :: i
-    integer :: nn
-    integer,intent(in) :: n
-    real(wp) :: rowi(n)
-    real(wp) :: bi
-    real(wp) :: a(nn)
-    real(wp) :: soln(n)
-    real(wp) :: err
-    integer :: ier
+    integer,intent(in) :: i !! the index of the row being entered.  (`i` is 1
+                            !! for the first call, increases by 1 for each
+                            !! call, and is `m` when the final row is
+                            !! entered).  After the final row has been
+                            !! entered, [[suprls]] is called with `i = 0` to
+                            !! complete the reduction and solution.
+    integer,intent(in) :: nn !! length of scratch array `a`. `nn` must be at
+                             !! least `n*(n+5)/2+1`. For speed, `nn` should be
+                             !! as large as possible up to a maximum of
+                             !! `(n+1)*m`.
+    integer,intent(in) :: n !! the length of the rows of the matrix (i.e.,
+                            !! the number of columns). `n <= m`, where `m` is
+                            !! the number of rows.
+    real(wp),intent(in) :: rowi(n) !! a vector which on the `i`th call contains the `n`
+                                   !! components of the `i`th row of the matrix.  the
+                                   !! dimension of `rowi` in calling program must be
+                                   !! at least `n`.
+    real(wp),intent(in) :: bi !! on the `i`th call, `bi` contains the `i`th element
+                              !! of the right hand side vector `b`.
+    real(wp),intent(in) :: a(nn) !! a working array which must not be changed
+                                 !! between the successive calls to [[suprls]].
+    real(wp),intent(out) :: soln(n) !! the `n`-components of the solution vector are
+                                    !! returned in this array after the final call
+                                    !! to [[suprls]].
+    real(wp),intent(out) :: err !! the euclidean norm of the residual is
+                                !! returned in `err` after the final call to
+                                !! [[suprls]].
+    integer,intent(out) :: ier !! error parameter.
+                               !! fatal errors:
+                               !!
+                               !!  * 32 -- insufficient scratch storage provided,
+                               !!    must have `nn >= n*(n+5)/2+1`.
+                               !!  * 33 -- array has too few rows.  must have
+                               !!    `m >= n`.
+                               !!  * 34 -- system is singular.
+                               !!  * 35 -- values of `i` not in sequence.
 
     real(wp) :: s,temp,temp1,cn,sn
     integer :: j,ilj,ilnp,nreq,k,&
