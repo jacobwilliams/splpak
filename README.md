@@ -1,3 +1,6 @@
+![splpak](/media/splpak.png)
+============
+
 This library contains routines for fitting (least squares) a multidimensional cubic spline to arbitrarily located data.  It also contains routines for evaluating this spline (or its partial derivatives) at any point.
 This is a modernization of the double precision SPLPAK files from [NCL](https://github.com/NCAR/ncl).
 
