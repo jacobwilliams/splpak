@@ -152,11 +152,17 @@
 </h2>
     
 
-    <p>Returns an interpolated value at the point defined by the array X.</p>
+    <p>N-dimensional cubic spline function evaluation.</p>
+<p>Except for lack of derivative capability, this
+  function is identical to function <a href="../proc/splde.html">splde</a> in
+  usage.  The argument list is also identical
+  except for the omission of <code>nderiv</code>.</p>
 <h3>See also</h3>
 <ul>
 <li><a href="../proc/splde.html">splde</a></li>
 </ul>
+<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
+      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -186,7 +192,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndim~3"></span>
+              <span class="anchor" id="variable-ndim~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -201,7 +207,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~2"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -216,7 +222,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-coef~3"></span>
+              <span class="anchor" id="variable-coef~4"></span>
               real(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -231,7 +237,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmin~3"></span>
+              <span class="anchor" id="variable-xmin~4"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -246,7 +252,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmax~3"></span>
+              <span class="anchor" id="variable-xmax~4"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -261,7 +267,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nodes~3"></span>
+              <span class="anchor" id="variable-nodes~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -276,7 +282,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ierror~3"></span>
+              <span class="anchor" id="variable-ierror~4"></span>
               integer,
             </td>
 <td>intent(out)</td>

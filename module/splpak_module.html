@@ -770,7 +770,7 @@ generic,
                   public
                   :: <strong><a href='../type/splpak_type.html#boundprocedure-evaluate'>evaluate</a></strong>
  =>
-                    <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde'>splde</a>
+                    <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde~2'>splde</a>
                 </td>
                 <td><p>evaluate the spline</p></td>
               </tr>
@@ -812,7 +812,7 @@ generic,
                 <td>
                     procedure
                     ,                  private
-                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splde'>splde</a></strong>
+                  :: <strong><a href='../type/splpak_type.html#boundprocedure-splde~2'>splde</a></strong>
 <small>Function</small>                </td>
                 <td></td>
               </tr>
@@ -848,8 +848,7 @@ generic,
 </h3></div>
     <div class="panel-body">
           
-  <p>Returns an interpolated
-  value for one of several partial derivatives.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>N-dimensional cubic spline derivative evaluation.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -889,7 +888,11 @@ generic,
             <td>::</td>
             <td><strong>ndim</strong></td>
             <td>
-
+<p>the dimensionality of the problem.  the
+spline is a function of <code>ndim</code> variables or
+coordinates and thus a point in the
+independent variable space is an <code>ndim</code> vector.
+<code>ndim</code> must be in the range <code>1 &lt;= ndim &lt;= 4</code>.</p>
             </td>
         </tr>
         <tr>
@@ -904,7 +907,9 @@ generic,
             <td>::</td>
             <td><strong>x</strong>(ndim)</td>
             <td>
-
+<p>an <code>ndim</code> vector describing the point in the
+independent variable space at which the
+spline is to be evaluated.</p>
             </td>
         </tr>
         <tr>
@@ -919,7 +924,11 @@ generic,
             <td>::</td>
             <td><strong>nderiv</strong>(ndim)</td>
             <td>
-
+<p>an <code>ndim</code> vector of integers specifying the
+partial derivative to be evaluated.  the
+order of the derivative along the <code>idim</code> axis
+is <code>nderiv(idim)</code>.  these integers must be in
+the range <code>0 &lt;= nderiv(idim) &lt;= 2</code>.</p>
             </td>
         </tr>
         <tr>
@@ -934,7 +943,18 @@ generic,
             <td>::</td>
             <td><strong>coef</strong>(*)</td>
             <td>
-
+<p>the array of coefficients which determine the
+spline.  each coefficient corresponds to a
+particular basis function which in turn
+corresponds to a node in the node grid.  this
+correspondence between the node grid and the
+array <code>coef</code> is as if <code>coef</code> were an
+ndim-dimensional fortran array with
+dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
+store the array linearly, the leftmost
+indices are incremented most frequently.
+coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
+or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -949,7 +969,11 @@ generic,
             <td>::</td>
             <td><strong>xmin</strong>(ndim)</td>
             <td>
-
+<p>a vector describing the lower extreme corner
+of the node grid.  a set of evenly spaced
+nodes is formed along each coordinate axis
+and <code>xmin(idim)</code> is the location of the first
+node along the <code>idim</code> axis.</p>
             </td>
         </tr>
         <tr>
@@ -964,7 +988,11 @@ generic,
             <td>::</td>
             <td><strong>xmax</strong>(ndim)</td>
             <td>
-
+<p>a vector describing the upper extreme corner
+of the node grid.  a set of evenly spaced
+nodes is formed along each coordinate axis
+and <code>xmax(idim)</code> is the location of the last
+node along the <code>idim</code> axis.</p>
             </td>
         </tr>
         <tr>
@@ -979,7 +1007,14 @@ generic,
             <td>::</td>
             <td><strong>nodes</strong>(ndim)</td>
             <td>
-
+<p>a vector of integers describing the number of
+nodes along each axis.  <code>nodes(idim)</code> is the
+the number of nodes (counting endpoints)
+along the <code>idim</code> axis and determines the
+flexibility of the spline in that coordinate
+direction.  <code>nodes(idim)</code> must be &gt;= 4 but
+may be as large as the arrays <code>coef</code> and <code>work</code>
+allow.</p><a href="../proc/splde.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -994,7 +1029,7 @@ generic,
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-
+<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -1004,7 +1039,9 @@ generic,
     Return Value
     <small>real(kind=wp)</small>
     </h4>
-    
+    <p>the function value returned is the partial
+derivative (indicated by <code>nderiv</code>) of the
+spline evaluated at <code>x</code>.</p>
 
     </div>
   </div>
@@ -1014,7 +1051,7 @@ generic,
 </h3></div>
     <div class="panel-body">
           
-  <p>Returns an interpolated value at the point defined by the array X.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>N-dimensional cubic spline function evaluation.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1876,7 +1913,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  of the spline in that coordinate direction.
  <code>NODES(IDIM)</code> must be <code>&gt;= 4</code>, but may be as
  large as the arrays <code>COEF</code> and <code>WORK</code> allow.
- The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
+ The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2011,7 +2048,7 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -2026,7 +2063,8 @@ diagnosed if <code>NWRK</code> is less than
 </h3></div>
     <div class="panel-body">
           
-  <p>Solve the overdetermined system of linear equations.</p>
+  <p>To determine the least squares solution of a
+  large overdetermined linear system.</p><a href="../proc/suprls.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2057,31 +2095,39 @@ diagnosed if <code>NWRK</code> is less than
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer
+              integer,
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>i</strong></td>
             <td>
-
+<p>the index of the row being entered.  (<code>i</code> is 1
+for the first call, increases by 1 for each
+call, and is <code>m</code> when the final row is
+entered).  After the final row has been
+entered, <a href="../proc/suprls.html">suprls</a> is called with <code>i = 0</code> to
+complete the reduction and solution.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp)
+              real(kind=wp),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>rowi</strong>(n)</td>
             <td>
-
+<p>a vector which on the <code>i</code>th call contains the <code>n</code>
+components of the <code>i</code>th row of the matrix.  the
+dimension of <code>rowi</code> in calling program must be
+at least <code>n</code>.</p>
             </td>
         </tr>
         <tr>
@@ -2096,97 +2142,109 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>n</strong></td>
             <td>
-
+<p>the length of the rows of the matrix (i.e.,
+the number of columns). <code>n &lt;= m</code>, where <code>m</code> is
+the number of rows.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp)
+              real(kind=wp),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>bi</strong></td>
             <td>
-
+<p>on the <code>i</code>th call, <code>bi</code> contains the <code>i</code>th element
+of the right hand side vector <code>b</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp)
+              real(kind=wp),
             </td>
-<td></td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>a</strong>(nn)</td>
             <td>
-
+<p>a working array which must not be changed
+between the successive calls to <a href="../proc/suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer
+              integer,
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>nn</strong></td>
             <td>
-
+<p>length of scratch array <code>a</code>. <code>nn</code> must be at
+least <code>n*(n+5)/2+1</code>. For speed, <code>nn</code> should be
+as large as possible up to a maximum of
+<code>(n+1)*m</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp)
+              real(kind=wp),
             </td>
-<td></td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>soln</strong>(n)</td>
             <td>
-
+<p>the <code>n</code>-components of the solution vector are
+returned in this array after the final call
+to <a href="../proc/suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=wp)
+              real(kind=wp),
             </td>
-<td></td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>err</strong></td>
             <td>
-
+<p>the euclidean norm of the residual is
+returned in <code>err</code> after the final call to
+<a href="../proc/suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer
+              integer,
             </td>
-<td></td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>ier</strong></td>
             <td>
-
+<p>error parameter.
+fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>

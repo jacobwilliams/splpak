@@ -152,14 +152,27 @@
 </h2>
     
 
-    <p>Returns an interpolated
-  value for one of several partial derivatives.</p>
+    <p>N-dimensional cubic spline derivative evaluation.</p>
+<p>A grid of evenly spaced nodes in <code>ndim</code> space is
+  defined by the arguments <code>xmin</code>, <code>xmax</code> and <code>nodes</code>.
+  A linear basis for the class of natural splines
+  on these nodes is formed, and to each basis
+  function corresponds a coefficient in the array
+  <code>coef</code> (computed in <a href="../proc/splcc.html">splcc</a> or <a href="../proc/splcw.html">splcw</a>).  Using
+  <code>nderiv</code> to indicate the appropriate partial
+  derivatives, each basis function is evaluated
+  at the point <code>x</code> in <code>ndim</code> space.  These values are
+  then multiplied by the corresponding
+  coefficient and summed to form the function
+  result.</p>
 <h3>See also</h3>
 <ul>
 <li><a href="../proc/splfe.html">splfe</a></li>
 </ul>
 <p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>The original version of this routine would stop for an error.
       Now it just returns.</p></div>
+<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
+      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -189,7 +202,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndim~4"></span>
+              <span class="anchor" id="variable-ndim"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -199,12 +212,16 @@
             <td>::</td>
             <td><strong>ndim</strong></td>
             <td>
-                
+                <p>the dimensionality of the problem.  the
+spline is a function of <code>ndim</code> variables or
+coordinates and thus a point in the
+independent variable space is an <code>ndim</code> vector.
+<code>ndim</code> must be in the range <code>1 &lt;= ndim &lt;= 4</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~2"></span>
+              <span class="anchor" id="variable-x"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -214,7 +231,9 @@
             <td>::</td>
             <td><strong>x</strong>(ndim)</td>
             <td>
-                
+                <p>an <code>ndim</code> vector describing the point in the
+independent variable space at which the
+spline is to be evaluated.</p>
             </td>
         </tr>
         <tr>
@@ -229,12 +248,16 @@
             <td>::</td>
             <td><strong>nderiv</strong>(ndim)</td>
             <td>
-                
+                <p>an <code>ndim</code> vector of integers specifying the
+partial derivative to be evaluated.  the
+order of the derivative along the <code>idim</code> axis
+is <code>nderiv(idim)</code>.  these integers must be in
+the range <code>0 &lt;= nderiv(idim) &lt;= 2</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-coef~4"></span>
+              <span class="anchor" id="variable-coef"></span>
               real(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -244,12 +267,25 @@
             <td>::</td>
             <td><strong>coef</strong>(*)</td>
             <td>
-                
+                <p>the array of coefficients which determine the
+spline.  each coefficient corresponds to a
+particular basis function which in turn
+corresponds to a node in the node grid.  this
+correspondence between the node grid and the
+array <code>coef</code> is as if <code>coef</code> were an
+ndim-dimensional fortran array with
+dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
+store the array linearly, the leftmost
+indices are incremented most frequently.
+coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
+or <a href="../proc/splcw.html">splcw</a>.</p>
+<p>the dimension is assumed to be
+<code>coef(nodes(1)*...*nodes(ndim))</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmin~4"></span>
+              <span class="anchor" id="variable-xmin"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -259,12 +295,16 @@
             <td>::</td>
             <td><strong>xmin</strong>(ndim)</td>
             <td>
-                
+                <p>a vector describing the lower extreme corner
+of the node grid.  a set of evenly spaced
+nodes is formed along each coordinate axis
+and <code>xmin(idim)</code> is the location of the first
+node along the <code>idim</code> axis.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmax~4"></span>
+              <span class="anchor" id="variable-xmax"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -274,12 +314,16 @@
             <td>::</td>
             <td><strong>xmax</strong>(ndim)</td>
             <td>
-                
+                <p>a vector describing the upper extreme corner
+of the node grid.  a set of evenly spaced
+nodes is formed along each coordinate axis
+and <code>xmax(idim)</code> is the location of the last
+node along the <code>idim</code> axis.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nodes~4"></span>
+              <span class="anchor" id="variable-nodes"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -289,12 +333,32 @@
             <td>::</td>
             <td><strong>nodes</strong>(ndim)</td>
             <td>
-                
+                <p>a vector of integers describing the number of
+nodes along each axis.  <code>nodes(idim)</code> is the
+the number of nodes (counting endpoints)
+along the <code>idim</code> axis and determines the
+flexibility of the spline in that coordinate
+direction.  <code>nodes(idim)</code> must be &gt;= 4 but
+may be as large as the arrays <code>coef</code> and <code>work</code>
+allow.</p>
+<p><em>note:</em>  the node grid is completely defined by
+the arguments <code>xmin</code>, <code>xmax</code> and <code>nodes</code>.
+the spacing of this grid in the <code>idim</code>
+coordinate direction is
+<code>dx(idim) = (xmax(idim)-xmin(idim)) / (nodes(idim)-1)</code>.
+a node in this grid may be indexed by
+an <code>ndim</code> vector of integers
+<code>(in(1),...,in(ndim))</code> where
+<code>1 &lt;= in(idim) &lt;= nodes(idim)</code>.  the
+location of such a node may be
+represented by an <code>ndim</code> vector
+<code>(x(1),...,x(ndim))</code> where
+<code>x(idim) = xmin(idim)+(in(idim)-1) * dx(idim)</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ierror~4"></span>
+              <span class="anchor" id="variable-ierror"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -304,7 +368,14 @@
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-                
+                <p>an error flag with the following meanings:</p>
+<ul>
+<li>0  no error.</li>
+<li>101  ndim is &lt; 1 or is &gt; 4.</li>
+<li>102  nodes(idim) is &lt; 4 for some idim.</li>
+<li>103  xmin(idim) = xmax(idim) for some idim.</li>
+<li>104  nderiv(idim) is &lt; 0 or is &gt; 2 for some idim.</li>
+</ul>
             </td>
         </tr>
     </tbody>
@@ -312,11 +383,13 @@
 
       <h3>Return Value
         <small>
-          <span class="anchor" id="variable-splde~2"></span>
+          <span class="anchor" id="variable-splde"></span>
           real(kind=wp)
         </small>
       </h3>
-      
+      <p>the function value returned is the partial
+derivative (indicated by <code>nderiv</code>) of the
+spline evaluated at <code>x</code>.</p>
     <br>
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -466,15 +539,76 @@
     <div class="highlight"><pre><span></span><span class="k">function </span><span class="n">splde</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">nderiv</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">splpak_type</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splde</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndim</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmin</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmax</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nderiv</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nodes</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ierror</span><span class="w"></span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splde</span><span class="w"> </span><span class="c">!! the function value returned is the partial</span>
+<span class="w">                      </span><span class="c">!! derivative (indicated by `nderiv`) of the</span>
+<span class="w">                      </span><span class="c">!! spline evaluated at `x`.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndim</span><span class="w"> </span><span class="c">!! the dimensionality of the problem.  the</span>
+<span class="w">                               </span><span class="c">!! spline is a function of `ndim` variables or</span>
+<span class="w">                               </span><span class="c">!! coordinates and thus a point in the</span>
+<span class="w">                               </span><span class="c">!! independent variable space is an `ndim` vector.</span>
+<span class="w">                               </span><span class="c">!! `ndim` must be in the range `1 &lt;= ndim &lt;= 4`.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="c">!! an `ndim` vector describing the point in the</span>
+<span class="w">                                   </span><span class="c">!! independent variable space at which the</span>
+<span class="w">                                   </span><span class="c">!! spline is to be evaluated.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="c">!! the array of coefficients which determine the</span>
+<span class="w">                                    </span><span class="c">!! spline.  each coefficient corresponds to a</span>
+<span class="w">                                    </span><span class="c">!! particular basis function which in turn</span>
+<span class="w">                                    </span><span class="c">!! corresponds to a node in the node grid.  this</span>
+<span class="w">                                    </span><span class="c">!! correspondence between the node grid and the</span>
+<span class="w">                                    </span><span class="c">!! array `coef` is as if `coef` were an</span>
+<span class="w">                                    </span><span class="c">!! ndim-dimensional fortran array with</span>
+<span class="w">                                    </span><span class="c">!! dimensions `nodes(1),...,nodes(ndim)`, i.e., to</span>
+<span class="w">                                    </span><span class="c">!! store the array linearly, the leftmost</span>
+<span class="w">                                    </span><span class="c">!! indices are incremented most frequently.</span>
+<span class="w">                                    </span><span class="c">!! coef may be computed by using routines [[splcc]]</span>
+<span class="w">                                    </span><span class="c">!! or [[splcw]].</span>
+<span class="w">                                    </span><span class="c">!!</span>
+<span class="w">                                    </span><span class="c">!! the dimension is assumed to be</span>
+<span class="w">                                    </span><span class="c">!! `coef(nodes(1)*...*nodes(ndim))`.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmin</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="c">!! a vector describing the lower extreme corner</span>
+<span class="w">                                      </span><span class="c">!! of the node grid.  a set of evenly spaced</span>
+<span class="w">                                      </span><span class="c">!! nodes is formed along each coordinate axis</span>
+<span class="w">                                      </span><span class="c">!! and `xmin(idim)` is the location of the first</span>
+<span class="w">                                      </span><span class="c">!! node along the `idim` axis.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmax</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="c">!! a vector describing the upper extreme corner</span>
+<span class="w">                                      </span><span class="c">!! of the node grid.  a set of evenly spaced</span>
+<span class="w">                                      </span><span class="c">!! nodes is formed along each coordinate axis</span>
+<span class="w">                                      </span><span class="c">!! and `xmax(idim)` is the location of the last</span>
+<span class="w">                                      </span><span class="c">!! node along the `idim` axis.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nderiv</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="c">!! an `ndim` vector of integers specifying the</span>
+<span class="w">                                       </span><span class="c">!! partial derivative to be evaluated.  the</span>
+<span class="w">                                       </span><span class="c">!! order of the derivative along the `idim` axis</span>
+<span class="w">                                       </span><span class="c">!! is `nderiv(idim)`.  these integers must be in</span>
+<span class="w">                                       </span><span class="c">!! the range `0 &lt;= nderiv(idim) &lt;= 2`.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nodes</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"> </span><span class="c">!! a vector of integers describing the number of</span>
+<span class="w">                                      </span><span class="c">!! nodes along each axis.  `nodes(idim)` is the</span>
+<span class="w">                                      </span><span class="c">!! the number of nodes (counting endpoints)</span>
+<span class="w">                                      </span><span class="c">!! along the `idim` axis and determines the</span>
+<span class="w">                                      </span><span class="c">!! flexibility of the spline in that coordinate</span>
+<span class="w">                                      </span><span class="c">!! direction.  `nodes(idim)` must be &gt;= 4 but</span>
+<span class="w">                                      </span><span class="c">!! may be as large as the arrays `coef` and `work`</span>
+<span class="w">                                      </span><span class="c">!! allow.</span>
+<span class="w">                                      </span><span class="c">!!</span>
+<span class="w">                                      </span><span class="c">!! *note:*  the node grid is completely defined by</span>
+<span class="w">                                      </span><span class="c">!! the arguments `xmin`, `xmax` and `nodes`.</span>
+<span class="w">                                      </span><span class="c">!! the spacing of this grid in the `idim`</span>
+<span class="w">                                      </span><span class="c">!! coordinate direction is</span>
+<span class="w">                                      </span><span class="c">!! `dx(idim) = (xmax(idim)-xmin(idim)) / (nodes(idim)-1)`.</span>
+<span class="w">                                      </span><span class="c">!! a node in this grid may be indexed by</span>
+<span class="w">                                      </span><span class="c">!! an `ndim` vector of integers</span>
+<span class="w">                                      </span><span class="c">!! `(in(1),...,in(ndim))` where</span>
+<span class="w">                                      </span><span class="c">!! `1 &lt;= in(idim) &lt;= nodes(idim)`.  the</span>
+<span class="w">                                      </span><span class="c">!! location of such a node may be</span>
+<span class="w">                                      </span><span class="c">!! represented by an `ndim` vector</span>
+<span class="w">                                      </span><span class="c">!! `(x(1),...,x(ndim)) ` where</span>
+<span class="w">                                      </span><span class="c">!! `x(idim) = xmin(idim)+(in(idim)-1) * dx(idim)`.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ierror</span><span class="w"> </span><span class="c">!! an error flag with the following meanings:</span>
+<span class="w">                                  </span><span class="c">!!</span>
+<span class="w">                                  </span><span class="c">!! *   0  no error.</span>
+<span class="w">                                  </span><span class="c">!! * 101  ndim is &lt; 1 or is &gt; 4.</span>
+<span class="w">                                  </span><span class="c">!! * 102  nodes(idim) is &lt; 4 for some idim.</span>
+<span class="w">                                  </span><span class="c">!! * 103  xmin(idim) = xmax(idim) for some idim.</span>
+<span class="w">                                  </span><span class="c">!! * 104  nderiv(idim) is &lt; 0 or is &gt; 2 for some idim.</span>
 
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xrng</span><span class="p">,</span><span class="nb">sum</span><span class="p">,</span><span class="n">basm</span><span class="w"></span>
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iibmx</span><span class="p">,</span><span class="nb">idim</span><span class="p">,</span><span class="n">nod</span><span class="p">,</span><span class="n">it</span><span class="p">,</span><span class="n">iib</span><span class="p">,</span><span class="n">icof</span><span class="w"></span>
