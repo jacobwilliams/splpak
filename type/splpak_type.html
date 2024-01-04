@@ -4,75 +4,58 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Fitting (least squares) a multidimensional cubic spline to arbitrarily located data">
+      <meta name="description" content="Fitting (least squares) a multidimensional cubic spline to arbitrarily located data">
     <meta name="author" content="Jacob Williams" >
     <link rel="icon" href="../favicon.png">
 
     <title>splpak_type &ndash; splpak </title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
-    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="../js/jquery-2.1.3.min.js"></script>
-    <script src="../js/svg-pan-zoom.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">splpak </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-              data-toggle="dropdown" role="button"
-              aria-haspopup="true"
-     aria-expanded="false">Contents <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="../sourcefile/splpak.f90.html">Source File</a></li>
-            <li><a href="../lists/modules.html">Modules</a></li>
-            <li><a href="../lists/procedures.html">Procedures</a></li>
-                   <li><a href="../lists/types.html">Derived Types</a></li>
-       
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
             </ul>
-        
-            </li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../sourcefile/splpak.f90.html">Source File</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
-          </ul>
-        <form action="../search.html" class="navbar-form navbar-right" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
         </div>
-<!--
-        <button type="submit" class="btn btn-default">Submit</button>
--->
-        </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="container">
   <div class="row">
@@ -80,33 +63,37 @@
       <small>Derived Type</small>
       
     </h1>
-      <div class="row" id="info-bar">
-    <div class="col-lg-12">
-      <div class="well well-sm">
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
-          <li id="statements"><i class="fa fa-list-ol"></i>
-            <a data-toggle="tooltip"
-               data-placement="bottom" data-html="true"
-               title="<p>100.0% of total for derived types.</p>Including implementation: 1027 statements, 100.0% of total for derived types.">29 statements</a>
-          </li>
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title="<p>100.0% of total for derived types.</p>Including implementation: 718 statements, 100.0% of total for derived types.">29 statements</a>
+            </li>
 
-            <li id="source-file">
+            <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
               <a href="../src/splpak.F90"> Source File</a>
             </li>
         </ul>
-        <ol class="breadcrumb in-well text-right">
-              <li><a href='../sourcefile/splpak.f90.html'>splpak.F90</a></li>
-              <li><a href='../module/splpak_module.html'>splpak_module</a></li>
-          <li class="active">splpak_type</li>
-        </ol>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/splpak.f90.html'>splpak.F90</a></li>
+                <li class="breadcrumb-item"><a href='../module/splpak_module.html'>splpak_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">splpak_type</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </div>
   <script>
     $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
     })
   </script>
 
@@ -117,14 +104,13 @@
       <div id="sidebar">
       <h3>Contents</h3>
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#vars-0">Variables</a>
-        </h3>
-      </div>
-      <div id="vars-0" class="panel-collapse collapse">
-        <div class="list-group">
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/splpak_type.html#variable-mdim">mdim</a>
             <a class="list-group-item" href="../type/splpak_type.html#variable-dx">dx</a>
             <a class="list-group-item" href="../type/splpak_type.html#variable-dxin">dxin</a>
@@ -159,21 +145,20 @@
   
   
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#boundprocs-0">Type-Bound Procedures</a>
-        </h3>
-      </div>
-      <div id="boundprocs-0" class="panel-collapse collapse">
-        <div class="list-group">
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#boundprocs-0"
+         aria-expanded="false" aria-controls="boundprocs-0">
+         <h4 class="card-header bg-primary text-white">Type-Bound Procedures</h4>
+      </a>
+      <div id="boundprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-initialize">initialize</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-evaluate">evaluate</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-destroy">destroy</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splcc">splcc</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splfe">splfe</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splde~2">splde</a>
+            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splde">splde</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-bascmp">bascmp</a>
             <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-suprls">suprls</a>
         </div>
@@ -181,8 +166,9 @@
     </div>
 
   
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
       <div class="list-group">
         <a class="list-group-item" href="../type/splpak_type.html#src">splpak_type</a>
       </div>
@@ -197,20 +183,20 @@
       <h2>type, public :: splpak_type</h2>
     <h3>Usage</h3>
 <p>The class contains four user entries:
-  <a href="../proc/splcc.html">splcc</a>, <a href="../proc/splcw.html">splcw</a>, <a href="../proc/splfe.html">splfe</a>, and <a href="../proc/splde.html">splde</a>.</p>
-<p>The user first calls <a href="../proc/splcc.html">splcc</a> by</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span><span class="w"></span>
-<span class="w">                       </span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="w"></span>
-<span class="w">                       </span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+  <a href="../type/splpak_type.html#boundprocedure-splcc">splcc</a>, <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>, <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a>, and <a href="../type/splpak_type.html#boundprocedure-splde">splde</a>.</p>
+<p>The user first calls <a href="../type/splpak_type.html#boundprocedure-splcc">splcc</a> by</p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>or <a href="../proc/splcw.html">splcw</a> by</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">wdata</span><span class="p">,</span><span class="w"></span>
-<span class="w">                       </span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="w"></span>
-<span class="w">                       </span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+<p>or <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a> by</p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">wdata</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The parameter <code>NDATA</code> in the call to <a href="../proc/splcw.html">splcw</a>
+<p>The parameter <code>NDATA</code> in the call to <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>
   enables the user to weight some of the data
   points more heavily than others.  Both
   routines return a set of coefficients in the
@@ -218,114 +204,36 @@
   subsequently used in the computation of
   function values and partial derivatives.
   To compute values on the spline approximation
-  the user then calls <a href="../proc/splfe.html">splfe</a> or <a href="../proc/splde.html">splde</a> any
+  the user then calls <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> or <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> any
   number of times in any order provided that
   the values of the inputs, <code>NDIM</code>, <code>COEF</code>, <code>XMIN</code>,
   <code>XMAX</code>, and <code>NODES</code>, are preserved between calls.</p>
-<p><a href="../proc/splfe.html">splfe</a> and <a href="../proc/splde.html">splde</a> are called in the following way:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+<p><a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> and <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> are called in the following way:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
 <p>or</p>
-<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">nderiv</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">nderiv</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The routine <a href="../proc/splfe.html">splfe</a> returns an interpolated
+<p>The routine <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> returns an interpolated
   value at the point defined by the array <code>X</code>.
-  <a href="../proc/splde.html">splde</a> affords the user the additional
+  <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> affords the user the additional
   capability of calculating an interpolated
   value for one of several partial derivatives
   specified by the array <code>NDERIV</code>.</p>
     <br>
-
-    <section class="visible-xs visible-sm hidden-md">
-        <h3>Contents</h3>
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#vars-1">Variables</a>
-        </h3>
-      </div>
-      <div id="vars-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../type/splpak_type.html#variable-mdim">mdim</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-dx">dx</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-dxin">dxin</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-ib">ib</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-ibmn">ibmn</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-ibmx">ibmx</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-ilast">ilast</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-isav">isav</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-iold">iold</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-np1">np1</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-l">l</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-il1">il1</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-k">k</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-k1">k1</a>
-            <a class="list-group-item" href="../type/splpak_type.html#variable-errsum">errsum</a>
-        </div>
-      </div>
-    </div>
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#boundprocs-1">Type-Bound Procedures</a>
-        </h3>
-      </div>
-      <div id="boundprocs-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-initialize">initialize</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-evaluate">evaluate</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-destroy">destroy</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splcc">splcc</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splfe">splfe</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-splde~2">splde</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-bascmp">bascmp</a>
-            <a class="list-group-item" href="../type/splpak_type.html#boundprocedure-suprls">suprls</a>
-        </div>
-      </div>
-    </div>
-
-  
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-      <div class="list-group">
-        <a class="list-group-item" href="../type/splpak_type.html#src">splpak_type</a>
-      </div>
-    </div>
-
-
-    </section>
-    <br class="visible-xs visible-sm hidden-md">
 
     <section>
     <h2>Components</h2>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Visibility</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-<th></th><th>Initial</th>        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -593,10 +501,17 @@
 
       <section>
         <h2>Type-Bound Procedures</h2>
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-initialize"></span><h3>generic, public :: <strong>initialize</strong>  => <a href='../type/splpak_type.html#boundprocedure-splcc'>splcc</a>, <a href='../type/splpak_type.html#boundprocedure-splcw'>splcw</a>         
-    </h3></div>
-      <div class="panel-body">
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-initialize"></span>
+      <h3>
+          generic, public ::
+  <strong>initialize</strong> => <a href='../type/splpak_type.html#boundprocedure-splcc'>splcc</a>, <a href='../type/splpak_type.html#boundprocedure-splcw'>splcw</a>
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>compute the spline coefficients</p>
       </div>
@@ -606,23 +521,19 @@
     private  subroutine <a href='../proc/splcc.html'>splcc</a>(me, ndim, xdata, l1xdat, ydata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3>
     
+
   <p>N-dimensional cubic spline coefficient
-calculation by least squares.</p>
-<p>The usage and arguments of this routine are
-identical to those for <a href="../proc/splcw.html">splcw</a> except for the
-omission of the array of weights, <code>WDATA</code>.  See
-entry <a href="../proc/splcw.html">splcw</a> description for a
-complete description.</p>
+calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -860,70 +771,20 @@ complete description.</p>
     private  subroutine <a href='../proc/splcw.html'>splcw</a>(me, ndim, xdata, l1xdat, ydata, wdata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3>
     
+
   <p>N-dimensional cubic spline coefficient
   calculation by weighted least squares on
-  arbitrarily located data.</p>
-<p>The spline (or its derivatives) may then be
-  evaluated by using function <a href="../proc/splfe.html">splfe</a> (or <a href="../proc/splde.html">splde</a>).</p>
-<p>A grid of evenly spaced nodes in NDIM space is
-  defined by the arguments XMIN, XMAX and NODES.
-  A linear basis for the class of natural splines
-  on these nodes is formed, and a set of
-  corresponding coefficients is computed in the
-  array COEF.  These coefficients are chosen to
-  minimize the weighted sum of squared errors
-  between the spline and the arbitrarily located
-  data values described by the arguments XDATA,
-  YDATA and NDATA.  The smoothness of the spline
-  in data sparse areas is controlled by the
-  argument XTRAP.</p>
-<h3>Note</h3>
-<p>In order to understand the arguments of this
-  routine, one should realize that the node grid
-  need not bear any particular relation to the
-  data points.  In the theory of exact-fit
-  interpolatory splines, the nodes would in fact
-  be data locations, but in this case they serve
-  only to define the class of splines from which
-  the approximating function is chosen.  This
-  node grid is a rectangular arrangement of
-  points in NDIM space, with the restriction that
-  along any coordinate direction the nodes are
-  equally spaced.  The class of natural splines
-  on this grid of nodes (NDIM-cubic splines whose
-  2nd derivatives normal to the boundaries are 0)
-  has as many degrees of freedom as the grid has
-  nodes.  Thus the smoothness or flexibility of
-  the splines is determined by the choice of the
-  node grid.</p>
-<h3>Algorithm</h3>
-<p>An overdetermined system of linear equations
-  is formed -- one equation for each data point
-  plus equations for derivative constraints.
-  This system is solved using subroutine <a href="../proc/suprls.html">suprls</a>.</p>
-<h3>Accuracy</h3>
-<p>If there is exactly one data point in the
-  near vicinity of each node and no extra data,
-  the resulting spline will agree with the
-  data values to machine accuracy.  However, if
-  the problem is overdetermined or the sparse
-  data option is utilized, the accuracy is hard
-  to predict.  Basically, smooth functions
-  require fewer nodes than rough ones for the
-  same accuracy.</p>
-<h3>Timing</h3>
-<p>The execution time is roughly proportional
-  to <code>NDATA*NCOF**2</code> where <code>NCOF = NODES(1)*...*NODES(NDIM)</code>.</p>
+  arbitrarily located data.</p><a href="../proc/splcw.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -1124,7 +985,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  of the spline in that coordinate direction.
  <code>NODES(IDIM)</code> must be <code>&gt;= 4</code>, but may be as
  large as the arrays <code>COEF</code> and <code>WORK</code> allow.
- The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+ The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1182,8 +1043,8 @@ indices are incremented most frequently.
 Hence the length of the <code>COEF</code> array must equal
 or exceed the total number of nodes, which is
 <code>NODES(1)*...*NODES(NDIM)</code>.  The computed array
-<code>COEF</code> may be used with function <a href="../proc/splfe.html">splfe</a>
-(or <a href="../proc/splde.html">splde</a>) to evaluate the spline (or its
+<code>COEF</code> may be used with function <a>SPLFE</a>
+(or <a>SPLDE</a>) to evaluate the spline (or its
 derivatives) at an arbitrary point in <code>NDIM</code>
 space.  The dimension is assumed to be <code>COEF(NCF)</code>.</p>
             </td>
@@ -1259,7 +1120,7 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -1270,10 +1131,18 @@ diagnosed if <code>NWRK</code> is less than
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-evaluate"></span><h3>generic, public :: <strong>evaluate</strong>  => <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde~2'>splde</a>         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-evaluate"></span>
+      <h3>
+          generic, public ::
+  <strong>evaluate</strong> => <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde'>splde</a>
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>evaluate the spline</p>
       </div>
@@ -1283,27 +1152,18 @@ diagnosed if <code>NWRK</code> is less than
     private  function <a href='../proc/splfe.html'>splfe</a>(me, ndim, x, coef, xmin, xmax, nodes, ierror)  
 </h3>
     
-  <p>N-dimensional cubic spline function evaluation.</p>
-<p>Except for lack of derivative capability, this
-  function is identical to function <a href="../proc/splde.html">splde</a> in
-  usage.  The argument list is also identical
-  except for the omission of <code>nderiv</code>.</p>
-<h3>See also</h3>
-<ul>
-<li><a href="../proc/splde.html">splde</a></li>
-</ul>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
-      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
+
+  <p>N-dimensional cubic spline function evaluation.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -1441,37 +1301,18 @@ diagnosed if <code>NWRK</code> is less than
     private  function <a href='../proc/splde.html'>splde</a>(me, ndim, x, nderiv, coef, xmin, xmax, nodes, ierror)  
 </h3>
     
-  <p>N-dimensional cubic spline derivative evaluation.</p>
-<p>A grid of evenly spaced nodes in <code>ndim</code> space is
-  defined by the arguments <code>xmin</code>, <code>xmax</code> and <code>nodes</code>.
-  A linear basis for the class of natural splines
-  on these nodes is formed, and to each basis
-  function corresponds a coefficient in the array
-  <code>coef</code> (computed in <a href="../proc/splcc.html">splcc</a> or <a href="../proc/splcw.html">splcw</a>).  Using
-  <code>nderiv</code> to indicate the appropriate partial
-  derivatives, each basis function is evaluated
-  at the point <code>x</code> in <code>ndim</code> space.  These values are
-  then multiplied by the corresponding
-  coefficient and summed to form the function
-  result.</p>
-<h3>See also</h3>
-<ul>
-<li><a href="../proc/splfe.html">splfe</a></li>
-</ul>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>The original version of this routine would stop for an error.
-      Now it just returns.</p></div>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
-      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
+
+  <p>N-dimensional cubic spline derivative evaluation.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -1567,7 +1408,7 @@ dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
 store the array linearly, the leftmost
 indices are incremented most frequently.
 coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
-or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef" class="pull-right"><emph>Read more&hellip;</emph></a>
+or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1627,7 +1468,7 @@ along the <code>idim</code> axis and determines the
 flexibility of the spline in that coordinate
 direction.  <code>nodes(idim)</code> must be &gt;= 4 but
 may be as large as the arrays <code>coef</code> and <code>work</code>
-allow.</p><a href="../proc/splde.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
+allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1642,7 +1483,7 @@ allow.</p><a href="../proc/splde.html#variable-nodes" class="pull-right"><emph>R
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -1660,10 +1501,18 @@ spline evaluated at <code>x</code>.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-destroy"></span><h3>procedure, public :: <strong>destroy</strong>  => <a href='../proc/destroy_splpak.html'>destroy_splpak</a>         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-destroy"></span>
+      <h3>
+          procedure, public ::
+  <strong>destroy</strong> => <a href='../proc/destroy_splpak.html'>destroy_splpak</a>
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>destory the internal class variables</p>
       </div>
@@ -1673,17 +1522,18 @@ spline evaluated at <code>x</code>.</p>
     private  subroutine <a href='../proc/destroy_splpak.html'>destroy_splpak</a>(me, ndim)  
 </h3>
     
+
   <p>Destroy the internal class variables.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -1724,32 +1574,36 @@ spline evaluated at <code>x</code>.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-splcc"></span><h3>procedure, private :: <strong>splcc</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-splcc"></span>
+      <h3>
+          procedure, private ::
+  <strong>splcc</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  subroutine <a href='../proc/splcc.html'>splcc</a>(me, ndim, xdata, l1xdat, ydata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3>
     
+
   <p>N-dimensional cubic spline coefficient
-calculation by least squares.</p>
-<p>The usage and arguments of this routine are
-identical to those for <a href="../proc/splcw.html">splcw</a> except for the
-omission of the array of weights, <code>WDATA</code>.  See
-entry <a href="../proc/splcw.html">splcw</a> description for a
-complete description.</p>
+calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -1985,79 +1839,37 @@ complete description.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-splcw"></span><h3>procedure, private :: <strong>splcw</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-splcw"></span>
+      <h3>
+          procedure, private ::
+  <strong>splcw</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  subroutine <a href='../proc/splcw.html'>splcw</a>(me, ndim, xdata, l1xdat, ydata, wdata, ndata, xmin, xmax, nodes, xtrap, coef, ncf, work, nwrk, ierror)  
 </h3>
     
+
   <p>N-dimensional cubic spline coefficient
   calculation by weighted least squares on
-  arbitrarily located data.</p>
-<p>The spline (or its derivatives) may then be
-  evaluated by using function <a href="../proc/splfe.html">splfe</a> (or <a href="../proc/splde.html">splde</a>).</p>
-<p>A grid of evenly spaced nodes in NDIM space is
-  defined by the arguments XMIN, XMAX and NODES.
-  A linear basis for the class of natural splines
-  on these nodes is formed, and a set of
-  corresponding coefficients is computed in the
-  array COEF.  These coefficients are chosen to
-  minimize the weighted sum of squared errors
-  between the spline and the arbitrarily located
-  data values described by the arguments XDATA,
-  YDATA and NDATA.  The smoothness of the spline
-  in data sparse areas is controlled by the
-  argument XTRAP.</p>
-<h3>Note</h3>
-<p>In order to understand the arguments of this
-  routine, one should realize that the node grid
-  need not bear any particular relation to the
-  data points.  In the theory of exact-fit
-  interpolatory splines, the nodes would in fact
-  be data locations, but in this case they serve
-  only to define the class of splines from which
-  the approximating function is chosen.  This
-  node grid is a rectangular arrangement of
-  points in NDIM space, with the restriction that
-  along any coordinate direction the nodes are
-  equally spaced.  The class of natural splines
-  on this grid of nodes (NDIM-cubic splines whose
-  2nd derivatives normal to the boundaries are 0)
-  has as many degrees of freedom as the grid has
-  nodes.  Thus the smoothness or flexibility of
-  the splines is determined by the choice of the
-  node grid.</p>
-<h3>Algorithm</h3>
-<p>An overdetermined system of linear equations
-  is formed -- one equation for each data point
-  plus equations for derivative constraints.
-  This system is solved using subroutine <a href="../proc/suprls.html">suprls</a>.</p>
-<h3>Accuracy</h3>
-<p>If there is exactly one data point in the
-  near vicinity of each node and no extra data,
-  the resulting spline will agree with the
-  data values to machine accuracy.  However, if
-  the problem is overdetermined or the sparse
-  data option is utilized, the accuracy is hard
-  to predict.  Basically, smooth functions
-  require fewer nodes than rough ones for the
-  same accuracy.</p>
-<h3>Timing</h3>
-<p>The execution time is roughly proportional
-  to <code>NDATA*NCOF**2</code> where <code>NCOF = NODES(1)*...*NODES(NDIM)</code>.</p>
+  arbitrarily located data.</p><a href="../proc/splcw.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -2258,7 +2070,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  of the spline in that coordinate direction.
  <code>NODES(IDIM)</code> must be <code>&gt;= 4</code>, but may be as
  large as the arrays <code>COEF</code> and <code>WORK</code> allow.
- The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+ The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2316,8 +2128,8 @@ indices are incremented most frequently.
 Hence the length of the <code>COEF</code> array must equal
 or exceed the total number of nodes, which is
 <code>NODES(1)*...*NODES(NDIM)</code>.  The computed array
-<code>COEF</code> may be used with function <a href="../proc/splfe.html">splfe</a>
-(or <a href="../proc/splde.html">splde</a>) to evaluate the spline (or its
+<code>COEF</code> may be used with function <a>SPLFE</a>
+(or <a>SPLDE</a>) to evaluate the spline (or its
 derivatives) at an arbitrary point in <code>NDIM</code>
 space.  The dimension is assumed to be <code>COEF(NCF)</code>.</p>
             </td>
@@ -2393,7 +2205,7 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -2404,36 +2216,35 @@ diagnosed if <code>NWRK</code> is less than
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-splfe"></span><h3>procedure, private :: <strong>splfe</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-splfe"></span>
+      <h3>
+          procedure, private ::
+  <strong>splfe</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  function <a href='../proc/splfe.html'>splfe</a>(me, ndim, x, coef, xmin, xmax, nodes, ierror)  
 </h3>
     
-  <p>N-dimensional cubic spline function evaluation.</p>
-<p>Except for lack of derivative capability, this
-  function is identical to function <a href="../proc/splde.html">splde</a> in
-  usage.  The argument list is also identical
-  except for the omission of <code>nderiv</code>.</p>
-<h3>See also</h3>
-<ul>
-<li><a href="../proc/splde.html">splde</a></li>
-</ul>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
-      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
+
+  <p>N-dimensional cubic spline function evaluation.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -2569,46 +2380,35 @@ diagnosed if <code>NWRK</code> is less than
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-splde~2"></span><h3>procedure, private :: <strong>splde</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-splde"></span>
+      <h3>
+          procedure, private ::
+  <strong>splde</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  function <a href='../proc/splde.html'>splde</a>(me, ndim, x, nderiv, coef, xmin, xmax, nodes, ierror)  
 </h3>
     
-  <p>N-dimensional cubic spline derivative evaluation.</p>
-<p>A grid of evenly spaced nodes in <code>ndim</code> space is
-  defined by the arguments <code>xmin</code>, <code>xmax</code> and <code>nodes</code>.
-  A linear basis for the class of natural splines
-  on these nodes is formed, and to each basis
-  function corresponds a coefficient in the array
-  <code>coef</code> (computed in <a href="../proc/splcc.html">splcc</a> or <a href="../proc/splcw.html">splcw</a>).  Using
-  <code>nderiv</code> to indicate the appropriate partial
-  derivatives, each basis function is evaluated
-  at the point <code>x</code> in <code>ndim</code> space.  These values are
-  then multiplied by the corresponding
-  coefficient and summed to form the function
-  result.</p>
-<h3>See also</h3>
-<ul>
-<li><a href="../proc/splfe.html">splfe</a></li>
-</ul>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>The original version of this routine would stop for an error.
-      Now it just returns.</p></div>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
-      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p></div>
+
+  <p>N-dimensional cubic spline derivative evaluation.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -2704,7 +2504,7 @@ dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
 store the array linearly, the leftmost
 indices are incremented most frequently.
 coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
-or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef" class="pull-right"><emph>Read more&hellip;</emph></a>
+or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2764,7 +2564,7 @@ along the <code>idim</code> axis and determines the
 flexibility of the spline in that coordinate
 direction.  <code>nodes(idim)</code> must be &gt;= 4 but
 may be as large as the arrays <code>coef</code> and <code>work</code>
-allow.</p><a href="../proc/splde.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
+allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2779,7 +2579,7 @@ allow.</p><a href="../proc/splde.html#variable-nodes" class="pull-right"><emph>R
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -2797,60 +2597,37 @@ spline evaluated at <code>x</code>.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-bascmp"></span><h3>procedure, private :: <strong>bascmp</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-bascmp"></span>
+      <h3>
+          procedure, private ::
+  <strong>bascmp</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  subroutine <a href='../proc/bascmp.html'>bascmp</a>(me, x, nderiv, xmin, nodes, icol, basm)  
 </h3>
     
+
   <p>This routine does basis function computations for natural
-splines.  This routine is called by routines <a href="../proc/splcw.html">splcw</a> and <a href="../proc/splde.html">splde</a>
-to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p>
-<ul>
-<li>The <code>MDIM</code> indices in <code>IB</code> (defined in <a href="../type/splpak_type.html">splpak_type</a>) determine
-   a specific node in the node grid (see routine <a href="../proc/splcc.html">splcc</a> for a
-   description of the node grid).  Every node is associated
-   with an <code>MDIM</code>-dimensional basis function and a corresponding
-   column in the least squares matrix (or element of the
-   coefficient vector).  The column index (which may be thought
-   of as a linear address for the <code>MDIM</code>-dimensional node grid)
-   corresponding to the specified node is computed as <code>ICOL</code>.  The
-   associated basis function evaluated at <code>X</code> (an <code>MDIM</code>-vector) is
-   computed as <code>BASM</code> (a scalar).</li>
-</ul>
-<p>In case <code>NDERIV</code> is not all zero, <code>BASM</code> will not be the value of
-the basis function but rather a partial derivative of that
-function as follows:</p>
-<ul>
-<li>The order of the partial derivative in the direction of the
-   <code>IDIM</code> coordinate is <code>NDERIV(IDIM)</code> (for <code>IDIM &lt;= MDIM</code>).  This
-   routine will compute incorrect values if <code>NDERIV(IDIM)</code> is not
-   in the range 0 to 2.</li>
-</ul>
-<p>The technique of this routine is to transform the independent
-variable in each dimension such that the nodes fall on
-suitably chosen integers.  On this transformed space, the
-1-dimensional basis functions and their derivatives have a
-particularly simple form.  The desired <code>MDIM</code>-dimensional basis
-function (or any of its partial derivatives) is computed as
-a product of such 1-dimensional functions (tensor product
-method of defining multi-dimensional splines).  The values
-which determine the location of the nodes, and hence the
-above transform, are passed through common and the argument
-list.</p>
+splines.  This routine is called by routines <a>SPLCW</a> and <a>SPLDE</a>
+to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p><a href="../proc/bascmp.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -2966,115 +2743,36 @@ list.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-suprls"></span><h3>procedure, private :: <strong>suprls</strong>          
-    </h3></div>
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-suprls"></span>
+      <h3>
+          procedure, private ::
+  <strong>suprls</strong>
+        
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  subroutine <a href='../proc/suprls.html'>suprls</a>(me, i, rowi, n, bi, a, nn, soln, err, ier)  
 </h3>
     
+
   <p>To determine the least squares solution of a
-  large overdetermined linear system.</p>
-<p>Given the <code>m</code> by <code>n</code> matrix <code>r</code> (<code>m &gt;= n</code>)
-  and the <code>m</code>-vector <code>b</code>,
-  this routine calculates the <code>n</code>-vector <code>x</code> such
-  that the euclidean norm of the residue (<code>r*x-b</code>)
-  is minimized.  the subroutine accepts rows of
-  the matrix one by one so that the entire matrix
-  need not be stored at one time.  this allows
-  large problems to be solved without peripheral
-  storage.  the length of the rows is limited by
-  the amount of scratch storage which can be set
-  aside for use by the routine.  there is no
-  restriction on the number of rows.</p>
-<h3>Usage</h3>
-<p><a href="../proc/suprls.html">suprls</a> is called once for
-  each row of the matrix.  A final call returns
-  the solution vector and the euclidean norm
-  of the residual. This following sequence would
-  process the <code>m</code> by <code>n</code> matrix <code>r</code> and the right hand
-  side <code>m</code>-vector <code>b</code></p>
-<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="w"></span>
-<span class="w">    </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="w"></span>
-<span class="w">      </span><span class="c">! here set rowi(j) to the (i,j) element of r</span>
-<span class="w">    </span><span class="k">end do</span><span class="w"></span>
-<span class="w">    </span><span class="c">! here set bi to the ith component of b.</span>
-<span class="w">    </span><span class="k">call </span><span class="n">suprls</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">rowi</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">bi</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">nn</span><span class="p">,</span><span class="n">soln</span><span class="p">,</span><span class="n">err</span><span class="p">,</span><span class="n">ier</span><span class="p">)</span><span class="w"></span>
-<span class="w">  </span><span class="k">end do</span>
-<span class="k">  call </span><span class="n">suprls</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">rowi</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">bi</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">nn</span><span class="p">,</span><span class="n">soln</span><span class="p">,</span><span class="n">err</span><span class="p">,</span><span class="n">ier</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-<h3>Algorithm</h3>
-<p>given the <code>m</code> by <code>n</code> matrix <code>r</code> (<code>m&gt;=n</code>) and the
-  <code>m</code>-vector <code>b</code>, we wish to find an <code>n</code>-vector <code>x</code>
-  such that</p>
-<div class="codehilite"><pre><span></span><code>      e = l2-norm of  r*x-b
-</code></pre></div>
-
-<p>is minimized.  since the euclidean norm is
-  invariant under orthogonal transformation,
-  <code>r</code> and <code>b</code> may be premultiplied by any
-  orthogonal matrix without changing the
-  norm of the residual (<code>r*x-b</code>).  <code>r</code> is reduced
-  to upper triangular form by premultiplying
-  <code>r</code> and <code>b</code> by a sequence of householder and
-  rotation matrices.  when the reduction is
-  complete, the norm of the residual takes the
-  form</p>
-<div class="codehilite"><pre><span></span><code>    e =  l2 norm(t*x-b(n))+l2 norm(b(m-n))
-</code></pre></div>
-
-<p>where <code>t</code> is an <code>n</code> by <code>n</code> upper triangular
-  matrix, <code>b(n)</code> is a vector of the first <code>n</code>
-  components of <code>b</code>, <code>b(m-n)</code> is a vector of
-  the remaining <code>(m-n)</code> components of <code>b</code>.  <code>e</code> is
-  minimized by taking <code>x</code> to be the solution
-  of the system  <code>t*x=b(n)</code>.  this triangular
-  system is therefore solved to give the
-  required least squares solution.  the norm
-  of the residual is then the l2-norm of <code>b(m-n)</code>.</p>
-<p>at each phase of the reduction, as many rows
-  as space permits are entered into the scratch
-  area.  householder transformations are then
-  used to zero out subdiagonal elements.  space
-  is saved by eliminating storage for the
-  zero subdiagonal terms.  if there is room
-  for only one new row, rotation rather than
-  householder matrices are used for greater
-  speed.  when all <code>m</code> rows have been entered,
-  reduction is completed and the triangular
-  system solved.</p>
-<h3>Reference</h3>
-<ul>
-<li>Hanson, R.J., and Lawson, C.L., "Extensions and
-  applications of the householder algorithm
-  for solving linear least squares problems".
-  Math. of comp. vol.23, pp. 787-812. (1969)</li>
-</ul>
-<h3>Accuracy</h3>
-<p>This will depend upon the size and condition
-  of the matrix.  Near machine accuracy may be
-  expected for well conditioned systems of
-  moderate size.  If ill conditioning is
-  suspect, a version using pivoting may be
-  necessary.</p>
-<h3>History</h3>
-<ul>
-<li>Original FORTRAN 66 version written in May 1972 by
-    A.K. Cline of NCAR'S Scientific Computing Division.</li>
-</ul>
+  large overdetermined linear system.</p><a href="../proc/suprls.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -3255,11 +2953,12 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
     </ul>
   </div>
 
+          </div>
       </section>
 
     <section>
     <h3><span class="anchor" id="src"></span>Source Code</h3>
-    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">type</span><span class="p">,</span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splpak_type</span><span class="w"></span>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">type</span><span class="p">,</span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splpak_type</span>
 
 <span class="w">        </span><span class="c">!!### Usage</span>
 <span class="w">        </span><span class="c">!!</span>
@@ -3306,26 +3005,26 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
 <span class="w">        </span><span class="c">!!  value for one of several partial derivatives</span>
 <span class="w">        </span><span class="c">!!  specified by the array `NDERIV`.</span>
 
-<span class="w">        </span><span class="k">private</span><span class="w"></span>
+<span class="w">        </span><span class="k">private</span>
 
 <span class="w">        </span><span class="c">! formerly in splcomd common block:</span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mdim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mdim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="c">! originally these were all size 4</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dxin</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ib</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ibmn</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ibmx</span><span class="w"></span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dxin</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ib</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ibmn</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">ibmx</span>
 
 <span class="w">        </span><span class="c">! formerly saved variables in suprls</span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ilast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">isav</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iold</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">np1</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">l</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">il1</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k1</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">errsum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"></span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ilast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">isav</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iold</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">np1</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">l</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">il1</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k1</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">errsum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
 
 <span class="w">        </span><span class="k">contains</span>
 
@@ -3334,14 +3033,14 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
 <span class="k">        generic</span><span class="p">,</span><span class="k">public</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">initialize</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">splcc</span><span class="p">,</span><span class="w"> </span><span class="n">splcw</span><span class="w"> </span><span class="c">!! compute the spline coefficients</span>
 <span class="w">        </span><span class="k">generic</span><span class="p">,</span><span class="k">public</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">evaluate</span><span class="w">   </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">splfe</span><span class="p">,</span><span class="w"> </span><span class="n">splde</span><span class="w"> </span><span class="c">!! evaluate the spline</span>
 <span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">destroy</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">destroy_splpak</span><span class="w"> </span><span class="c">!! destory the internal class variables</span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splcc</span><span class="w"></span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splcw</span><span class="w"></span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splfe</span><span class="w"></span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splde</span><span class="w"></span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bascmp</span><span class="w"></span>
-<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">suprls</span><span class="w"></span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splcc</span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splcw</span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splfe</span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">splde</span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bascmp</span>
+<span class="w">        </span><span class="k">procedure</span><span class="p">,</span><span class="k">private</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">suprls</span>
 
-<span class="w">    </span><span class="k">end type </span><span class="n">splpak_type</span><span class="w"></span>
+<span class="w">    </span><span class="k">end type </span><span class="n">splpak_type</span>
 </pre></div>
 
     </section>
@@ -3349,50 +3048,45 @@ fatal errors:</p><a href="../proc/suprls.html#variable-ier" class="pull-right"><
     </div>
   </div>
 
-    <hr>    
+      <hr>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-      <div class="row">
-        <div class="col-xs-6 col-md-6"><p>splpak was developed by Jacob Williams<br>&copy; 2023 
+        <div class="row justify-content-between">
+          <div class="col"><p>splpak was developed by Jacob Williams<br>&copy; 2024 
 </p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
         </div>
-        <div class="col-xs-6 col-md-6">
-          <p class="text-right">
-            Documentation generated by 
-            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
-          </p>
-        </div>
-      </div>
-      <br>
-      </div> <!-- /container -->    
+        <br>
+      </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+    <!-- Bootstrap core JavaScript -->
     <!-- Placed at the end of the document so the pages load faster -->
-<!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
--->
-    <script src="../js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
     <!-- MathJax JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-      });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script src="../tipuesearch/tipuesearch_content.js"></script>
-    <script src="../tipuesearch/tipuesearch_set.js"></script>
-    <script src="../tipuesearch/tipuesearch.js"></script>
-    
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>

@@ -4,75 +4,58 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Fitting (least squares) a multidimensional cubic spline to arbitrarily located data">
+      <meta name="description" content="Fitting (least squares) a multidimensional cubic spline to arbitrarily located data">
     <meta name="author" content="Jacob Williams" >
     <link rel="icon" href="../favicon.png">
 
     <title>splcc &ndash; splpak</title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
-    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="../js/jquery-2.1.3.min.js"></script>
-    <script src="../js/svg-pan-zoom.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">splpak </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-              data-toggle="dropdown" role="button"
-              aria-haspopup="true"
-     aria-expanded="false">Contents <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="../sourcefile/splpak.f90.html">Source File</a></li>
-            <li><a href="../lists/modules.html">Modules</a></li>
-            <li><a href="../lists/procedures.html">Procedures</a></li>
-                   <li><a href="../lists/types.html">Derived Types</a></li>
-       
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
             </ul>
-        
-            </li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../sourcefile/splpak.f90.html">Source File</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
-          </ul>
-        <form action="../search.html" class="navbar-form navbar-right" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
         </div>
-<!--
-        <button type="submit" class="btn btn-default">Submit</button>
--->
-        </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="container">
   <div class="row">
@@ -80,33 +63,37 @@
       <small>Subroutine</small>
       
     </h1>
-      <div class="row" id="info-bar">
-    <div class="col-lg-12">
-      <div class="well well-sm">
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
-          <li id="statements"><i class="fa fa-list-ol"></i>
-            <a data-toggle="tooltip"
-               data-placement="bottom" data-html="true"
-               title=" 2.7% of total for procedures.">19 statements</a>
-          </li>
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title=" 2.7% of total for procedures.">19 statements</a>
+            </li>
 
-            <li id="source-file">
+            <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
               <a href="../src/splpak.F90"> Source File</a>
             </li>
         </ul>
-        <ol class="breadcrumb in-well text-right">
-              <li><a href='../sourcefile/splpak.f90.html'>splpak.F90</a></li>
-              <li><a href='../module/splpak_module.html'>splpak_module</a></li>
-          <li class="active">splcc</li>
-        </ol>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/splpak.f90.html'>splpak.F90</a></li>
+                <li class="breadcrumb-item"><a href='../module/splpak_module.html'>splpak_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">splcc</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </div>
   <script>
     $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
     })
   </script>
 
@@ -135,8 +122,9 @@
   
   
   
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
       <div class="list-group">
         <a class="list-group-item" href="../proc/splcc.html#src">splcc</a>
       </div>
@@ -155,20 +143,23 @@
     <p>N-dimensional cubic spline coefficient
 calculation by least squares.</p>
 <p>The usage and arguments of this routine are
-identical to those for <a href="../proc/splcw.html">splcw</a> except for the
+identical to those for <a>SPLCW</a> except for the
 omission of the array of weights, <code>WDATA</code>.  See
-entry <a href="../proc/splcw.html">splcw</a> description for a
+entry <a>SPLCW</a> description for a
 complete description.</p>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/splpak_type.html'>splpak_type</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -400,38 +391,195 @@ complete description.</p>
   </table>
 
     <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~splcc~~CallsGraph Pages: 1 -->
+<svg id="procsplccCallsGraph" width="641pt" height="109pt"
+ viewBox="0.00 0.00 641.00 109.32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~splcc~~CallsGraph" class="graph" transform="scale(1.41 1.41) rotate(0) translate(4 150)">
+<title>proc~~splcc~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-150 899,-150 899,4 -4,4"/>
+<!-- proc~splcc -->
+<g id="proc~~splcc~~CallsGraph_node1" class="node">
+<title>proc~splcc</title>
+<polygon fill="none" stroke="black" points="200,-86 0,-86 0,-62 200,-62 200,-86"/>
+<text text-anchor="middle" x="100" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50">splpak_module::splpak_type%splcc</text>
+</g>
+<!-- proc~splcw -->
+<g id="proc~~splcc~~CallsGraph_node2" class="node">
+<title>proc~splcw</title>
+<g id="a_proc~~splcc~~CallsGraph_node2"><a xlink:href=".././proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
+<polygon fill="#d9534f" stroke="#d9534f" points="438,-86 236,-86 236,-62 438,-62 438,-86"/>
+<text text-anchor="middle" x="337" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcw</text>
+</a>
+</g>
+</g>
+<!-- proc~splcc&#45;&gt;proc~splcw -->
+<g id="proc~~splcc~~CallsGraph_edge1" class="edge">
+<title>proc~splcc&#45;&gt;proc~splcw</title>
+<path fill="none" stroke="#000000" d="M200.32,-74C208.69,-74 217.19,-74 225.64,-74"/>
+<polygon fill="#000000" stroke="#000000" points="225.91,-77.5 235.91,-74 225.91,-70.5 225.91,-77.5"/>
+</g>
+<!-- proc~bascmp -->
+<g id="proc~~splcc~~CallsGraph_node3" class="node">
+<title>proc~bascmp</title>
+<g id="a_proc~~splcc~~CallsGraph_node3"><a xlink:href=".././proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
+<polygon fill="#d9534f" stroke="#d9534f" points="707.5,-146 492.5,-146 492.5,-122 707.5,-122 707.5,-146"/>
+<text text-anchor="middle" x="600" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%bascmp</text>
+</a>
+</g>
+</g>
+<!-- proc~splcw&#45;&gt;proc~bascmp -->
+<g id="proc~~splcc~~CallsGraph_edge2" class="edge">
+<title>proc~splcw&#45;&gt;proc~bascmp</title>
+<path fill="none" stroke="#000000" d="M384.16,-86.03C410.43,-92.75 443.99,-101.13 474,-108 491.78,-112.07 511.03,-116.21 528.99,-119.95"/>
+<polygon fill="#000000" stroke="#000000" points="528.31,-123.38 538.81,-121.99 529.73,-116.53 528.31,-123.38"/>
+</g>
+<!-- proc~cfaerr -->
+<g id="proc~~splcc~~CallsGraph_node4" class="node">
+<title>proc~cfaerr</title>
+<g id="a_proc~~splcc~~CallsGraph_node4"><a xlink:href=".././proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
+<polygon fill="#d9534f" stroke="#d9534f" points="895,-65 762,-65 762,-41 895,-41 895,-65"/>
+<text text-anchor="middle" x="828.5" y="-50.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::cfaerr</text>
+</a>
+</g>
+</g>
+<!-- proc~splcw&#45;&gt;proc~cfaerr -->
+<g id="proc~~splcc~~CallsGraph_edge3" class="edge">
+<title>proc~splcw&#45;&gt;proc~cfaerr</title>
+<path fill="none" stroke="#000000" d="M438.4,-80.25C516.92,-83.7 628.71,-85.42 726,-75 741.08,-73.38 757.2,-70.46 772.06,-67.25"/>
+<polygon fill="#000000" stroke="#000000" points="773.12,-70.6 782.11,-65 771.59,-63.77 773.12,-70.6"/>
+</g>
+<!-- proc~destroy_splpak -->
+<g id="proc~~splcc~~CallsGraph_node5" class="node">
+<title>proc~destroy_splpak</title>
+<g id="a_proc~~splcc~~CallsGraph_node5"><a xlink:href=".././proc/destroy_splpak.html" xlink:title="splpak_module::splpak_type%destroy_splpak">
+<polygon fill="#d9534f" stroke="#d9534f" points="726,-66 474,-66 474,-42 726,-42 726,-66"/>
+<text text-anchor="middle" x="600" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%destroy_splpak</text>
+</a>
+</g>
+</g>
+<!-- proc~splcw&#45;&gt;proc~destroy_splpak -->
+<g id="proc~~splcc~~CallsGraph_edge4" class="edge">
+<title>proc~splcw&#45;&gt;proc~destroy_splpak</title>
+<path fill="none" stroke="#000000" d="M438.16,-66.32C446.53,-65.68 455.08,-65.03 463.65,-64.37"/>
+<polygon fill="#000000" stroke="#000000" points="464.02,-67.85 473.72,-63.6 463.48,-60.87 464.02,-67.85"/>
+</g>
+<!-- proc~suprls -->
+<g id="proc~~splcc~~CallsGraph_node6" class="node">
+<title>proc~suprls</title>
+<g id="a_proc~~splcc~~CallsGraph_node6"><a xlink:href=".././proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
+<polygon fill="#d9534f" stroke="#d9534f" points="702.5,-24 497.5,-24 497.5,0 702.5,0 702.5,-24"/>
+<text text-anchor="middle" x="600" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%suprls</text>
+</a>
+</g>
+</g>
+<!-- proc~splcw&#45;&gt;proc~suprls -->
+<g id="proc~~splcc~~CallsGraph_edge5" class="edge">
+<title>proc~splcw&#45;&gt;proc~suprls</title>
+<path fill="none" stroke="#000000" d="M373.46,-61.97C400.71,-53.05 439.42,-41.08 474,-33 485.02,-30.42 496.66,-28.04 508.22,-25.86"/>
+<polygon fill="#000000" stroke="#000000" points="509.14,-29.25 518.35,-24.01 507.88,-22.37 509.14,-29.25"/>
+</g>
+<!-- proc~suprls&#45;&gt;proc~cfaerr -->
+<g id="proc~~splcc~~CallsGraph_edge6" class="edge">
+<title>proc~suprls&#45;&gt;proc~cfaerr</title>
+<path fill="none" stroke="#000000" d="M674.76,-24.04C691.61,-26.89 709.44,-29.98 726,-33 736.31,-34.88 747.19,-36.94 757.85,-39.01"/>
+<polygon fill="#000000" stroke="#000000" points="757.49,-42.5 767.98,-40.98 758.83,-35.63 757.49,-42.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocsplccCallsGraph = svgPanZoom('#procsplccCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CallsGraph-help-text">Help</a></div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                </div>
+              <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.16 1.16) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
 
-    <section class="visible-xs visible-sm hidden-md">
-        <h3>Contents</h3>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-      <div class="list-group">
-        <a class="list-group-item" href="../proc/splcc.html#src">splcc</a>
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-
-    </section>
-    <br class="visible-xs visible-sm hidden-md">
+    <br>
 
 
     
@@ -439,37 +587,38 @@ complete description.</p>
 
     
     
+
 
 
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">splcc</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
-<span class="w">                 </span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+    <div class="hl codehilite"><pre><span></span><span class="k">subroutine </span><span class="n">splcc</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                 </span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 
-<span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">splpak_type</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndim</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">l1xdat</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ncf</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nwrk</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndata</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xdata</span><span class="p">(</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ndata</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ydata</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmin</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmax</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xtrap</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nodes</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="p">(</span><span class="n">nwrk</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="n">ncf</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ierror</span><span class="w"></span>
+<span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">splpak_type</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndim</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">l1xdat</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ncf</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nwrk</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ndata</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xdata</span><span class="p">(</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ndata</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ydata</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmin</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmax</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xtrap</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nodes</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="p">(</span><span class="n">nwrk</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="n">ncf</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ierror</span>
 
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">wdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0_wp</span><span class="w"> </span><span class="c">!! indicates to [[splcw]]</span>
 <span class="w">                                                       </span><span class="c">!! that weights are not used</span>
 
-<span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">splcw</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">wdata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                  </span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">splcw</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">wdata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,&amp;</span>
+<span class="w">                  </span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 
-<span class="k">end subroutine </span><span class="n">splcc</span><span class="w"></span>
+<span class="k">end subroutine </span><span class="n">splcc</span>
 </pre></div>
 
     </section>
@@ -478,50 +627,45 @@ complete description.</p>
     </div>
   </div>
 
-    <hr>    
+      <hr>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-      <div class="row">
-        <div class="col-xs-6 col-md-6"><p>splpak was developed by Jacob Williams<br>&copy; 2023 
+        <div class="row justify-content-between">
+          <div class="col"><p>splpak was developed by Jacob Williams<br>&copy; 2024 
 </p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
         </div>
-        <div class="col-xs-6 col-md-6">
-          <p class="text-right">
-            Documentation generated by 
-            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
-          </p>
-        </div>
-      </div>
-      <br>
-      </div> <!-- /container -->    
+        <br>
+      </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+    <!-- Bootstrap core JavaScript -->
     <!-- Placed at the end of the document so the pages load faster -->
-<!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
--->
-    <script src="../js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
     <!-- MathJax JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-      });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script src="../tipuesearch/tipuesearch_content.js"></script>
-    <script src="../tipuesearch/tipuesearch_set.js"></script>
-    <script src="../tipuesearch/tipuesearch.js"></script>
-    
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>
