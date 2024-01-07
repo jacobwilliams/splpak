@@ -6,6 +6,7 @@ This is a modernization of the double precision SPLPAK files from [NCL](https://
 
 ## Status
 
+[![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)](https://github.com/topics/fortran)
 [![GitHub release](https://img.shields.io/github/release/jacobwilliams/splpak.svg)](https://github.com/jacobwilliams/splpak/releases/latest)
 [![Build Status](https://github.com/jacobwilliams/splpak/actions/workflows/CI.yml/badge.svg)](https://github.com/jacobwilliams/splpak/actions)
 [![codecov](https://codecov.io/gh/jacobwilliams/splpak/branch/master/graph/badge.svg)](https://codecov.io/gh/jacobwilliams/splpak)
