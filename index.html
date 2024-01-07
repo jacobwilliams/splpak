@@ -17,7 +17,8 @@
     <link href="./css/local.css" rel="stylesheet">
       <link  href="./tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="./js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +36,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="./sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="./lists/modules.html">Modules</a>
@@ -79,7 +80,7 @@ This is a modernization of the double precision SPLPAK files from <a href="https
 <a href="https://codecov.io/gh/jacobwilliams/splpak"><img alt="codecov" src="https://codecov.io/gh/jacobwilliams/splpak/branch/master/graph/badge.svg"></a>
 <a href="https://github.com/jacobwilliams/splpak/commits/master"><img alt="last-commit" src="https://img.shields.io/github/last-commit/jacobwilliams/splpak"></a></p>
 <h2>Compiling</h2>
-<p>A <code>fmp.toml</code> file is provided for compiling splpak with the <a href="https://github.com/fortran-lang/fpm">Fortran Package Manager</a>. For example, to build:</p>
+<p>A <code>fpm.toml</code> file is provided for compiling splpak with the <a href="https://github.com/fortran-lang/fpm">Fortran Package Manager</a>. For example, to build:</p>
 <div class="codehilite"><pre><span></span><code>fpm build --profile release
 </code></pre></div>
 
@@ -156,7 +157,7 @@ This is a modernization of the double precision SPLPAK files from <a href="https
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Source Files</h3>
-              <ul><li><a href='./sourcefile/splpak.f90.html'>splpak.F90</a></li></ul>
+              <ul><li><a href='sourcefile/splpak.f90.html'>splpak.F90</a></li></ul>
             </div>
             <div>
               <ul>
@@ -167,7 +168,7 @@ This is a modernization of the double precision SPLPAK files from <a href="https
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Modules</h3>
-              <ul><li><a href='./module/splpak_module.html'>splpak_module</a></li></ul>
+              <ul><li><a href='module/splpak_module.html'>splpak_module</a></li></ul>
             </div>
             <div>
               <ul>
@@ -178,7 +179,7 @@ This is a modernization of the double precision SPLPAK files from <a href="https
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Procedures</h3>
-              <ul><li><a href='./proc/bascmp.html'>bascmp</a></li><li><a href='./proc/cfaerr.html'>cfaerr</a></li><li><a href='./proc/destroy_splpak.html'>destroy_splpak</a></li><li><a href='./proc/splcc.html'>splcc</a></li><li><a href='./proc/splcw.html'>splcw</a></li><li><a href='./proc/splde.html'>splde</a></li><li><a href='./proc/splfe.html'>splfe</a></li><li><a href='./proc/suprls.html'>suprls</a></li></ul>
+              <ul><li><a href='proc/bascmp.html'>bascmp</a></li><li><a href='proc/cfaerr.html'>cfaerr</a></li><li><a href='proc/destroy_splpak.html'>destroy_splpak</a></li><li><a href='proc/splcc.html'>splcc</a></li><li><a href='proc/splcw.html'>splcw</a></li><li><a href='proc/splde.html'>splde</a></li><li><a href='proc/splfe.html'>splfe</a></li><li><a href='proc/suprls.html'>suprls</a></li></ul>
             </div>
             <div>
               <ul>
@@ -189,7 +190,7 @@ This is a modernization of the double precision SPLPAK files from <a href="https
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Derived Types</h3>
-              <ul><li><a href='./type/splpak_type.html'>splpak_type</a></li></ul>
+              <ul><li><a href='type/splpak_type.html'>splpak_type</a></li></ul>
             </div>
             <div>
               <ul>

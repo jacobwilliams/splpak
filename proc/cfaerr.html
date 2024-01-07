@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,7 +19,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +38,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -215,7 +218,7 @@ or just an error message.</p>
 <!-- proc~splcw -->
 <g id="proc~~cfaerr~~CalledByGraph_node2" class="node">
 <title>proc~splcw</title>
-<g id="a_proc~~cfaerr~~CalledByGraph_node2"><a xlink:href=".././proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
+<g id="a_proc~~cfaerr~~CalledByGraph_node2"><a xlink:href="../proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
 <polygon fill="#d9534f" stroke="#d9534f" points="438,-86 236,-86 236,-62 438,-62 438,-86"/>
 <text text-anchor="middle" x="337" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcw</text>
 </a>
@@ -230,7 +233,7 @@ or just an error message.</p>
 <!-- proc~suprls -->
 <g id="proc~~cfaerr~~CalledByGraph_node4" class="node">
 <title>proc~suprls</title>
-<g id="a_proc~~cfaerr~~CalledByGraph_node4"><a xlink:href=".././proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
+<g id="a_proc~~cfaerr~~CalledByGraph_node4"><a xlink:href="../proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
 <polygon fill="#d9534f" stroke="#d9534f" points="679,-66 474,-66 474,-42 679,-42 679,-66"/>
 <text text-anchor="middle" x="576.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%suprls</text>
 </a>
@@ -245,7 +248,7 @@ or just an error message.</p>
 <!-- proc~splde -->
 <g id="proc~~cfaerr~~CalledByGraph_node3" class="node">
 <title>proc~splde</title>
-<g id="a_proc~~cfaerr~~CalledByGraph_node3"><a xlink:href=".././proc/splde.html" xlink:title="splpak_module::splpak_type%splde">
+<g id="a_proc~~cfaerr~~CalledByGraph_node3"><a xlink:href="../proc/splde.html" xlink:title="splpak_module::splpak_type%splde">
 <polygon fill="#d94e8f" stroke="#d94e8f" points="677.5,-24 475.5,-24 475.5,0 677.5,0 677.5,-24"/>
 <text text-anchor="middle" x="576.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splde</text>
 </a>
@@ -266,7 +269,7 @@ or just an error message.</p>
 <!-- proc~splcc -->
 <g id="proc~~cfaerr~~CalledByGraph_node5" class="node">
 <title>proc~splcc</title>
-<g id="a_proc~~cfaerr~~CalledByGraph_node5"><a xlink:href=".././proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
+<g id="a_proc~~cfaerr~~CalledByGraph_node5"><a xlink:href="../proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
 <polygon fill="#d9534f" stroke="#d9534f" points="200,-86 0,-86 0,-62 200,-62 200,-86"/>
 <text text-anchor="middle" x="100" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcc</text>
 </a>
@@ -281,7 +284,7 @@ or just an error message.</p>
 <!-- proc~splfe -->
 <g id="proc~~cfaerr~~CalledByGraph_node6" class="node">
 <title>proc~splfe</title>
-<g id="a_proc~~cfaerr~~CalledByGraph_node6"><a xlink:href=".././proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
+<g id="a_proc~~cfaerr~~CalledByGraph_node6"><a xlink:href="../proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
 <polygon fill="#d94e8f" stroke="#d94e8f" points="436.5,-24 237.5,-24 237.5,0 436.5,0 436.5,-24"/>
 <text text-anchor="middle" x="337" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splfe</text>
 </a>
@@ -299,17 +302,17 @@ or just an error message.</p>
                   var panproccfaerrCalledByGraph = svgPanZoom('#proccfaerrCalledByGraph',
                     {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
                   );
-                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CalledByGraph-help-text">Help</a></div>
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"

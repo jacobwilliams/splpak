@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,7 +19,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +38,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -146,7 +149,7 @@
   A linear basis for the class of natural splines
   on these nodes is formed, and to each basis
   function corresponds a coefficient in the array
-  <code>coef</code> (computed in <a href="../proc/splcc.html">splcc</a> or <a href="../proc/splcw.html">splcw</a>).  Using
+  <code>coef</code> (computed in <a href="splcc.html">splcc</a> or <a href="splcw.html">splcw</a>).  Using
   <code>nderiv</code> to indicate the appropriate partial
   derivatives, each basis function is evaluated
   at the point <code>x</code> in <code>ndim</code> space.  These values are
@@ -155,7 +158,7 @@
   result.</p>
 <h3>See also</h3>
 <ul>
-<li><a href="../proc/splfe.html">splfe</a></li>
+<li><a href="splfe.html">splfe</a></li>
 </ul>
 <div class="alert alert-info">
 <p class="alert-title h4">Note</p>
@@ -165,7 +168,7 @@
 <div class="alert alert-info">
 <p class="alert-title h4">Note</p>
 <p><code>coef</code>, <code>xmin</code>, <code>xmax</code> and <code>nodes</code> must be exactly
-      retained from the call to <a href="../proc/splcc.html">splcc</a> (or <a href="../proc/splcw.html">splcw</a>).</p>
+      retained from the call to <a href="splcc.html">splcc</a> (or <a href="splcw.html">splcw</a>).</p>
 </div>
 
     <h3>Type Bound</h3>
@@ -184,7 +187,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-me~4"></span>
+              <span class="anchor" id="variable-me~5"></span>
               class(<a href='../type/splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
@@ -199,7 +202,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndim~2"></span>
+              <span class="anchor" id="variable-ndim~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -218,7 +221,7 @@ independent variable space is an <code>ndim</code> vector.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -235,7 +238,7 @@ spline is to be evaluated.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nderiv"></span>
+              <span class="anchor" id="variable-nderiv~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -254,7 +257,7 @@ the range <code>0 &lt;= nderiv(idim) &lt;= 2</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-coef~2"></span>
+              <span class="anchor" id="variable-coef~3"></span>
               real(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -274,15 +277,15 @@ ndim-dimensional fortran array with
 dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
 store the array linearly, the leftmost
 indices are incremented most frequently.
-coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
-or <a href="../proc/splcw.html">splcw</a>.</p>
+coef may be computed by using routines <a href="splcc.html">splcc</a>
+or <a href="splcw.html">splcw</a>.</p>
 <p>the dimension is assumed to be
 <code>coef(nodes(1)*...*nodes(ndim))</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmin~2"></span>
+              <span class="anchor" id="variable-xmin~4"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -301,7 +304,7 @@ node along the <code>idim</code> axis.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmax~2"></span>
+              <span class="anchor" id="variable-xmax~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -320,7 +323,7 @@ node along the <code>idim</code> axis.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nodes~2"></span>
+              <span class="anchor" id="variable-nodes~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -355,7 +358,7 @@ represented by an <code>ndim</code> vector
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ierror~2"></span>
+              <span class="anchor" id="variable-ierror~3"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -413,7 +416,7 @@ spline evaluated at <code>x</code>.</p>
 <!-- proc~bascmp -->
 <g id="proc~~splde~~CallsGraph_node2" class="node">
 <title>proc~bascmp</title>
-<g id="a_proc~~splde~~CallsGraph_node2"><a xlink:href=".././proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
+<g id="a_proc~~splde~~CallsGraph_node2"><a xlink:href="../proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
 <polygon fill="#d9534f" stroke="#d9534f" points="453,-66 238,-66 238,-42 453,-42 453,-66"/>
 <text text-anchor="middle" x="345.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%bascmp</text>
 </a>
@@ -428,7 +431,7 @@ spline evaluated at <code>x</code>.</p>
 <!-- proc~cfaerr -->
 <g id="proc~~splde~~CallsGraph_node3" class="node">
 <title>proc~cfaerr</title>
-<g id="a_proc~~splde~~CallsGraph_node3"><a xlink:href=".././proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
+<g id="a_proc~~splde~~CallsGraph_node3"><a xlink:href="../proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
 <polygon fill="#d9534f" stroke="#d9534f" points="412,-24 279,-24 279,0 412,0 412,-24"/>
 <text text-anchor="middle" x="345.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::cfaerr</text>
 </a>
@@ -442,17 +445,17 @@ spline evaluated at <code>x</code>.</p>
 </g>
 </g>
 </svg>
-</div>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CallsGraph-help-text">Help</a></div>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -546,7 +549,7 @@ implementation in a submodule of an interface in a parent module.
 <!-- proc~splfe -->
 <g id="proc~~splde~~CalledByGraph_node2" class="node">
 <title>proc~splfe</title>
-<g id="a_proc~~splde~~CalledByGraph_node2"><a xlink:href=".././proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
+<g id="a_proc~~splde~~CalledByGraph_node2"><a xlink:href="../proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
 <polygon fill="#d94e8f" stroke="#d94e8f" points="199,-24 0,-24 0,0 199,0 199,-24"/>
 <text text-anchor="middle" x="99.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splfe</text>
 </a>
@@ -560,17 +563,17 @@ implementation in a submodule of an interface in a parent module.
 </g>
 </g>
 </svg>
-</div>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CalledByGraph-help-text">Help</a></div>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"

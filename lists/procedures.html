@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -18,7 +20,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -36,7 +39,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -65,21 +68,61 @@
 			 <table class="table table-striped">
 			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
 			 <tbody>
-			   <tr><td><a href='../proc/bascmp.html'>bascmp</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>This routine does basis function computations for natural
+			   <tr>
+                 <td><a href='../proc/bascmp.html'>bascmp</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>This routine does basis function computations for natural
 splines.  This routine is called by routines <a>SPLCW</a> and <a>SPLDE</a>
-to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p><a href="../proc/bascmp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/cfaerr.html'>cfaerr</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>To print an error number and an error message
-or just an error message.</p><a href="../proc/cfaerr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/destroy_splpak.html'>destroy_splpak</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>Destroy the internal class variables.</p></td></tr>
-			   <tr><td><a href='../proc/splcc.html'>splcc</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>N-dimensional cubic spline coefficient
-calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/splcw.html'>splcw</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>N-dimensional cubic spline coefficient
+to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows:</p><a href="../proc/bascmp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/cfaerr.html'>cfaerr</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>To print an error number and an error message
+or just an error message.</p><a href="../proc/cfaerr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/destroy_splpak.html'>destroy_splpak</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Destroy the internal class variables.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/splcc.html'>splcc</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>N-dimensional cubic spline coefficient
+calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/splcw.html'>splcw</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>N-dimensional cubic spline coefficient
   calculation by weighted least squares on
-  arbitrarily located data.</p><a href="../proc/splcw.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/splde.html'>splde</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Function</td><td><p>N-dimensional cubic spline derivative evaluation.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/splfe.html'>splfe</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Function</td><td><p>N-dimensional cubic spline function evaluation.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/suprls.html'>suprls</a></td><td><a href='../module/splpak_module.html'>splpak_module</a></td><td>Subroutine</td><td><p>To determine the least squares solution of a
-  large overdetermined linear system.</p><a href="../proc/suprls.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
+  arbitrarily located data.</p><a href="../proc/splcw.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/splde.html'>splde</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Function</td>
+                 <td><p>N-dimensional cubic spline derivative evaluation.</p><a href="../proc/splde.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/splfe.html'>splfe</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Function</td>
+                 <td><p>N-dimensional cubic spline function evaluation.</p><a href="../proc/splfe.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/suprls.html'>suprls</a></td>
+                 <td><a href='../module/splpak_module.html'>splpak_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>To determine the least squares solution of a
+  large overdetermined linear system.</p><a href="../proc/suprls.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
 			 </tbody></table>
              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -95,7 +138,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- none~evaluate -->
 <g id="call~~graph~~CallGraph_node1" class="node">
 <title>none~evaluate</title>
-<g id="a_call~~graph~~CallGraph_node1"><a xlink:href=".././type/splpak_type.html#boundprocedure-evaluate" xlink:title="splpak_module::splpak_type%evaluate">
+<g id="a_call~~graph~~CallGraph_node1"><a xlink:href="../type/splpak_type.html#boundprocedure-evaluate" xlink:title="splpak_module::splpak_type%evaluate">
 <polygon fill="#a7506f" stroke="#a7506f" points="220,-154 0,-154 0,-130 220,-130 220,-154"/>
 <text text-anchor="middle" x="110" y="-139.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%evaluate</text>
 </a>
@@ -104,7 +147,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~splde -->
 <g id="call~~graph~~CallGraph_node8" class="node">
 <title>proc~splde</title>
-<g id="a_call~~graph~~CallGraph_node8"><a xlink:href=".././proc/splde.html" xlink:title="splpak_module::splpak_type%splde">
+<g id="a_call~~graph~~CallGraph_node8"><a xlink:href="../proc/splde.html" xlink:title="splpak_module::splpak_type%splde">
 <polygon fill="#d94e8f" stroke="#d94e8f" points="694,-163 492,-163 492,-139 694,-139 694,-163"/>
 <text text-anchor="middle" x="593" y="-148.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splde</text>
 </a>
@@ -119,7 +162,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~splfe -->
 <g id="call~~graph~~CallGraph_node9" class="node">
 <title>proc~splfe</title>
-<g id="a_call~~graph~~CallGraph_node9"><a xlink:href=".././proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
+<g id="a_call~~graph~~CallGraph_node9"><a xlink:href="../proc/splfe.html" xlink:title="splpak_module::splpak_type%splfe">
 <polygon fill="#d94e8f" stroke="#d94e8f" points="455.5,-144 256.5,-144 256.5,-120 455.5,-120 455.5,-144"/>
 <text text-anchor="middle" x="356" y="-129.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splfe</text>
 </a>
@@ -134,7 +177,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- none~initialize -->
 <g id="call~~graph~~CallGraph_node2" class="node">
 <title>none~initialize</title>
-<g id="a_call~~graph~~CallGraph_node2"><a xlink:href=".././type/splpak_type.html#boundprocedure-initialize" xlink:title="splpak_module::splpak_type%initialize">
+<g id="a_call~~graph~~CallGraph_node2"><a xlink:href="../type/splpak_type.html#boundprocedure-initialize" xlink:title="splpak_module::splpak_type%initialize">
 <polygon fill="#a7506f" stroke="#a7506f" points="218.5,-92 1.5,-92 1.5,-68 218.5,-68 218.5,-92"/>
 <text text-anchor="middle" x="110" y="-77.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%initialize</text>
 </a>
@@ -143,7 +186,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~splcc -->
 <g id="call~~graph~~CallGraph_node6" class="node">
 <title>proc~splcc</title>
-<g id="a_call~~graph~~CallGraph_node6"><a xlink:href=".././proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
+<g id="a_call~~graph~~CallGraph_node6"><a xlink:href="../proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
 <polygon fill="#d9534f" stroke="#d9534f" points="456,-97 256,-97 256,-73 456,-73 456,-97"/>
 <text text-anchor="middle" x="356" y="-82.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcc</text>
 </a>
@@ -158,7 +201,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~splcw -->
 <g id="call~~graph~~CallGraph_node7" class="node">
 <title>proc~splcw</title>
-<g id="a_call~~graph~~CallGraph_node7"><a xlink:href=".././proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
+<g id="a_call~~graph~~CallGraph_node7"><a xlink:href="../proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
 <polygon fill="#d9534f" stroke="#d9534f" points="694,-75 492,-75 492,-51 694,-51 694,-75"/>
 <text text-anchor="middle" x="593" y="-60.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcw</text>
 </a>
@@ -173,7 +216,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~bascmp -->
 <g id="call~~graph~~CallGraph_node3" class="node">
 <title>proc~bascmp</title>
-<g id="a_call~~graph~~CallGraph_node3"><a xlink:href=".././proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
+<g id="a_call~~graph~~CallGraph_node3"><a xlink:href="../proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
 <polygon fill="#d9534f" stroke="#d9534f" points="963.5,-146 748.5,-146 748.5,-122 963.5,-122 963.5,-146"/>
 <text text-anchor="middle" x="856" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%bascmp</text>
 </a>
@@ -182,7 +225,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~cfaerr -->
 <g id="call~~graph~~CallGraph_node4" class="node">
 <title>proc~cfaerr</title>
-<g id="a_call~~graph~~CallGraph_node4"><a xlink:href=".././proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
+<g id="a_call~~graph~~CallGraph_node4"><a xlink:href="../proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
 <polygon fill="#d9534f" stroke="#d9534f" points="1151,-106 1018,-106 1018,-82 1151,-82 1151,-106"/>
 <text text-anchor="middle" x="1084.5" y="-91.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::cfaerr</text>
 </a>
@@ -191,7 +234,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~destroy_splpak -->
 <g id="call~~graph~~CallGraph_node5" class="node">
 <title>proc~destroy_splpak</title>
-<g id="a_call~~graph~~CallGraph_node5"><a xlink:href=".././proc/destroy_splpak.html" xlink:title="splpak_module::splpak_type%destroy_splpak">
+<g id="a_call~~graph~~CallGraph_node5"><a xlink:href="../proc/destroy_splpak.html" xlink:title="splpak_module::splpak_type%destroy_splpak">
 <polygon fill="#d9534f" stroke="#d9534f" points="982,-66 730,-66 730,-42 982,-42 982,-66"/>
 <text text-anchor="middle" x="856" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%destroy_splpak</text>
 </a>
@@ -224,7 +267,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
 <!-- proc~suprls -->
 <g id="call~~graph~~CallGraph_node10" class="node">
 <title>proc~suprls</title>
-<g id="a_call~~graph~~CallGraph_node10"><a xlink:href=".././proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
+<g id="a_call~~graph~~CallGraph_node10"><a xlink:href="../proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
 <polygon fill="#d9534f" stroke="#d9534f" points="958.5,-24 753.5,-24 753.5,0 958.5,0 958.5,-24"/>
 <text text-anchor="middle" x="856" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%suprls</text>
 </a>
@@ -266,17 +309,17 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
                   var pancallgraphCallGraph = svgPanZoom('#callgraphCallGraph',
                     {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
                   );
-                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CallGraph-help-text">Help</a></div>
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CallGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"

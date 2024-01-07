@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,7 +19,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +38,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -180,7 +183,7 @@
 <p>An overdetermined system of linear equations
   is formed -- one equation for each data point
   plus equations for derivative constraints.
-  This system is solved using subroutine <a href="../proc/suprls.html">suprls</a>.</p>
+  This system is solved using subroutine <a href="suprls.html">suprls</a>.</p>
 <h3>Accuracy</h3>
 <p>If there is exactly one data point in the
   near vicinity of each node and no extra data,
@@ -211,7 +214,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-me~2"></span>
+              <span class="anchor" id="variable-me~4"></span>
               class(<a href='../type/splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
@@ -226,7 +229,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndim"></span>
+              <span class="anchor" id="variable-ndim~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -245,7 +248,7 @@ independent variable space is an <code>NDIM</code> vector.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xdata"></span>
+              <span class="anchor" id="variable-xdata~2"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -273,7 +276,7 @@ The dimension of <code>XDATA</code> is assumed to be
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l1xdat"></span>
+              <span class="anchor" id="variable-l1xdat~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -291,7 +294,7 @@ The dimension of <code>XDATA</code> is assumed to be
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ydata"></span>
+              <span class="anchor" id="variable-ydata~2"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -355,7 +358,7 @@ squares sense.  The dimension is assumed to be
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndata"></span>
+              <span class="anchor" id="variable-ndata~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -371,7 +374,7 @@ above arguments.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmin"></span>
+              <span class="anchor" id="variable-xmin~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -391,7 +394,7 @@ assumed to be <code>XMIN(NDIM)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xmax"></span>
+              <span class="anchor" id="variable-xmax~2"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -411,7 +414,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nodes"></span>
+              <span class="anchor" id="variable-nodes~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -449,7 +452,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xtrap"></span>
+              <span class="anchor" id="variable-xtrap~2"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -485,7 +488,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-coef"></span>
+              <span class="anchor" id="variable-coef~2"></span>
               real(kind=wp),
             </td>
 <td>intent(out)</td>
@@ -516,7 +519,7 @@ space.  The dimension is assumed to be <code>COEF(NCF)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncf"></span>
+              <span class="anchor" id="variable-ncf~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -533,7 +536,7 @@ a fatal error is diagnosed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work"></span>
+              <span class="anchor" id="variable-work~2"></span>
               real(kind=wp)
             </td>
 <td></td>
@@ -555,7 +558,7 @@ must equal or exceed <code>NCOL*(NCOL+1)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nwrk"></span>
+              <span class="anchor" id="variable-nwrk~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -575,7 +578,7 @@ diagnosed if <code>NWRK</code> is less than
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ierror"></span>
+              <span class="anchor" id="variable-ierror~2"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -594,7 +597,7 @@ diagnosed if <code>NWRK</code> is less than
 <li><code>104</code>  <code>NCF</code> (size of <code>COEF</code>) is <code>&lt; NODES(1)*...*NODES(NDIM)</code>.</li>
 <li><code>105</code>  <code>NDATA</code> is <code>&lt; 1</code>.</li>
 <li><code>106</code>  <code>NWRK</code> (size of <code>WORK</code>) is too small.</li>
-<li><code>107</code>  <a href="../proc/suprls.html">suprls</a> failure (usually insufficient
+<li><code>107</code>  <a href="suprls.html">suprls</a> failure (usually insufficient
   data) -- ordinarily occurs only if
   <code>XTRAP</code> is zero or <code>WDATA</code> contains all
   zeros.</li>
@@ -630,7 +633,7 @@ diagnosed if <code>NWRK</code> is less than
 <!-- proc~bascmp -->
 <g id="proc~~splcw~~CallsGraph_node2" class="node">
 <title>proc~bascmp</title>
-<g id="a_proc~~splcw~~CallsGraph_node2"><a xlink:href=".././proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
+<g id="a_proc~~splcw~~CallsGraph_node2"><a xlink:href="../proc/bascmp.html" xlink:title="splpak_module::splpak_type%bascmp">
 <polygon fill="#d9534f" stroke="#d9534f" points="471.5,-146 256.5,-146 256.5,-122 471.5,-122 471.5,-146"/>
 <text text-anchor="middle" x="364" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%bascmp</text>
 </a>
@@ -645,7 +648,7 @@ diagnosed if <code>NWRK</code> is less than
 <!-- proc~cfaerr -->
 <g id="proc~~splcw~~CallsGraph_node3" class="node">
 <title>proc~cfaerr</title>
-<g id="a_proc~~splcw~~CallsGraph_node3"><a xlink:href=".././proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
+<g id="a_proc~~splcw~~CallsGraph_node3"><a xlink:href="../proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
 <polygon fill="#d9534f" stroke="#d9534f" points="659,-65 526,-65 526,-41 659,-41 659,-65"/>
 <text text-anchor="middle" x="592.5" y="-50.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::cfaerr</text>
 </a>
@@ -660,7 +663,7 @@ diagnosed if <code>NWRK</code> is less than
 <!-- proc~destroy_splpak -->
 <g id="proc~~splcw~~CallsGraph_node4" class="node">
 <title>proc~destroy_splpak</title>
-<g id="a_proc~~splcw~~CallsGraph_node4"><a xlink:href=".././proc/destroy_splpak.html" xlink:title="splpak_module::splpak_type%destroy_splpak">
+<g id="a_proc~~splcw~~CallsGraph_node4"><a xlink:href="../proc/destroy_splpak.html" xlink:title="splpak_module::splpak_type%destroy_splpak">
 <polygon fill="#d9534f" stroke="#d9534f" points="490,-66 238,-66 238,-42 490,-42 490,-66"/>
 <text text-anchor="middle" x="364" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%destroy_splpak</text>
 </a>
@@ -675,7 +678,7 @@ diagnosed if <code>NWRK</code> is less than
 <!-- proc~suprls -->
 <g id="proc~~splcw~~CallsGraph_node5" class="node">
 <title>proc~suprls</title>
-<g id="a_proc~~splcw~~CallsGraph_node5"><a xlink:href=".././proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
+<g id="a_proc~~splcw~~CallsGraph_node5"><a xlink:href="../proc/suprls.html" xlink:title="splpak_module::splpak_type%suprls">
 <polygon fill="#d9534f" stroke="#d9534f" points="466.5,-24 261.5,-24 261.5,0 466.5,0 466.5,-24"/>
 <text text-anchor="middle" x="364" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%suprls</text>
 </a>
@@ -699,17 +702,17 @@ diagnosed if <code>NWRK</code> is less than
                   var panprocsplcwCallsGraph = svgPanZoom('#procsplcwCallsGraph',
                     {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
                   );
-                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CallsGraph-help-text">Help</a></div>
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -803,7 +806,7 @@ implementation in a submodule of an interface in a parent module.
 <!-- proc~splcc -->
 <g id="proc~~splcw~~CalledByGraph_node2" class="node">
 <title>proc~splcc</title>
-<g id="a_proc~~splcw~~CalledByGraph_node2"><a xlink:href=".././proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
+<g id="a_proc~~splcw~~CalledByGraph_node2"><a xlink:href="../proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
 <polygon fill="#d9534f" stroke="#d9534f" points="200,-24 0,-24 0,0 200,0 200,-24"/>
 <text text-anchor="middle" x="100" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcc</text>
 </a>
@@ -817,17 +820,17 @@ implementation in a submodule of an interface in a parent module.
 </g>
 </g>
 </svg>
-</div>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CalledByGraph-help-text">Help</a></div>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"

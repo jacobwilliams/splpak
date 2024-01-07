@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,7 +19,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +38,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -180,23 +183,24 @@
     </div>
     
     <div class="col-md-9" id='text'>
-      <h2>type, public :: splpak_type</h2>
+      <h2>
+        type, public :: splpak_type</h2>
     <h3>Usage</h3>
 <p>The class contains four user entries:
-  <a href="../type/splpak_type.html#boundprocedure-splcc">splcc</a>, <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>, <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a>, and <a href="../type/splpak_type.html#boundprocedure-splde">splde</a>.</p>
-<p>The user first calls <a href="../type/splpak_type.html#boundprocedure-splcc">splcc</a> by</p>
+  <a href="splpak_type.html#boundprocedure-splcc">splcc</a>, <a href="splpak_type.html#boundprocedure-splcw">splcw</a>, <a href="splpak_type.html#boundprocedure-splfe">splfe</a>, and <a href="splpak_type.html#boundprocedure-splde">splde</a>.</p>
+<p>The user first calls <a href="splpak_type.html#boundprocedure-splcc">splcc</a> by</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdat</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">ndata</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>or <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a> by</p>
+<p>or <a href="splpak_type.html#boundprocedure-splcw">splcw</a> by</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">initialize</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">xdata</span><span class="p">,</span><span class="n">l1xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">wdata</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">ndata</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">xtrap</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">coef</span><span class="p">,</span><span class="n">ncf</span><span class="p">,</span><span class="n">work</span><span class="p">,</span><span class="n">nwrk</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The parameter <code>NDATA</code> in the call to <a href="../type/splpak_type.html#boundprocedure-splcw">splcw</a>
+<p>The parameter <code>NDATA</code> in the call to <a href="splpak_type.html#boundprocedure-splcw">splcw</a>
   enables the user to weight some of the data
   points more heavily than others.  Both
   routines return a set of coefficients in the
@@ -204,11 +208,11 @@
   subsequently used in the computation of
   function values and partial derivatives.
   To compute values on the spline approximation
-  the user then calls <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> or <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> any
+  the user then calls <a href="splpak_type.html#boundprocedure-splfe">splfe</a> or <a href="splpak_type.html#boundprocedure-splde">splde</a> any
   number of times in any order provided that
   the values of the inputs, <code>NDIM</code>, <code>COEF</code>, <code>XMIN</code>,
   <code>XMAX</code>, and <code>NODES</code>, are preserved between calls.</p>
-<p><a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> and <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> are called in the following way:</p>
+<p><a href="splpak_type.html#boundprocedure-splfe">splfe</a> and <a href="splpak_type.html#boundprocedure-splde">splde</a> are called in the following way:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
@@ -216,9 +220,9 @@
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">nderiv</span><span class="p">,</span><span class="n">coef</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The routine <a href="../type/splpak_type.html#boundprocedure-splfe">splfe</a> returns an interpolated
+<p>The routine <a href="splpak_type.html#boundprocedure-splfe">splfe</a> returns an interpolated
   value at the point defined by the array <code>X</code>.
-  <a href="../type/splpak_type.html#boundprocedure-splde">splde</a> affords the user the additional
+  <a href="splpak_type.html#boundprocedure-splde">splde</a> affords the user the additional
   capability of calculating an interpolated
   value for one of several partial derivatives
   specified by the array <code>NDERIV</code>.</p>
@@ -507,7 +511,7 @@
       <span class="anchor" id="boundprocedure-initialize"></span>
       <h3>
           generic, public ::
-  <strong>initialize</strong> => <a href='../type/splpak_type.html#boundprocedure-splcc'>splcc</a>, <a href='../type/splpak_type.html#boundprocedure-splcw'>splcw</a>
+  <strong>initialize</strong> => <a href='/home/runner/work/splpak/splpak/doc/type/splpak_type.html#boundprocedure-splcc'>splcc</a>, <a href='/home/runner/work/splpak/splpak/doc/type/splpak_type.html#boundprocedure-splcw'>splcw</a>
         
       </h3>
     </div>
@@ -539,7 +543,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -790,7 +794,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -862,7 +866,7 @@ The dimension of <code>XDATA</code> is assumed to be
             <td><strong>l1xdat</strong></td>
             <td>
 <p>The length of the 1st dimension of <code>XDATA</code> in
- the calling program.  <code>L1XDAT</code> must be <code>&gt;= NDIM</code>.</p><a href="../proc/splcw.html#variable-l1xdat" class="pull-right"><emph>Read more&hellip;</emph></a>
+ the calling program.  <code>L1XDAT</code> must be <code>&gt;= NDIM</code>.</p><a href="../proc/splcw.html#variable-l1xdat~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -985,7 +989,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  of the spline in that coordinate direction.
  <code>NODES(IDIM)</code> must be <code>&gt;= 4</code>, but may be as
  large as the arrays <code>COEF</code> and <code>WORK</code> allow.
- The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
+ The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1015,7 +1019,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  a weight for these constraints, and thus may
  be used to control smoothness in data sparse
  areas.  Experience indicates that unity is a
- good first guess for this parameter.</p><a href="../proc/splcw.html#variable-xtrap" class="pull-right"><emph>Read more&hellip;</emph></a>
+ good first guess for this parameter.</p><a href="../proc/splcw.html#variable-xtrap~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1120,7 +1124,7 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -1138,7 +1142,7 @@ diagnosed if <code>NWRK</code> is less than
       <span class="anchor" id="boundprocedure-evaluate"></span>
       <h3>
           generic, public ::
-  <strong>evaluate</strong> => <a href='../type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='../type/splpak_type.html#boundprocedure-splde'>splde</a>
+  <strong>evaluate</strong> => <a href='/home/runner/work/splpak/splpak/doc/type/splpak_type.html#boundprocedure-splfe'>splfe</a>, <a href='/home/runner/work/splpak/splpak/doc/type/splpak_type.html#boundprocedure-splde'>splde</a>
         
       </h3>
     </div>
@@ -1169,7 +1173,7 @@ diagnosed if <code>NWRK</code> is less than
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1318,7 +1322,7 @@ diagnosed if <code>NWRK</code> is less than
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1407,8 +1411,8 @@ ndim-dimensional fortran array with
 dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
 store the array linearly, the leftmost
 indices are incremented most frequently.
-coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
-or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+coef may be computed by using routines <a href="splcc.html">splcc</a>
+or <a href="splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1468,7 +1472,7 @@ along the <code>idim</code> axis and determines the
 flexibility of the spline in that coordinate
 direction.  <code>nodes(idim)</code> must be &gt;= 4 but
 may be as large as the arrays <code>coef</code> and <code>work</code>
-allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+allow.</p><a href="../proc/splde.html#variable-nodes~4" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -1483,7 +1487,7 @@ allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -1508,7 +1512,7 @@ spline evaluated at <code>x</code>.</p>
       <span class="anchor" id="boundprocedure-destroy"></span>
       <h3>
           procedure, public ::
-  <strong>destroy</strong> => <a href='../proc/destroy_splpak.html'>destroy_splpak</a>
+  <strong>destroy</strong> => <a href='/home/runner/work/splpak/splpak/doc/proc/destroy_splpak.html'>destroy_splpak</a>
         
       </h3>
     </div>
@@ -1539,7 +1543,7 @@ spline evaluated at <code>x</code>.</p>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1609,7 +1613,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1875,7 +1879,7 @@ calculation by least squares.</p><a href="../proc/splcc.html" class="pull-right"
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1947,7 +1951,7 @@ The dimension of <code>XDATA</code> is assumed to be
             <td><strong>l1xdat</strong></td>
             <td>
 <p>The length of the 1st dimension of <code>XDATA</code> in
- the calling program.  <code>L1XDAT</code> must be <code>&gt;= NDIM</code>.</p><a href="../proc/splcw.html#variable-l1xdat" class="pull-right"><emph>Read more&hellip;</emph></a>
+ the calling program.  <code>L1XDAT</code> must be <code>&gt;= NDIM</code>.</p><a href="../proc/splcw.html#variable-l1xdat~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2070,7 +2074,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  of the spline in that coordinate direction.
  <code>NODES(IDIM)</code> must be <code>&gt;= 4</code>, but may be as
  large as the arrays <code>COEF</code> and <code>WORK</code> allow.
- The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes" class="pull-right"><emph>Read more&hellip;</emph></a>
+ The dimension is assumed to be <code>NODES(NDIM)</code>.</p><a href="../proc/splcw.html#variable-nodes~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2100,7 +2104,7 @@ assumed to be <code>XMAX(NDIM)</code>.</p>
  a weight for these constraints, and thus may
  be used to control smoothness in data sparse
  areas.  Experience indicates that unity is a
- good first guess for this parameter.</p><a href="../proc/splcw.html#variable-xtrap" class="pull-right"><emph>Read more&hellip;</emph></a>
+ good first guess for this parameter.</p><a href="../proc/splcw.html#variable-xtrap~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2205,7 +2209,7 @@ diagnosed if <code>NWRK</code> is less than
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>An error flag with the following meanings:</p><a href="../proc/splcw.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -2250,7 +2254,7 @@ diagnosed if <code>NWRK</code> is less than
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -2414,7 +2418,7 @@ diagnosed if <code>NWRK</code> is less than
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -2503,8 +2507,8 @@ ndim-dimensional fortran array with
 dimensions <code>nodes(1),...,nodes(ndim)</code>, i.e., to
 store the array linearly, the leftmost
 indices are incremented most frequently.
-coef may be computed by using routines <a href="../proc/splcc.html">splcc</a>
-or <a href="../proc/splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+coef may be computed by using routines <a href="splcc.html">splcc</a>
+or <a href="splcw.html">splcw</a>.</p><a href="../proc/splde.html#variable-coef~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2564,7 +2568,7 @@ along the <code>idim</code> axis and determines the
 flexibility of the spline in that coordinate
 direction.  <code>nodes(idim)</code> must be &gt;= 4 but
 may be as large as the arrays <code>coef</code> and <code>work</code>
-allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+allow.</p><a href="../proc/splde.html#variable-nodes~4" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
         <tr>
@@ -2579,7 +2583,7 @@ allow.</p><a href="../proc/splde.html#variable-nodes~2" class="pull-right"><emph
             <td>::</td>
             <td><strong>ierror</strong></td>
             <td>
-<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+<p>an error flag with the following meanings:</p><a href="../proc/splde.html#variable-ierror~3" class="pull-right"><emph>Read more&hellip;</emph></a>
             </td>
         </tr>
     </tbody>
@@ -2633,7 +2637,7 @@ to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -2778,7 +2782,7 @@ to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/splpak_type.html'>splpak_type</a>),
+              class(<a href='splpak_type.html'>splpak_type</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -2806,7 +2810,7 @@ to compute <code>ICOL</code> and <code>BASM</code>, which are defined as follows
 for the first call, increases by 1 for each
 call, and is <code>m</code> when the final row is
 entered).  After the final row has been
-entered, <a href="../proc/suprls.html">suprls</a> is called with <code>i = 0</code> to
+entered, <a href="suprls.html">suprls</a> is called with <code>i = 0</code> to
 complete the reduction and solution.</p>
             </td>
         </tr>
@@ -2874,7 +2878,7 @@ of the right hand side vector <code>b</code>.</p>
             <td><strong>a</strong>(nn)</td>
             <td>
 <p>a working array which must not be changed
-between the successive calls to <a href="../proc/suprls.html">suprls</a>.</p>
+between the successive calls to <a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
@@ -2909,7 +2913,7 @@ as large as possible up to a maximum of
             <td>
 <p>the <code>n</code>-components of the solution vector are
 returned in this array after the final call
-to <a href="../proc/suprls.html">suprls</a>.</p>
+to <a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
@@ -2926,7 +2930,7 @@ to <a href="../proc/suprls.html">suprls</a>.</p>
             <td>
 <p>the euclidean norm of the residual is
 returned in <code>err</code> after the final call to
-<a href="../proc/suprls.html">suprls</a>.</p>
+<a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>

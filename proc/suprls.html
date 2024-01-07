@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,7 +19,8 @@
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +38,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
                   <li class="nav-item">
-                    <a class="nav-link" href="../sourcefile/splpak.f90.html">Source File</a>
+                    <a class="nav-link" href="sourcefile/splpak.f90.html">Source File</a>
                   </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/modules.html">Modules</a>
@@ -155,7 +158,7 @@
   aside for use by the routine.  there is no
   restriction on the number of rows.</p>
 <h3>Usage</h3>
-<p><a href="../proc/suprls.html">suprls</a> is called once for
+<p><a href="suprls.html">suprls</a> is called once for
   each row of the matrix.  A final call returns
   the solution vector and the euclidean norm
   of the residual. This following sequence would
@@ -276,7 +279,7 @@
 for the first call, increases by 1 for each
 call, and is <code>m</code> when the final row is
 entered).  After the final row has been
-entered, <a href="../proc/suprls.html">suprls</a> is called with <code>i = 0</code> to
+entered, <a href="suprls.html">suprls</a> is called with <code>i = 0</code> to
 complete the reduction and solution.</p>
             </td>
         </tr>
@@ -344,7 +347,7 @@ of the right hand side vector <code>b</code>.</p>
             <td><strong>a</strong>(nn)</td>
             <td>
                 <p>a working array which must not be changed
-between the successive calls to <a href="../proc/suprls.html">suprls</a>.</p>
+between the successive calls to <a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
@@ -379,7 +382,7 @@ as large as possible up to a maximum of
             <td>
                 <p>the <code>n</code>-components of the solution vector are
 returned in this array after the final call
-to <a href="../proc/suprls.html">suprls</a>.</p>
+to <a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
@@ -396,7 +399,7 @@ to <a href="../proc/suprls.html">suprls</a>.</p>
             <td>
                 <p>the euclidean norm of the residual is
 returned in <code>err</code> after the final call to
-<a href="../proc/suprls.html">suprls</a>.</p>
+<a href="suprls.html">suprls</a>.</p>
             </td>
         </tr>
         <tr>
@@ -452,7 +455,7 @@ fatal errors:</p>
 <!-- proc~cfaerr -->
 <g id="proc~~suprls~~CallsGraph_node2" class="node">
 <title>proc~cfaerr</title>
-<g id="a_proc~~suprls~~CallsGraph_node2"><a xlink:href=".././proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
+<g id="a_proc~~suprls~~CallsGraph_node2"><a xlink:href="../proc/cfaerr.html" xlink:title="splpak_module::cfaerr">
 <polygon fill="#d9534f" stroke="#d9534f" points="374,-24 241,-24 241,0 374,0 374,-24"/>
 <text text-anchor="middle" x="307.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::cfaerr</text>
 </a>
@@ -466,17 +469,17 @@ fatal errors:</p>
 </g>
 </g>
 </svg>
-</div>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CallsGraph-help-text">Help</a></div>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -570,7 +573,7 @@ implementation in a submodule of an interface in a parent module.
 <!-- proc~splcw -->
 <g id="proc~~suprls~~CalledByGraph_node2" class="node">
 <title>proc~splcw</title>
-<g id="a_proc~~suprls~~CalledByGraph_node2"><a xlink:href=".././proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
+<g id="a_proc~~suprls~~CalledByGraph_node2"><a xlink:href="../proc/splcw.html" xlink:title="splpak_module::splpak_type%splcw">
 <polygon fill="#d9534f" stroke="#d9534f" points="438,-24 236,-24 236,0 438,0 438,-24"/>
 <text text-anchor="middle" x="337" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcw</text>
 </a>
@@ -585,7 +588,7 @@ implementation in a submodule of an interface in a parent module.
 <!-- proc~splcc -->
 <g id="proc~~suprls~~CalledByGraph_node3" class="node">
 <title>proc~splcc</title>
-<g id="a_proc~~suprls~~CalledByGraph_node3"><a xlink:href=".././proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
+<g id="a_proc~~suprls~~CalledByGraph_node3"><a xlink:href="../proc/splcc.html" xlink:title="splpak_module::splpak_type%splcc">
 <polygon fill="#d9534f" stroke="#d9534f" points="200,-24 0,-24 0,0 200,0 200,-24"/>
 <text text-anchor="middle" x="100" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">splpak_module::splpak_type%splcc</text>
 </a>
@@ -603,17 +606,17 @@ implementation in a submodule of an interface in a parent module.
                   var panprocsuprlsCalledByGraph = svgPanZoom('#procsuprlsCalledByGraph',
                     {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
                   );
-                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#CalledByGraph-help-text">Help</a></div>
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
           <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
