@@ -94,7 +94,7 @@
                         figsize=figsize,font_size=20,axes_labelsize=20,&
                         xtick_labelsize=20, ytick_labelsize=20,&
                         legend_fontsize=20,&
-                        title='splpak_test',legend=.true.)
+                        title='splpak_test_linear',legend=.true.)
     call plt%add_plot(xdata(1,:),ydata,&
                         label='Original points',&
                         linestyle='ko',markersize=5,linewidth=2,istat=istat)
