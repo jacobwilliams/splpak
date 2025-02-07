@@ -308,7 +308,7 @@ subroutine bascmp(me,x,nderiv,xmin,nodes,icol,basm)
                 fact = me%dxin(idim)
             end if
             z = fact* (x(idim)-xb) + 2.0_wp
-            if (z<0.0_wp) then
+            if (z>0.0_wp) then
                 if (z<2.0_wp) then
                     bas1 = 1.5_wp*z**2
                     z = z - 1.0_wp
