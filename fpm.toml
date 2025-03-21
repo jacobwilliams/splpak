@@ -1,10 +1,10 @@
-name = "spkpak"
+name = "splpak"
 author = "Jacob Williams"
 maintainer = "Jacob Williams"
 copyright = "Copyright (C) 2000 University Corporation for Atmospheric Research"
 license = "Apache"
-description = "spkpak"
-homepage = "https://github.com/jacobwilliams/spkpak"
+description = "Modernized SPLPAK library for multidimensional least-squares cubic spline fitting"
+homepage = "https://github.com/jacobwilliams/splpak"
 
 [build]
 auto-executables = false
